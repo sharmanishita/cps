@@ -13,7 +13,7 @@ app.use(helmet({
 app.use(cors({
   origin: '*',
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-  allowedHeaders: ['Authorization']
+  allowedHeaders: ['Authorization', 'Content-Type']
 }))
 app.use(express.json())
 
@@ -32,13 +32,14 @@ app.get('/', (req: Request, res: Response) => {
 app.use('/api', authRouter)
 app.use(errorHandler)
 
+app.use((req: Request, res: Response) => {
+  res.status(404).json({ error: '404 Route not found' });
+})
+
 const server = app.listen(PORT, () => {
   console.log(`Server is running over port: ${PORT} in ${env}`);
 })
 
-app.use((req: Request, res: Response) => {
-  res.status(404).json({ error: '404 Route not found' });
-})
 
 function gracefulShutdown() {
   console.log('Received kill signal, closing gracefully');

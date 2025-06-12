@@ -20,10 +20,10 @@ authRouter.post('/register', async (req: Request, res: Response) => {
     username: username,
     password: hashedPassword
   });
-  const token = tokenGeneration({ id: newUser._id, username: newUser.username });
+  const token = tokenGeneration({ id: newUser._id as string, username: newUser.username });
   res.status(201).json({
     message: `${username} registered successfully`,
-    token,
+    access_token: token,
   });
   return;
 })
@@ -46,10 +46,10 @@ authRouter.post('/login', async (req: Request, res: Response) => {
     })
     return;
   }
-  const token = tokenGeneration({ id: user._id, username: user.username })
+  const token = tokenGeneration({ id: user._id as string, username: user.username })
   res.status(200).json({
     message: 'Login Successful',
-    token
+    access_token: token
   });
   return;
 })
