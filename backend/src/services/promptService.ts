@@ -1,3 +1,5 @@
+/* AUTHOR - NIKITA S RAJ KAPINI (CREATED ON 10/06/2025) */
+/* AUTHOR - NIKITA S RAJ KAPINI (UPDATED ON 12/06/2025) */
 export const generatePrompt = (targetTopic: string, prereqs: string[]) => `
 You are an educational assistant tasked with generating diagnostic assessments that evaluate a learner’s readiness to study a particular target topic. Your goal is to create a well-balanced, concept-aligned question set based only on the prerequisite concepts for that target topic.
 

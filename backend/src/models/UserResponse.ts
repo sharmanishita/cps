@@ -1,3 +1,4 @@
+/* AUTHOR - NIKITA S RAJ KAPINI (CREATED ON 13/06/2025) */
 import mongoose from 'mongoose';
 
 const UserResponseSchema = new mongoose.Schema({
