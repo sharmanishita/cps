@@ -52,3 +52,4 @@ module.exports = {
   logout,
   getCurrentUser
 };
+//Added by Adwaidh
