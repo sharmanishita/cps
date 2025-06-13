@@ -100,20 +100,17 @@ const Dashboard: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [missingPrereqs, setMissingPrereqs] = useState<string[]>([]);
-  const [userEmail, setUserEmail] = useState<string | null>(null); // ⬅️ for showing email
+  const [userEmail, setUserEmail] = useState<string | null>(null);
 
   const navigate = useNavigate();
 
-  // 🔽 Fetch user email once component mounts
   useEffect(() => {
     const fetchUserEmail = async () => {
       try {
         const token = localStorage.getItem('token');
         if (!token) return;
-
         const headers = { Authorization: `Bearer ${token}` };
         const res = await api.get('/api/user/passed', { headers });
-
         setUserEmail(res.data.email || null);
       } catch (err) {
         console.error('Error fetching user email:', err);
@@ -164,9 +161,7 @@ const Dashboard: React.FC = () => {
       <h1 className="text-2xl font-semibold mb-2">What do you want to study today?</h1>
 
       {userEmail && (
-        <p className="text-green-700 font-medium mb-4">
-          Logged in as: {userEmail}
-        </p>
+        <p className="text-green-700 font-medium mb-4">Logged in as: {userEmail}</p>
       )}
 
       <form onSubmit={handleTopicSubmit} className="flex gap-2 mb-4">
@@ -198,10 +193,29 @@ const Dashboard: React.FC = () => {
 
       {missingPrereqs.length > 0 && (
         <div className="bg-yellow-100 border border-yellow-400 p-4 rounded mt-4">
-          <p className="font-medium">You need to complete these prerequisite topics first:</p>
-          <ul className="list-disc list-inside mt-2">
+          <p className="font-medium mb-2">You need to complete these prerequisite topics first:</p>
+          <ul className="space-y-3">
             {missingPrereqs.map((prereq) => (
-              <li key={prereq}>{prereq}</li>
+              <li
+                key={prereq}
+                className="flex justify-between items-center bg-white p-3 rounded shadow"
+              >
+                <span className="font-medium">{prereq}</span>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => navigate(`/learn/${encodeURIComponent(prereq)}`)}
+                    className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+                  >
+                    Learn
+                  </button>
+                  <button
+                    onClick={() => navigate(`/quiz/${encodeURIComponent(prereq)}`)}
+                    className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
+                  >
+                    Take Quiz
+                  </button>
+                </div>
+              </li>
             ))}
           </ul>
         </div>
@@ -211,4 +225,3 @@ const Dashboard: React.FC = () => {
 };
 
 export default Dashboard;
-
