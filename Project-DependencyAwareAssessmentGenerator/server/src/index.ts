@@ -6,6 +6,8 @@ import dotenv from 'dotenv';
 import authRoutes from './routes/authRoutes';
 import userRoutes from './routes/userRoutes';
 import prereqRoutes from './routes/prereqRoutes';
+import questionRoutes from "./routes/questionRoutes";
+
 
 dotenv.config();
 
@@ -23,6 +25,7 @@ mongoose.connect('mongodb://localhost:27017/dependencyApp', {
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/prerequisite', prereqRoutes);
+app.use("/api/question", questionRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
