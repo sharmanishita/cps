@@ -1,4 +1,4 @@
-# Personalized Learning Path RecommendationAdd commentMore actions
+# Personalized Learning Path Recommendation
 
 An experimental AI-powered educational tool that recommends personalized learning paths based on a user’s target topic. The system dynamically constructs a prerequisite concept graph to identify foundational knowledge, and uses GPT-based analysis to generate diagnostic assessments — ensuring learners build a strong conceptual base before progressing.
 
