@@ -76,6 +76,20 @@ In the current development state:
 > The connection between frontend input and backend services is not yet wired together, but both parts function correctly when tested separately.
 
 ---
+## Contributions
+
+- **Nikita S Raj Kapini** : Building the backend for question generation, data storage with MongoDB, and response analysis
+
+- **Shreyas Mene** : Developing the frontend user interface using Vite + React
+
+- **Yeddalu Pushkala** : Developing and integrating a chatbot (help assistant) with the frontend interface
+
+- **Manda Rani** : Designing UI components for registration and login pages  
+
+- **Nakshtra Bandary** : Preparing project documentation, including UML diagrams, SRS, and system design documentation
+
+
+---
 
 ## Documentation
 
