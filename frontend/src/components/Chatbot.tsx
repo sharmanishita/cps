@@ -1,114 +1,201 @@
-import React, { useState, useEffect } from 'react';
+//Author:Yeddula Pushkala             Date:12-06-25
+import React, { useState, useRef, useEffect } from 'react';
+import { EnhancedChatbotService } from '../services';
+import { ConversationMemoryManager } from '../services/conversationMemory';
+import type { ConversationContext, Message } from '../services/conversationMemory';
 import './Chatbot.css';
-
-interface Message {
-  text: string;
-  isUser: boolean;
-}
 
 const Chatbot: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [inputMessage, setInputMessage] = useState('');
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: '1',
+      text: 'Hello! I can help you navigate our ML assessment platform, explain prerequisites, troubleshoot issues, interpret results, and guide your learning journey. What can I assist you with today?',
+      isUser: false,
+      timestamp: new Date(),
+      intent: 'greeting'
+    }
+  ]);
+  const [inputText, setInputText] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  
+  // Add the missing serviceReady state declaration
+  const [serviceReady, setServiceReady] = useState(false);
+  
+  const [chatbotService] = useState(() => new EnhancedChatbotService());
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const welcomeMessage = {
-    text: 'Welcome to EduAssess! 👋 I\'m here to help you navigate our intelligent assessment platform. You can use this website to:\n\n• Take AI-generated quizzes on your chosen topics\n• Test your knowledge of prerequisites\n• Get detailed performance reports\n• Track your learning progress\n\nFeel free to ask me any questions about how to use the platform!',
-    isUser: false,
-  };
-
-  const predefinedResponses: { [key: string]: string } = {
-    'how does this app work?': 'Choose the appropriate topics that you have studied in the search box above. We will generate an assessment quiz to test your knowledge of the topic and its prerequisites, then provide you with a detailed report.',
-    'where can i enter my concepts?': 'You can enter your concepts in the search box at the center of the screen. As you type, you\'ll see a dropdown menu with relevant topics to choose from.',
-    'what is eduassess?': 'EduAssess is an intelligent assessment platform that helps evaluate your understanding of various topics and their prerequisites through AI-generated quizzes.',
-    'help': 'I can help you navigate EduAssess! You can ask me about how the app works, where to enter concepts, or what EduAssess is.',
+  useEffect(() => {
+    const initializeServices = async () => {
+      try {
+        await chatbotService.initialize();
+        setServiceReady(true);
+        console.log('Chatbot service initialized successfully');
+      } catch (error) {
+        console.error('Service initialization failed:', error);
+        setServiceReady(false);
+      }
+    };
+    initializeServices();
+  }, [chatbotService]);
+  
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   useEffect(() => {
-    // Add welcome message when the chat is opened for the first time
-    if (isOpen && messages.length === 0) {
-      setMessages([welcomeMessage]);
-    }
-  }, [isOpen]);
+    scrollToBottom();
+  }, [messages]);
 
-  const handleSendMessage = () => {
-    if (!inputMessage.trim()) return;
-
-    const newUserMessage: Message = {
-      text: inputMessage,
-      isUser: true,
+  const addMessage = (text: string, isUser: boolean, intent?: string, confidence?: number) => {
+    const newMessage: Message = {
+      id: Date.now().toString(),
+      text,
+      isUser,
+      timestamp: new Date(),
+      intent,
+      confidence
     };
-
-    let botResponse = 'I\'m not sure how to help with that. Try asking about how the app works or where to enter concepts.';
-    
-    // Check for predefined responses (case-insensitive)
-    const userMessageLower = inputMessage.toLowerCase();
-    for (const [key, value] of Object.entries(predefinedResponses)) {
-      if (userMessageLower.includes(key)) {
-        botResponse = value;
-        break;
-      }
-    }
-
-    const newBotMessage: Message = {
-      text: botResponse,
-      isUser: false,
-    };
-
-    setMessages([...messages, newUserMessage, newBotMessage]);
-    setInputMessage('');
+    setMessages(prev => [...prev, newMessage]);
   };
 
-  return (
-    <div className="chatbot-container">
-      {!isOpen && (
-        <button className="chat-button" onClick={() => setIsOpen(true)}>
-          <img src="/chat-bot.svg" alt="Chat" className="chat-icon" />
-        </button>
-      )}
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    // Add serviceReady check to prevent processing when service isn't ready
+    if (!inputText.trim() || isLoading || !serviceReady) return;
 
+    const userMessage = inputText.trim();
+    addMessage(userMessage, true);
+    setInputText('');
+    setIsLoading(true);
+
+    try {
+      // Use the enhanced chatbot service with correct method name
+      const result = await chatbotService.classifyAndRespond(
+        userMessage,
+        'default_user', // In production, use actual user ID
+        'default_session' // In production, use actual session ID
+      );
+      
+      // Add bot response with classification metadata
+      addMessage(result.response, false, result.intent, result.confidence);
+
+    } catch (error) {
+      console.error('Error processing message:', error);
+      addMessage('I apologize, but I encountered an error processing your request. Please try again or contact our support team if the issue persists.', false);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const toggleChat = () => setIsOpen(!isOpen);
+
+  return (
+    <>
+      {/* Chat Toggle Button */}
+      <button 
+        onClick={toggleChat}
+        className={`chat-toggle ${isOpen ? 'open' : ''}`}
+        aria-label="Toggle chat"
+      >
+        {isOpen ? '✕' : '🤖'}
+      </button>
+
+      {/* Chat Window */}
       {isOpen && (
-        <div className="chat-window">
-          <div className="chat-header">
-            <h3>EduAssess Assistant</h3>
-            <button className="close-button" onClick={() => setIsOpen(false)}>
-              ✕
-            </button>
+        <div className="chatbot-container">
+          <div className="chatbot-header">
+            <h3>ML Assessment Assistant</h3>
+            <span className={`service-status ${serviceReady ? 'ready' : 'initializing'}`}>
+              {serviceReady ? '' : '🔄 Initializing...'}
+            </span>
+            <button onClick={toggleChat} className="close-button">✕</button>
           </div>
           
-          <div className="messages-container">
-            {messages.map((message, index) => (
-              <div key={index} className="message-wrapper">
-                {!message.isUser && (
-                  <div className="bot-profile">
-                    <img src="/bot-face.svg" alt="Bot" />
-                  </div>
-                )}
-                <div className={`message ${message.isUser ? 'user-message' : 'bot-message'}`}>
-                  {message.text.split('\n').map((line, i) => (
-                    <React.Fragment key={i}>
-                      {line}
-                      {i < message.text.split('\n').length - 1 && <br />}
-                    </React.Fragment>
-                  ))}
+          <div className="chatbot-messages">
+            {messages.map((message) => (
+              <div 
+                key={message.id} 
+                className={`message ${message.isUser ? 'user' : 'bot'}`}
+              >
+                <div className="message-content">
+                  {formatMessage(message.text)}
+                </div>
+                <div className="message-metadata">
+                  <span className="message-timestamp">
+                    {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </span>
+                  {message.intent && message.confidence && (
+                    <span className={`intent-debug confidence-${getConfidenceLevel(message.confidence)}`}>
+                      {message.intent} ({(message.confidence * 100).toFixed(0)}%)
+                    </span>
+                  )}
                 </div>
               </div>
             ))}
+            
+            {isLoading && (
+              <div className="message bot loading">
+                <div className="message-content">
+                  <div className="typing-indicator">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                  </div>
+                  Processing your request...
+                </div>
+              </div>
+            )}
+            
+            <div ref={messagesEndRef} />
           </div>
 
-          <div className="input-container">
+          <form onSubmit={handleSubmit} className="chatbot-input-form">
             <input
               type="text"
-              value={inputMessage}
-              onChange={(e) => setInputMessage(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-              placeholder="Type your question here..."
+              value={inputText}
+              onChange={(e) => setInputText(e.target.value)}
+              placeholder={serviceReady 
+                ? "Ask about navigation, prerequisites, technical issues, results, or learning guidance..." 
+                : "Initializing chatbot services..."
+              }
+              className="chatbot-input"
+              disabled={isLoading || !serviceReady}
             />
-            <button onClick={handleSendMessage}>Send</button>
-          </div>
+            <button 
+              type="submit" 
+              className="chatbot-send-button"
+              disabled={isLoading || !inputText.trim() || !serviceReady}
+            >
+              {isLoading ? '⏳' : '📤'}
+            </button>
+          </form>
         </div>
       )}
-    </div>
+    </>
   );
 };
 
-export default Chatbot; 
+// Helper function to format messages
+const formatMessage = (text: string) => {
+  // Handle numbered lists and formatting
+  const lines = text.split('\n');
+  return lines.map((line, index) => {
+    if (line.match(/^\d+\)/)) {
+      return <div key={index} className="numbered-item">{line}</div>;
+    }
+    if (line.startsWith('**') && line.endsWith('**')) {
+      return <div key={index} className="message-header">{line.slice(2, -2)}</div>;
+    }
+    return <span key={index}>{line}{index < lines.length - 1 && <br />}</span>;
+  });
+};
+
+// Helper function to determine confidence level for styling
+const getConfidenceLevel = (confidence: number): string => {
+  if (confidence > 0.8) return 'high';
+  if (confidence > 0.4) return 'medium';
+  return 'low';
+};
+
+export default Chatbot;
