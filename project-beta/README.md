@@ -9,6 +9,8 @@ This project is under active development and aims to integrate **LangGraph-based
 ## Status
 
 > This project is currently in early development. Features and APIs are subject to frequent changes.
+> Both **frontend** and **backend** are independently functional.  
+> **Integration between frontend and backend is in progress.** Current workflows are being tested in isolation.
 
 ---
 
@@ -48,10 +50,10 @@ MONGO_URI=mongodb://localhost:27017/agenticAI
 ```bash
 cd frontend
 npm install
-npm start
+npm run dev
 ```
 
-This will launch the frontend on [http://localhost:3000](http://localhost:3000)
+This will launch the frontend on local host.
 
 #### In Terminal 2 (Backend)
 
@@ -65,11 +67,13 @@ npm start
 
 ## What Happens Now
 
-* Enter a topic (concept) in the input field on the website.
-* The system will:
+In the current development state:
 
-  * Use the Hugging Face model to generate questions based on the concept.
-  * Display the generated questions in the **backend terminal** and on the **web interface**.
+- The frontend allows concept input and renders UI components.
+
+- The backend generates diagnostic questions, scores responses, stores questions and answers in MongoDB, and identifies weak prerequisite topics.
+
+> The connection between frontend input and backend services is not yet wired together, but both parts function correctly when tested separately.
 
 ---
 
@@ -79,7 +83,7 @@ npm start
 
 ---
 
-## 🛠 Tech Stack
+## Tech Stack
 
 * **Frontend**: React (TypeScript)
 * **Backend**: Node.js + Express

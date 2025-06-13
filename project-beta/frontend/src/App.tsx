@@ -1,40 +1,58 @@
-// import React from 'react';
-// import logo from './logo.svg';
-// import './App.css';
+import { useState } from 'react';
+import './App.css'
+import Chatbot from './components/Chatbot'
+import TopicSelector from './components/TopicSelector'
+import AssessmentDisplay from './components/AssessmentDisplay'
 
-// function App() {
-//   return (
-//     <div className="App">
-//       <header className="App-header">
-//         <img src={logo} className="App-logo" alt="logo" />
-//         <p>
-//           Edit <code>src/App.tsx</code> and save to reload.
-//         </p>
-//         <a
-//           className="App-link"
-//           href="https://reactjs.org"
-//           target="_blank"
-//           rel="noopener noreferrer"
-//         >
-//           Learn React
-//         </a>
-//       </header>
-//     </div>
-//   );
-// }
-
-// export default App;
-
-
-// In App.tsx
-import AssessmentForm from './components/AssessmentForm';
-
-function App() {
-  return (
-    <div>
-      <AssessmentForm />
-    </div>
-  );
+interface Topic {
+  id: number;
+  name: string;
+  category: string;
 }
 
-export default App;
+function App() {
+  const [selectedTopics, setSelectedTopics] = useState<Topic[]>([]);
+  const [shouldGenerateAssessment, setShouldGenerateAssessment] = useState(false);
+
+  const handleTopicSelect = (topics: Topic[]) => {
+    setSelectedTopics(topics);
+    setShouldGenerateAssessment(false); // Reset assessment when topics change
+  };
+
+  const handleGenerateAssessment = (topics: Topic[]) => {
+    setShouldGenerateAssessment(true);
+  };
+
+  const handleAssessmentGenerated = () => {
+    setShouldGenerateAssessment(false);
+  };
+
+  return (
+    <div className="app-container">
+      <header>
+        <h1>
+          <img src="/graduation-cap.svg" alt="Graduation Cap" className="header-icon" />
+          EduAssess
+        </h1>
+      </header>
+      
+      <main>
+        <div className="content-container">
+          <TopicSelector 
+            onTopicSelect={handleTopicSelect}
+            onGenerateAssessment={handleGenerateAssessment}
+          />
+          <AssessmentDisplay 
+            selectedTopics={selectedTopics}
+            shouldGenerateAssessment={shouldGenerateAssessment}
+            onAssessmentGenerated={handleAssessmentGenerated}
+          />
+        </div>
+      </main>
+
+      <Chatbot />
+    </div>
+  )
+}
+
+export default App
