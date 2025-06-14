@@ -1,4 +1,4 @@
-# gsm8k_unique_concepts_with_retry.py
+# gsm8k_unique_concepts_with_retry.py; developed by: Sriram P
 
 from datasets import load_dataset
 import google.generativeai as genai
