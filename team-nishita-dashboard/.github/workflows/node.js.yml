@@ -5,9 +5,9 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "team-nishita-dashboard" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "team-nishita-dashboard" ]
 
 jobs:
   build:
@@ -26,10 +26,10 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-        cache-dependency-path: server/package-lock.json
+        cache-dependency-path: team-nishita-dashboard/server/package-lock.json
     - name: Install dependencies
       run: npm ci
-      working-directory: server
+      working-directory: team-nishita-dashboard/server
     - name: Build Typescript
       run: npm run build
-      working-directory: server
+      working-directory: team-nishita-dashboard/server
