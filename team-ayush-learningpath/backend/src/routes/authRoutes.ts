@@ -6,8 +6,9 @@ import {
     changePassword,
     logoutUser // <-- Logout controller included
 } from '../controllers/authController';
-import { protect } from '../middlewares/authMiddleware';
-import { registerRules, loginRules, changePasswordRules, validate } from '../validators/authValidator';
+import { protect } from '../middleware/authMiddleware';
+// Update the import path if the file is named differently or located elsewhere
+import { registerRules, loginRules, changePasswordRules, validate } from '../validators/authValidator'; // Make sure this file exists at the specified path
 
 const router = Router();
 

@@ -13,11 +13,17 @@ export const protect = async (req: Request, res: Response, next: NextFunction) =
             const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { id: string };
 
             // Find user by ID and attach to request, excluding the password
-            req.user = await User.findById(decoded.id).select('-password');
+            const userDoc = await User.findById(decoded.id).select('-password');
 
-            if (!req.user) {
+            if (!userDoc) {
                 return res.status(401).json({ message: 'Not authorized, user not found.' });
             }
+
+            req.user = {
+                id: userDoc.id.toString(),
+                email: userDoc.email,
+                role: userDoc.role as "student" | "admin"
+            };
 
             next();
         } catch (error) {

@@ -3,7 +3,7 @@ import express, { Express } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser'; // <-- Import cookie-parser
-import connectDB from './config/db';
+// import connectDB from './config/db';
 import authRoutes from './routes/authRoutes';
 
 // Load environment variables
@@ -13,7 +13,7 @@ dotenv.config();
 const app: Express = express();
 
 // Connect to Database
-connectDB();
+// connectDB();
 
 // Core Middlewares
 app.use(cors());

@@ -17,7 +17,7 @@ export const registerUser = async (req: Request, res: Response) => {
             return res.status(400).json({ message: 'User already exists.' });
         }
         user = await User.create({ name, email, password });
-        const token = generateToken(user._id.toString());
+        const token = generateToken(user.toString());
 
         // Set token in an HttpOnly cookie
         res.cookie('token', token, {
@@ -46,7 +46,7 @@ export const loginUser = async (req: Request, res: Response) => {
         if (!user || !(await bcrypt.compare(password, user.password))) {
             return res.status(401).json({ message: 'Invalid credentials.' });
         }
-        const token = generateToken(user._id.toString());
+        const token = generateToken(user.toString());
 
         // Set token in an HttpOnly cookie
         res.cookie('token', token, {
