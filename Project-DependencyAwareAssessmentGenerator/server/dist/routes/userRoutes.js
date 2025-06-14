@@ -29,7 +29,8 @@ router.get('/passed', (req, res) => __awaiter(void 0, void 0, void 0, function* 
         const user = yield User_1.default.findOne({ email: decoded.email });
         if (!user)
             return res.status(404).json({ message: 'User not found' });
-        res.json({ passed: user.passedArray });
+        // 👇 Include email in the response
+        res.json({ passed: user.passedArray, email: user.email });
     }
     catch (err) {
         res.status(403).json({ message: 'Invalid token' });

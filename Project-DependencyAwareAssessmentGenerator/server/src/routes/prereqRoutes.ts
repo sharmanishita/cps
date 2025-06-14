@@ -1,42 +1,52 @@
-// prerequisiteRoute.ts
 import express, { Request, Response } from 'express';
+import dotenv from 'dotenv';
 import Prerequisite from '../models/Prerequisite';
-import { Configuration, OpenAIApi } from 'openai';
 
+dotenv.config();
 const router = express.Router();
 
-// Initialize OpenAI
-const configuration = new Configuration({
-  apiKey: process.env.OPENAI_API_KEY, // Store this securely
-});
-const openai = new OpenAIApi(configuration);
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY as string;
+const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=' + GEMINI_API_KEY;
 
-// Generates prerequisite topics using OpenAI
 async function generatePrerequisites(topic: string): Promise<string[]> {
-  try {
-    const prompt = `List 3 prerequisite computer science topics someone should know before learning about "${topic}". Return them as a comma-separated list.`;
+  const prompt = `
+Generate a list of prerequisites required to learn "${topic}".
+Respond ONLY with a JSON array of prerequisite strings, or an array of objects with 'prerequisite' and 'description'.
+Wrap your response in raw JSON format (avoid markdown code blocks).
+`;
 
-    const response = await openai.createChatCompletion({
-      model: 'gpt-3.5-turbo',
-      messages: [
-        { role: 'system', content: 'You are a helpful assistant for a programming education platform.' },
-        { role: 'user', content: prompt },
-      ],
-      max_tokens: 50,
-      temperature: 0.7,
+  try {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }]
+      })
     });
 
-    const content = response.data.choices[0].message?.content || '';
-    const prerequisites = content.split(',').map((item) => item.trim());
+    const raw = await response.text();
 
-    return prerequisites.length > 0 ? prerequisites : ['Basics of Programming'];
-  } catch (error) {
-    console.error('OpenAI API error:', error);
-    return ['Basics of Programming']; // Fallback if API fails
+    const data = JSON.parse(raw);
+    const rawText = data.candidates[0].content.parts[0].text;
+    const cleaned = rawText.replace(/```json\n?|\n?```/g, '');
+
+    // Parse JSON string
+    const parsedArray = JSON.parse(cleaned);
+
+    // Extract only the 'prerequisite' fields
+    const prerequisites = parsedArray.map((item: any) => item.prerequisite);
+
+    // Output
+    console.log(prerequisites);
+    return prerequisites;
+  } catch (error: any) {
+    console.error("❌ Gemini fetch error:", error);
+    return [`Error: ${error.message || error}`];
   }
 }
 
-// GET /api/prerequisite/:topic
+
+
 router.get('/:topic', async (req: Request, res: Response) => {
   const { topic } = req.params;
 
