@@ -1,4 +1,4 @@
-//author: Pentapati V V Satya Pavan, Sandeep
+// Created by : @Pentapati V V Satya Pavan Sandeep
 import React, { useState } from 'react';
 import { Topic, Problem } from '../types';
 import { mockProblems } from '../data/mockData';

@@ -1,20 +1,19 @@
-//author: Venkata Sai Pranav, Balusu
+// Created by : @Venkata Sai Pranav Balusu
 import React from 'react';
 import { Topic, ExamResult } from '../types';
-import { CheckCircle, Award, TrendingUp, BookOpen } from 'lucide-react';
+import { TopicCard } from './TopicCard';
+import { CheckCircle, Award, TrendingUp } from 'lucide-react';
 
 interface KnownTopicsProps {
   topics: Topic[];
   examResults: ExamResult[];
   onTakeExam: (topicId: string) => void;
-  onReview: (topicId: string) => void;
 }
 
 export const KnownTopics: React.FC<KnownTopicsProps> = ({ 
   topics, 
   examResults, 
-  onTakeExam,
-  onReview 
+  onTakeExam 
 }) => {
   const knownTopics = topics.filter(topic => 
     topic.status === 'completed' || topic.status === 'mastered'
@@ -80,12 +79,8 @@ export const KnownTopics: React.FC<KnownTopicsProps> = ({
                 >
                   Retake Exam
                 </button>
-                <button 
-                  onClick={() => onReview(topic.id)}
-                  className="flex-1 bg-green-600 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-green-700 transition-colors flex items-center justify-center space-x-2"
-                >
-                  <BookOpen className="w-4 h-4" />
-                  <span>Review</span>
+                <button className="flex-1 bg-green-600 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-green-700 transition-colors">
+                  Review
                 </button>
               </div>
             </div>

@@ -1,4 +1,4 @@
-//author: Nabarupa, Banik
+// created by Nabarupa Banik
 import { User, Topic, ExamResult, ProgressData, AIRecommendation, Problem, ExamQuestion } from '../types';
 
 export const mockUser: User = {

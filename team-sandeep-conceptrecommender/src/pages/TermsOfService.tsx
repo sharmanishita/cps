@@ -1,4 +1,4 @@
-//author: Snehasis, Mukhopadhyay
+// Created by : @Snehasis Mukhopadhyay
 import React from 'react';
 import { Brain, Scale, AlertTriangle, BookOpen, Shield, Users, FileText, ArrowLeft } from 'lucide-react';
 

@@ -1,4 +1,4 @@
-//author: Mondi, Sai Lokesh
+//Created by : @Mondi Sai Lokesh
 import React, { useState } from 'react';
 import { Dashboard } from './components/Dashboard';
 import { TopicLearning } from './components/TopicLearning';
@@ -54,8 +54,6 @@ function App() {
   const [resetStatus, setResetStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [resetMessage, setResetMessage] = useState<string>('');
   const [selectedTopic, setSelectedTopic] = useState<Topic | null>(null);
-
-  console.log('App state:', { currentPage, selectedTopic });
 
   const features = [
     {
@@ -134,7 +132,6 @@ function App() {
   ];
 
   const handlePageChange = (page: Page) => {
-    console.log('Changing page from', currentPage, 'to', page);
     setCurrentPage(page);
     if (page === 'login' || page === 'home') {
       setResetStatus('idle');
@@ -150,30 +147,20 @@ function App() {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    const form = e.target as HTMLFormElement;
-    const email = (form.elements.namedItem('email') as HTMLInputElement).value;
-    const password = (form.elements.namedItem('password') as HTMLInputElement).value;
-    
-    console.log('Login form submitted with:', { email, password });
     setCurrentPage('dashboard');
   };
 
   const handleSignup = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Signup form submitted');
-    console.log('Current page before change:', currentPage);
     setCurrentPage('dashboard');
-    console.log('Current page after change:', currentPage);
   };
 
   const handleLogout = () => {
-    console.log('Logging out');
     setCurrentPage('home');
     setSelectedTopic(null);
   };
 
   const handleStartTopic = (topicId: string) => {
-    console.log('Starting topic:', topicId);
     const topic = mockTopics.find(t => t.id === topicId);
     if (topic) {
       setSelectedTopic(topic);
@@ -182,7 +169,6 @@ function App() {
   };
 
   const handleTakeExam = (topicId: string) => {
-    console.log('Taking exam for topic:', topicId);
     const topic = mockTopics.find(t => t.id === topicId);
     if (topic) {
       setSelectedTopic(topic);
@@ -191,6 +177,7 @@ function App() {
   };
 
   const handleExamComplete = (score: number) => {
+    // Update topic with exam score
     console.log('Exam completed with score:', score);
   };
 
@@ -837,7 +824,7 @@ function App() {
                   {showPassword ? (
                     <EyeOff className="h-5 w-5 text-gray-400" />
                   ) : (
-                    <Eye className="h-5 h-5 text-gray-400" />
+                    <Eye className="h-5 w-5 text-gray-400" />
                   )}
                 </button>
               </div>
@@ -1127,58 +1114,38 @@ function App() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {(() => {
-        console.log('Rendering App with currentPage:', currentPage);
-        switch (currentPage) {
-          case 'home':
-            return renderHomePage();
-          case 'login':
-            return renderLoginPage();
-          case 'signup':
-            return renderSignupPage();
-          case 'dashboard':
-            return (
-              <Dashboard
-                onLogout={handleLogout}
-                onStartTopic={handleStartTopic}
-                onTakeExam={handleTakeExam}
-                onReview={handleStartTopic}
-              />
-            );
-          case 'topic-learning':
-            return selectedTopic ? (
-              <TopicLearning
-                topic={selectedTopic}
-                onBack={() => setCurrentPage('dashboard')}
-                onTakeExam={() => handleTakeExam(selectedTopic.id)}
-              />
-            ) : null;
-          case 'exam':
-            return selectedTopic ? (
-              <ExamPage
-                topic={selectedTopic}
-                onBack={() => setCurrentPage('dashboard')}
-                onComplete={handleExamComplete}
-              />
-            ) : null;
-          case 'forgot-password':
-            return renderForgotPasswordPage();
-          case 'reset-password':
-            return renderResetPasswordPage();
-          case 'help-center':
-            return <HelpCenter onBack={() => setCurrentPage('home')} />;
-          case 'contact':
-            return <Contact onBack={() => setCurrentPage('home')} />;
-          case 'privacy-policy':
-            return <PrivacyPolicy onBack={() => setCurrentPage('home')} />;
-          case 'terms-of-service':
-            return <TermsOfService onBack={() => setCurrentPage('home')} />;
-          default:
-            return renderHomePage();
-        }
-      })()}
-    </div>
+    <>
+      {currentPage === 'home' && renderHomePage()}
+      {currentPage === 'login' && renderLoginPage()}
+      {currentPage === 'signup' && renderSignupPage()}
+      {currentPage === 'dashboard' && (
+        <Dashboard 
+          onLogout={handleLogout}
+          onStartTopic={handleStartTopic}
+          onTakeExam={handleTakeExam}
+        />
+      )}
+      {currentPage === 'forgot-password' && renderForgotPasswordPage()}
+      {currentPage === 'reset-password' && renderResetPasswordPage()}
+      {currentPage === 'topic-learning' && selectedTopic && (
+        <TopicLearning 
+          topic={selectedTopic}
+          onBack={() => setCurrentPage('dashboard')}
+          onTakeExam={() => setCurrentPage('exam')}
+        />
+      )}
+      {currentPage === 'exam' && selectedTopic && (
+        <ExamPage 
+          topic={selectedTopic}
+          onBack={() => setCurrentPage('dashboard')}
+          onComplete={handleExamComplete}
+        />
+      )}
+      {currentPage === 'help-center' && <HelpCenter onBack={() => setCurrentPage('home')} />}
+      {currentPage === 'contact' && <Contact onBack={() => setCurrentPage('home')} />}
+      {currentPage === 'privacy-policy' && <PrivacyPolicy onBack={() => setCurrentPage('home')} />}
+      {currentPage === 'terms-of-service' && <TermsOfService onBack={() => setCurrentPage('home')} />}
+    </>
   );
 }
 

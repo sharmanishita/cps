@@ -1,4 +1,4 @@
-//author: Venkata Sai Pranav, Balusu
+// Created by : @Venkata Sai Pranav Balusu
 import React, { useState, useEffect } from 'react';
 import { Topic, ExamQuestion } from '../types';
 import { mockExamQuestions } from '../data/mockData';
