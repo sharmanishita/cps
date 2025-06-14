@@ -1,71 +1,84 @@
 import json
-import networkx as nx
-import os
+import heapq
 
-# === Paths ===
-GRAPH_FILE = 'concept_graph_full.json'
 
-LEARNER_FILE = 'learner_profiles.json'
+def load_graph(graph_path):
+    with open(graph_path, 'r') as f:
+        graph_data = json.load(f)
 
-OUTPUT_DIR = 'graph/recommendations/'
+    graph = {}
+    for link in graph_data["links"]:
+        src = link["source"]
+        tgt = link["target"]
+        if src not in graph:
+            graph[src] = []
+        graph[src].append(tgt)
+    return graph
 
-# === Load concept graph as DiGraph ===
-with open(GRAPH_FILE) as f:
-    graph_data = json.load(f)
-G = nx.node_link_graph(graph_data, directed=True, multigraph=False)
 
-# === Load learner profiles ===
-with open(LEARNER_FILE) as f:
-    learners = json.load(f)
+def load_learner_profile(profile_path, learner_id="L001"):
+    with open(profile_path, 'r') as f:
+        profiles = json.load(f)
 
-# === Ensure output directory exists ===
-os.makedirs(OUTPUT_DIR, exist_ok=True)
+    for profile in profiles:
+        if profile["learner_id"] == learner_id:
+            return profile
+    raise ValueError(f"Learner ID '{learner_id}' not found in profile.")
 
-def recommend_for_learner(profile):
-    mastered = set(profile['mastered_concepts'])
-    recommendations = []
 
-    for node in G.nodes:
-        if node in mastered:
+def dijkstra_recommendation(graph, start_concepts, weak_concepts, target):
+    visited = set()
+    heap = []
+
+    for concept in start_concepts:
+        heapq.heappush(heap, (0, [concept]))  # (cost, path)
+
+    while heap:
+        cost, path = heapq.heappop(heap)
+        current = path[-1]
+
+        if current == target:
+            return {"path": path, "cost": cost}
+
+        if current in visited:
             continue
-        prereqs = list(G.predecessors(node))
-        if all(p in mastered for p in prereqs):
-            recommendations.append(node)
 
-    return recommendations
-def recommend_path(learner_profile, goal_concept):
-    mastered = set(learner_profile['mastered_concepts'])
+        visited.add(current)
 
-    # Find shortest path from any mastered node to goal_concept
-    shortest_path = None
-    min_length = float('inf')
+        for neighbor in graph.get(current, []):
+            edge_cost = 5 if neighbor in weak_concepts else 1
+            heapq.heappush(heap, (cost + edge_cost, path + [neighbor]))
 
-    for concept in mastered:
-        if nx.has_path(G, concept, goal_concept):
-            try:
-                path = nx.dijkstra_path(G, source=concept, target=goal_concept)
-                if len(path) < min_length:
-                    shortest_path = path
-                    min_length = len(path)
-            except nx.NetworkXNoPath:
-                continue
-
-    return shortest_path if shortest_path else []
+    return {"path": [], "cost": float('inf')}
 
 
-# === Optional batch processing ===
-if __name__ == '__main__':
-    for learner in learners:
-        learner_id = learner['learner_id']
-        recommended = recommend_for_learner(learner)
+if __name__ == "__main__":
+    concept_graph_path = "concept_graph_full.json"
+    learner_profile_path = "learner_profiles.json"
+    target_concept = "Sorting"  # ✅ Updated to valid node
 
-        output = {
-            'learner_id': learner_id,
-            'recommended_concepts': recommended
-        }
+    # Load graph
+    graph = load_graph(concept_graph_path)
 
-        output_path = os.path.join(OUTPUT_DIR, f'recommendations_{learner_id}.json')
-        with open(output_path, 'w') as f:
-            json.dump(output, f, indent=4)
+    # Check target exists
+    all_nodes = set(graph.keys()) | {n for neighbors in graph.values() for n in neighbors}
+    if target_concept not in all_nodes:
+        print(f"❌ Target concept '{target_concept}' not found in graph.")
+        exit()
 
-        print(f"[✔] Recommendations saved for {learner_id}: {recommended}")
+    # Load learner profile
+    try:
+        learner = load_learner_profile(learner_profile_path)
+    except ValueError as e:
+        print(f"❌ {e}")
+        exit()
+
+    result = dijkstra_recommendation(
+        graph,
+        start_concepts=learner["mastered_concepts"],
+        weak_concepts=learner["weak_concepts"],
+        target=target_concept
+    )
+
+    print("✅ Recommended Path:", result["path"])
+    print("💰 Total Cost:", result["cost"])
