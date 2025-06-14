@@ -1,12 +1,13 @@
 /* AUTHOR - SHREYAS MENE (CREATED ON 13/06/2025) */
 .assessment-display {
-  background: white;
+  background: var(--background-color);
   border-radius: 16px;
   padding: 24px;
   height: 100%;
   display: flex;
   flex-direction: column;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-color);
 }
 
 .assessment-header {
@@ -15,12 +16,12 @@
 
 .assessment-header h2 {
   font-size: 24px;
-  color: #333;
+  color: var(--text-color);
   margin: 0 0 8px 0;
 }
 
 .selected-topic {
-  color: #6c5ce7;
+  color: var(--primary-color);
   font-size: 16px;
   margin: 0;
   font-weight: 500;
@@ -33,25 +34,29 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  color: #666;
+  color: var(--text-color);
+  opacity: 0.8;
   padding: 32px;
 }
 
 .placeholder-icon {
   font-size: 48px;
   margin-bottom: 16px;
+  color: var(--primary-color);
 }
 
 .placeholder-content h3 {
   font-size: 20px;
   margin: 0 0 8px 0;
-  color: #333;
+  color: var(--text-color);
 }
 
 .placeholder-content p {
   font-size: 16px;
   max-width: 400px;
   margin: 0;
+  color: var(--text-color);
+  opacity: 0.8;
 }
 
 .assessment-content {
@@ -72,8 +77,8 @@
 .spinner {
   width: 40px;
   height: 40px;
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid #6c5ce7;
+  border: 4px solid var(--border-color);
+  border-top: 4px solid var(--primary-color);
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin-bottom: 16px;
@@ -91,20 +96,22 @@
 }
 
 .question-card {
-  background: #f8f9fa;
+  background: var(--background-color);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 20px;
   margin-bottom: 20px;
 }
 
 .question-card h3 {
-  color: #333;
+  color: var(--text-color);
   margin: 0 0 12px 0;
   font-size: 18px;
 }
 
 .question-card p {
-  color: #444;
+  color: var(--text-color);
+  opacity: 0.8;
   margin: 0 0 16px 0;
   font-size: 16px;
 }
@@ -118,15 +125,17 @@
   display: flex;
   align-items: center;
   padding: 12px 16px;
-  background: white;
-  border: 2px solid #e9ecef;
+  background: var(--background-color);
+  border: 2px solid var(--border-color);
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
+  color: var(--text-color);
 }
 
 .option-label:hover {
-  border-color: #6c5ce7;
+  border-color: var(--primary-color);
+  background: var(--hover-color);
 }
 
 .option-label input {
@@ -134,32 +143,37 @@
 }
 
 .option-label.correct {
-  background: #d4edda;
+  background: rgba(40, 167, 69, 0.1);
   border-color: #28a745;
+  color: var(--text-color);
 }
 
 .option-label.incorrect {
-  background: #f8d7da;
+  background: rgba(220, 53, 69, 0.1);
   border-color: #dc3545;
+  color: var(--text-color);
 }
 
 .short-answer-input {
   width: 100%;
   min-height: 100px;
   padding: 12px;
-  border: 2px solid #e9ecef;
+  border: 2px solid var(--border-color);
   border-radius: 8px;
   font-size: 16px;
   resize: vertical;
+  background: var(--background-color);
+  color: var(--text-color);
 }
 
 .short-answer-input:focus {
   outline: none;
-  border-color: #6c5ce7;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px var(--hover-color);
 }
 
 .submit-button {
-  background: #6c5ce7;
+  background: var(--primary-color);
   color: white;
   border: none;
   border-radius: 8px;
@@ -172,7 +186,7 @@
 }
 
 .submit-button:hover {
-  background: #5a4bd1;
+  background: var(--secondary-color);
 }
 
 .results-container {
@@ -188,7 +202,7 @@
   width: 120px;
   height: 120px;
   border-radius: 50%;
-  background: #6c5ce7;
+  background: var(--primary-color);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -202,9 +216,9 @@
 }
 
 .retry-button {
-  background: #e9ecef;
-  color: #495057;
-  border: none;
+  background: var(--hover-color);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 12px 24px;
   font-size: 16px;
@@ -214,7 +228,8 @@
 }
 
 .retry-button:hover {
-  background: #dee2e6;
+  background: var(--hover-color);
+  border-color: var(--primary-color);
 }
 
 /* Custom scrollbar */
@@ -223,15 +238,15 @@
 }
 
 .questions-container::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: var(--background-color);
   border-radius: 4px;
 }
 
 .questions-container::-webkit-scrollbar-thumb {
-  background: #c8c9cc;
+  background: var(--border-color);
   border-radius: 4px;
 }
 
 .questions-container::-webkit-scrollbar-thumb:hover {
-  background: #a8a9ac;
-} 
+  background: var(--primary-color);
+}
