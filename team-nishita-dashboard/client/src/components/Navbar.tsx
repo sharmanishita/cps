@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import {
   Leaf,
   LogOut,
@@ -8,72 +8,111 @@ import {
   ChartColumnIncreasing
 } from 'lucide-react';
 
-const Navbar = ({ user, onLogout }) => {
+const Navbar = ({ user, onLogout }: { user: { username: string } | null, onLogout: () => void }) => {
+  const location = useLocation();
+  const isHome = location.pathname === '/' || location.pathname === '/home';
+
+  if (isHome) return null;
+
   return (
-    <nav className="sticky top-0 z-10 border-b border-green-100 shadow-sm bg-white/60 backdrop-blur-md">
-      <div className="container flex justify-between items-center py-3 px-6 mx-auto">
-        <Link to="/home" className="group">
-          <div className="flex items-center space-x-2">
-            <div className="p-1.5 bg-gradient-to-br from-green-400 to-emerald-500 rounded-lg transition-all duration-300 group-hover:from-emerald-500 group-hover:to-green-400">
-              <Leaf className="text-white" size={22} />
-            </div>
-            <span className="text-xl font-bold text-emerald-700 transition-colors duration-200 group-hover:text-emerald-600">
-              Personal Learning Path Visualization Dashboard
-            </span>
+    <nav
+      style={{
+        position: 'sticky',
+        top: 0,
+        zIndex: 10,
+        background: 'rgba(255, 255, 255, 0.8)',
+        backdropFilter: 'blur(10px)',
+        borderBottom: '1px solid #b2dfdb',
+        boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+        padding: '0.75rem 2rem',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+      }}
+    >
+      <Link to="/home" style={{ textDecoration: 'none' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <div
+            style={{
+              padding: '0.4rem',
+              borderRadius: '8px',
+              background: 'linear-gradient(to bottom right, #66bb6a, #26a69a)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
+            <Leaf color="white" size={20} />
           </div>
-        </Link>
-
-        <div className="flex items-center space-x-2 md:space-x-4">
-          {!user && (
-            <div className="flex items-center space-x-1 md:space-x-3">
-              <Link
-                to="/login"
-                className="flex items-center py-1.5 px-3 text-sm text-emerald-700 rounded-md transition-colors duration-200 hover:text-emerald-900 hover:bg-green-50"
-              >
-                <LogIn className="mr-1.5 w-4 h-4" />
-                <span>Login</span>
-              </Link>
-
-              <div className="h-5 border-r border-gray-200"></div>
-
-              <Link
-                to="/signup"
-                className="flex items-center py-2 px-3 text-sm text-gray-700 hover:text-emerald-700 hover:bg-green-50"
-              >
-                <UserPlus className="mr-2 w-4 h-4 text-emerald-500" />
-                <span>Sign Up</span>
-              </Link>
-            </div>
-          )}
-
-          {user && (
-            <div className="flex items-center space-x-2 md:space-x-4">
-              <div className="flex items-center py-1 px-3 bg-green-50 rounded-full">
-                <User className="mr-1.5 w-4 h-4 text-green-500" />
-                <span className="text-sm font-medium text-emerald-700">
-                  {user.username}
-                </span>
-              </div>
-              <Link
-                to="/dashboard"
-                className="flex items-center py-1.5 px-3 text-sm text-emerald-700 rounded-md transition-colors duration-200 hover:text-emerald-900 hover:bg-green-50"
-              >
-                <ChartColumnIncreasing className="mr-1.5 w-4 h-4" />
-                <span className="hidden sm:inline">Dashboard</span>
-              </Link>
-
-              <button
-                onClick={onLogout}
-                className="flex items-center py-1.5 px-3 text-white bg-gradient-to-r from-green-400 to-emerald-500 rounded-md shadow-sm transition-all duration-200 hover:from-emerald-500 hover:to-green-500"
-              >
-                <LogOut className="mr-1.5 w-4 h-4" />
-                <span>Logout</span>
-              </button>
-            </div>
-          )}
+          <span style={{ fontWeight: 'bold', fontSize: '1.1rem', color: '#00695c' }}>
+            Personal Learning Path Visualization Dashboard
+          </span>
         </div>
+      </Link>
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+        {!user ? (
+          <>
+            <Link to="/login" style={navLinkStyle}>
+              <LogIn size={16} style={{ marginRight: '6px' }} />
+              Login
+            </Link>
+            <Link to="/signup" style={navLinkStyle}>
+              <UserPlus size={16} style={{ marginRight: '6px' }} />
+              Sign Up
+            </Link>
+          </>
+        ) : (
+          <>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              background: '#e0f2f1',
+              borderRadius: '9999px',
+              padding: '6px 12px'
+            }}>
+              <User size={16} style={{ marginRight: '6px', color: '#26a69a' }} />
+              <span style={{ fontSize: '0.9rem', fontWeight: 500, color: '#00695c' }}>
+                {user.username}
+              </span>
+            </div>
+            <Link to="/dashboard" style={navLinkStyle}>
+              <ChartColumnIncreasing size={16} style={{ marginRight: '6px' }} />
+              Dashboard
+            </Link>
+            <button
+              onClick={onLogout}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                background: 'linear-gradient(to right, #66bb6a, #26a69a)',
+                color: 'white',
+                border: 'none',
+                padding: '8px 14px',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                fontWeight: 'bold'
+              }}
+            >
+              <LogOut size={16} style={{ marginRight: '6px' }} />
+              Logout
+            </button>
+          </>
+        )}
       </div>
     </nav>
-  )
+  );
 };
+
+const navLinkStyle: React.CSSProperties = {
+  display: 'flex',
+  alignItems: 'center',
+  color: '#00695c',
+  textDecoration: 'none',
+  padding: '6px 10px',
+  borderRadius: '6px',
+  backgroundColor: '#f0fdf4',
+  fontWeight: 500
+};
+
 export default Navbar;
