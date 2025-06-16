@@ -1,0 +1,171 @@
+{
+  "concepts": [
+    {
+      "id": "t1",
+      "name": "Array",
+      "type": "topic",
+      "level": "beginner",
+      "description": "An array is a linear data structure that stores elements in contiguous memory locations and allows random access using indices.",
+      "keywords": ["array", "linear data structure", "contiguous memory", "indexed access"],
+      "prerequisites": [],
+      "topic_suggestions": ["t2", "t3"],
+      "resources": {
+        "videos": [
+          {
+            "title": "Introduction to Arrays | DSA",
+            "url": "https://www.youtube.com/watch?v=ZJKO9fEjHbI"
+          }
+        ],
+        "articles": [
+          {
+            "title": "Understanding Arrays",
+            "url": "https://www.geeksforgeeks.org/arrays-in-c-cpp/"
+          }
+        ]
+      },
+      "subconcepts": [
+        {
+          "id": "t1_s1",
+          "name": "Initialization",
+          "type": "subtopic",
+          "level": "beginner",
+          "description": "Ways to declare, initialize, and access elements in an array.",
+          "keywords": ["declare array", "initialize", "default values"],
+          "prerequisites": [],
+          "topic_suggestions": ["t1_s2"],
+          "resources": {
+            "videos": [
+              {
+                "title": "How to Initialize Arrays in C++",
+                "url": "https://www.youtube.com/watch?v=3CmPvQChZT8"
+              }
+            ],
+            "articles": []
+          }
+        },
+        {
+          "id": "t1_s2",
+          "name": "Size",
+          "type": "subtopic",
+          "level": "beginner",
+          "description": "Understanding how array size works, memory allocation, and related operations.",
+          "keywords": ["array size", "sizeof", "memory layout"],
+          "prerequisites": ["t1_s1"],
+          "topic_suggestions": [],
+          "resources": {
+            "videos": [],
+            "articles": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "t2",
+      "name": "Linked List",
+      "type": "topic",
+      "level": "intermediate",
+      "description": "A linear data structure where elements are stored in nodes, and each node contains data and a reference to the next node.",
+      "keywords": ["linked list", "node", "pointer", "dynamic memory"],
+      "prerequisites": ["t1"],
+      "topic_suggestions": ["t3", "t4"],
+      "resources": {
+        "videos": [
+          {
+            "title": "Linked Lists Explained",
+            "url": "https://www.youtube.com/watch?v=NobHlGUjV3g"
+          }
+        ],
+        "articles": [
+          {
+            "title": "Linked Lists in Data Structures",
+            "url": "https://www.geeksforgeeks.org/linked-list-set-1-introduction/"
+          }
+        ]
+      },
+      "subconcepts": [
+        {
+          "id": "t2_s1",
+          "name": "Singly Linked List",
+          "type": "subtopic",
+          "level": "intermediate",
+          "description": "A linked list where each node points to the next node in sequence.",
+          "keywords": ["singly linked", "next pointer", "traversal"],
+          "prerequisites": [],
+          "topic_suggestions": ["t2_s2"],
+          "resources": {
+            "videos": [],
+            "articles": []
+          }
+        },
+        {
+          "id": "t2_s2",
+          "name": "Doubly Linked List",
+          "type": "subtopic",
+          "level": "intermediate",
+          "description": "A linked list where each node has pointers to both the next and previous nodes.",
+          "keywords": ["doubly linked", "previous pointer", "bidirectional"],
+          "prerequisites": ["t2_s1"],
+          "topic_suggestions": [],
+          "resources": {
+            "videos": [],
+            "articles": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "t3",
+      "name": "Stack",
+      "type": "topic",
+      "level": "intermediate",
+      "description": "A linear data structure that follows the Last In First Out (LIFO) principle for adding and removing elements.",
+      "keywords": ["stack", "LIFO", "push", "pop", "top"],
+      "prerequisites": ["t1"],
+      "topic_suggestions": ["t4", "t5"],
+      "resources": {
+        "videos": [
+          {
+            "title": "Stack Data Structure",
+            "url": "https://www.youtube.com/watch?v=F1F2imiOJfk"
+          }
+        ],
+        "articles": [
+          {
+            "title": "Stack Implementation",
+            "url": "https://www.geeksforgeeks.org/stack-data-structure/"
+          }
+        ]
+      },
+      "subconcepts": [
+        {
+          "id": "t3_s1",
+          "name": "Array Implementation",
+          "type": "subtopic",
+          "level": "intermediate",
+          "description": "Implementing stack using arrays with fixed size and top pointer.",
+          "keywords": ["array stack", "fixed size", "top pointer"],
+          "prerequisites": [],
+          "topic_suggestions": ["t3_s2"],
+          "resources": {
+            "videos": [],
+            "articles": []
+          }
+        },
+        {
+          "id": "t3_s2",
+          "name": "Linked List Implementation",
+          "type": "subtopic",
+          "level": "intermediate",
+          "description": "Implementing stack using linked list for dynamic size management.",
+          "keywords": ["linked stack", "dynamic size", "head pointer"],
+          "prerequisites": ["t2_s1"],
+          "topic_suggestions": [],
+          "resources": {
+            "videos": [],
+            "articles": []
+          }
+        }
+      ]
+    }
+  ]
+}
