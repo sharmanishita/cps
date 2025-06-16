@@ -1,33 +1,87 @@
-import { Globe, Lock, ShieldCheck } from 'lucide-react';
+import React from 'react';
 import { Link } from 'react-router-dom';
+import { Compass, LogOut } from 'lucide-react'; // ✅ Import icons
 
-const Home = () => {
+const Home: React.FC = () => {
+  const token = localStorage.getItem('token');
+  let username = 'User';
+  if (token) {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      username = payload.username || 'User';
+    } catch (err) {
+      console.error('Invalid token');
+    }
+  }
 
-  const logged = Boolean(localStorage.getItem('token'));
   return (
-    <div className="flex flex-col w-full min-h-screen bg-gradient-to-br from-green-50 to-emerald-100">
-
-
-      <main className="grid flex-grow gap-12 items-center px-6 mt-16 md:grid-cols-2">
-
-        <div>
-          <h2 className="mb-6 text-5xl font-bold text-emerald-900">
-            TODO
-          </h2>
-          <div className="flex space-x-4">
-            <Link to='/login'>
-              {/* <button className="py-3 px-6 text-white bg-emerald-600 rounded-full transition hover:bg-emerald-700"> */}
-              {/*   {logged ? 'Dashboard' : 'Login'} */}
-              {/* </button> */}
-            </Link>
-          </div>
+    <div style={{ minHeight: '100vh', background: '#f0f8ff', display: 'flex', flexDirection: 'column' }}>
+      <header style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: '1rem 2rem',
+        backgroundColor: '#282c34',
+        color: 'white'
+      }}>
+        {/* ✅ Logo with Compass icon */}
+        <div style={{ display: 'flex', alignItems: 'center', fontSize: '1.5rem', fontWeight: 'bold' }}>
+          <Compass size={24} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
+          PathPilot
         </div>
+
+        <nav>
+          {token ? (
+            <button onClick={() => {
+              localStorage.removeItem('token');
+              window.location.href = '/';
+            }} style={{
+              backgroundColor: '#61dafb',
+              border: 'none',
+              padding: '0.5rem 1rem',
+              borderRadius: '5px',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center'
+            }}>
+              <LogOut size={16} style={{ marginRight: '6px' }} /> {/* ✅ LogOut icon */}
+              Logout
+            </button>
+          ) : (
+            <Link to="/login">
+              <button style={{
+                backgroundColor: '#61dafb',
+                border: 'none',
+                padding: '0.5rem 1rem',
+                borderRadius: '5px',
+                fontWeight: 'bold',
+                cursor: 'pointer'
+              }}>
+                Login
+              </button>
+            </Link>
+          )}
+        </nav>
+      </header>
+
+      <main style={{
+        flexGrow: 1,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
+      }}>
+        <h1 style={{
+          fontSize: '2.5rem',
+          fontWeight: 'bold',
+          color: '#2c3e50'
+        }}>
+          Welcome, {username}
+        </h1>
       </main>
 
-      <footer className="py-8 px-6 mt-16 text-center">
-        <p className="text-emerald-800">
-          © 2025.
-        </p>
+      <footer style={{ textAlign: 'center', padding: '1rem', backgroundColor: '#f8f9fa' }}>
+        <p>&copy; 2025 PathPilot</p>
       </footer>
     </div>
   );

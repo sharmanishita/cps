@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import { login } from '../api/api';
-import type { Credentials as FormData } from '../api/api'
-
+import type { Credentials as FormData } from '../api/api';
 
 interface LoginProps {
   onLogin: (user: { username: string }) => void;
@@ -36,65 +35,110 @@ const Login = ({ onLogin }: LoginProps) => {
   }, []);
 
   return (
-    <div className="flex justify-center items-center py-12 px-4 w-full min-h-screen bg-gradient-to-br from-emerald-100 to-blue-200">
+    <div style={{
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: '2rem',
+      minHeight: '100vh',
+      background: 'linear-gradient(to right, #d4f1f4, #a9def9)'
+    }}>
       {status && (
-        <div className="flex fixed top-20 left-1/2 items-center py-2 px-4 text-white bg-red-500 rounded-lg shadow-lg transition-transform duration-300 transform -translate-x-1/2 animate-slideIn">
-          <span>{status}</span>
+        <div style={{
+          position: 'fixed',
+          top: '2rem',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          backgroundColor: '#f44336',
+          color: 'white',
+          padding: '0.75rem 1.25rem',
+          borderRadius: '8px',
+          fontWeight: 'bold',
+          zIndex: 1000
+        }}>
+          {status}
         </div>
       )}
 
-      <div className="w-full max-w-md rounded-xl shadow-xl bg-white/80 backdrop-blur-sm">
-        <div className="p-8 rounded-xl shadow-lg bg-emerald-50/90">
-          <div className="mb-1 text-sm font-semibold tracking-wide text-emerald-700 uppercase">Welcome back</div>
-          <h2 className="block mt-1 text-2xl font-medium leading-tight text-emerald-800">Login to your account</h2>
-          <form onSubmit={handleSubmit} className="mt-6 space-y-6">
-            <div>
-              <label className="block mb-2 text-sm font-medium text-emerald-700" htmlFor="username">
-                Username
-              </label>
+      <div style={{
+        maxWidth: '400px',
+        width: '100%',
+        backgroundColor: '#ffffffcc',
+        borderRadius: '10px',
+        padding: '2rem',
+        boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
+        backdropFilter: 'blur(4px)'
+      }}>
+        <h2 style={{ marginBottom: '1rem', fontSize: '1.5rem', color: '#2c3e50' }}>Login to Your Account</h2>
+        <form onSubmit={handleSubmit}>
+          <div style={{ marginBottom: '1rem' }}>
+            <label htmlFor="username" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>Username</label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              value={formData.username}
+              onChange={handleChange}
+              required
+              style={{
+                width: '100%',
+                padding: '0.5rem',
+                borderRadius: '5px',
+                border: '1px solid #ccc'
+              }}
+            />
+          </div>
+          <div style={{ marginBottom: '1rem' }}>
+            <label htmlFor="password" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>Password</label>
+            <div style={{ position: 'relative' }}>
               <input
-                className="py-2 px-3 w-full rounded-lg border border-emerald-300 focus:ring-2 focus:ring-emerald-500 focus:outline-none bg-emerald-100/50"
-                id="username"
-                type="text"
-                name="username"
-                value={formData.username}
+                type={showPassword ? 'text' : 'password'}
+                id="password"
+                name="password"
+                value={formData.password}
                 onChange={handleChange}
                 required
+                style={{
+                  width: '100%',
+                  padding: '0.5rem',
+                  borderRadius: '5px',
+                  border: '1px solid #ccc'
+                }}
               />
-            </div>
-            <div>
-              <label className="block mb-2 text-sm font-medium text-emerald-700" htmlFor="password">
-                Password
-              </label>
-              <div className="relative">
-                <input
-                  className="py-2 px-3 w-full rounded-lg border border-emerald-300 focus:ring-2 focus:ring-emerald-500 focus:outline-none bg-emerald-100/50"
-                  id="password"
-                  type={showPassword ? 'text' : 'password'}
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  required
-                />
-                <button
-                  type="button"
-                  className="flex absolute inset-y-0 right-3 items-center text-emerald-600"
-                  onClick={() => setShowPassword((prev) => !prev)}
-                >
-                  {showPassword ? 'Hide' : 'Show'}
-                </button>
-              </div>
-            </div>
-            <div>
               <button
-                className="py-2 px-4 w-full font-semibold text-white bg-emerald-600 rounded-lg transition-colors duration-300 hover:bg-emerald-700"
-                type="submit"
+                type="button"
+                onClick={() => setShowPassword(prev => !prev)}
+                style={{
+                  position: 'absolute',
+                  right: '0.5rem',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  background: 'none',
+                  border: 'none',
+                  color: '#0077cc',
+                  cursor: 'pointer'
+                }}
               >
-                Log In
+                {showPassword ? 'Hide' : 'Show'}
               </button>
             </div>
-          </form>
-        </div>
+          </div>
+          <button
+            type="submit"
+            style={{
+              width: '100%',
+              padding: '0.75rem',
+              backgroundColor: '#0077cc',
+              color: 'white',
+              border: 'none',
+              borderRadius: '5px',
+              fontWeight: 'bold',
+              cursor: 'pointer'
+            }}
+          >
+            Log In
+          </button>
+        </form>
       </div>
     </div>
   );
