@@ -13,25 +13,28 @@ import './App.css';
 import NewCourses from './pages/NewCourses';
 import MyCourses from './pages/MyCourses';
 
+import './index.css';
+import DSAQuizEngine from './components/DSAQuizEngine';
+
 function App() {
-  return (
-    <AuthProvider>
-      <Router>
-        <div className="App">
-          <Navbar />
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/first" element={<First />} />
-            <Route path="/new-courses" element={<NewCourses />} />
-            <Route path="/my-courses" element={<MyCourses />} />
-          </Routes>
-        </div>
-      </Router>
-    </AuthProvider>
-  );
+  return <DSAQuizEngine/>
+  //   <AuthProvider>
+  //     <Router>
+  //       <div className="App">
+  //         <Navbar />
+  //         <Routes>
+  //           <Route path="/" element={<Home />} />
+  //           <Route path="/login" element={<Login />} />
+  //           <Route path="/register" element={<Register />} />
+  //           <Route path="/dashboard" element={<Dashboard />} />
+  //           <Route path="/first" element={<First />} />
+  //           <Route path="/new-courses" element={<NewCourses />} />
+  //           <Route path="/my-courses" element={<MyCourses />} />
+  //         </Routes>
+  //       </div>
+  //     </Router>
+  //   </AuthProvider>
+  // );
 }
 
 export default App;
