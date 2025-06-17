@@ -426,6 +426,17 @@ const DSAQuizEngine = () => {
           </div>
         </div>
 
+                {/* Progress Bar */}
+        <div className="mb-6">
+          <div className="bg-white/10 rounded-full h-3 overflow-hidden">
+            <div 
+              className="h-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all duration-500 ease-out"
+              style={{ width: `${getProgressPercentage()}%` }}
+            />
+          </div>
+        </div>
+
+        
 
       </div>
     );
