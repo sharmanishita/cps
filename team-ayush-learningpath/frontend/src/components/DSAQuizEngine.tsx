@@ -184,97 +184,97 @@ const DSAQuizEngine = () => {
     }
   };
 
-//   // Check for disqualification
-//   useEffect(() => {
-//     if (cheatingWarnings >= 3 && !isDisqualified) {
-//       setIsDisqualified(true);
-//       setQuizCompleted(true);
-//       addSuspiciousActivity('DISQUALIFIED: Too many violations', 'critical');
-//     }
-//   }, [cheatingWarnings, isDisqualified]);
+  // Check for disqualification
+  useEffect(() => {
+    if (cheatingWarnings >= 3 && !isDisqualified) {
+      setIsDisqualified(true);
+      setQuizCompleted(true);
+      addSuspiciousActivity('DISQUALIFIED: Too many violations', 'critical');
+    }
+  }, [cheatingWarnings, isDisqualified]);
 
-//   // Timer logic
-//   useEffect(() => {
-//     if (quizStarted && !quizCompleted && timeLeft > 0) {
-//       timerRef.current = setTimeout(() => {
-//         setTimeLeft(timeLeft - 1);
-//       }, 1000);
-//     } else if (timeLeft === 0 && !isSubmitting) {
-//       handleTimeUp();
-//     }
+  // Timer logic
+  useEffect(() => {
+    if (quizStarted && !quizCompleted && timeLeft > 0) {
+      timerRef.current = setTimeout(() => {
+        setTimeLeft(timeLeft - 1);
+      }, 1000);
+    } else if (timeLeft === 0 && !isSubmitting) {
+      handleTimeUp();
+    }
     
-//     return () => {
-//       if (timerRef.current !== null) {
-//         clearTimeout(timerRef.current);
-//       }
-//     };
-//   }, [quizStarted, quizCompleted, timeLeft, isSubmitting]);
+    return () => {
+      if (timerRef.current !== null) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, [quizStarted, quizCompleted, timeLeft, isSubmitting]);
 
-//   const handleTimeUp = () => {
-//     setIsSubmitting(true);
-//     addSuspiciousActivity('Question auto-submitted (timeout)', 'low');
+  const handleTimeUp = () => {
+    setIsSubmitting(true);
+    addSuspiciousActivity('Question auto-submitted (timeout)', 'low');
     
-//     setTimeout(() => {
-//       if (currentQuestion < questions.length - 1) {
-//         setCurrentQuestion(prev => prev + 1);
-//         setTimeLeft(15);
-//         setSelectedAnswer(null);
-//         setIsSubmitting(false);
-//       } else {
-//         completeQuiz();
-//       }
-//     }, 500);
-//   };
+    setTimeout(() => {
+      if (currentQuestion < questions.length - 1) {
+        setCurrentQuestion(prev => prev + 1);
+        setTimeLeft(15);
+        setSelectedAnswer(null);
+        setIsSubmitting(false);
+      } else {
+        completeQuiz();
+      }
+    }, 500);
+  };
 
-//   const handleAnswerSelect = (answerIndex: number) => {
-//     if (isSubmitting) return;
+  const handleAnswerSelect = (answerIndex: number) => {
+    if (isSubmitting) return;
     
-//     setSelectedAnswer(answerIndex);
-//     setAnswers(prev => ({
-//       ...prev,
-//       [currentQuestion]: answerIndex
-//     }));
+    setSelectedAnswer(answerIndex);
+    setAnswers(prev => ({
+      ...prev,
+      [currentQuestion]: answerIndex
+    }));
 
-//     // Track analytics
-//     analyticsRef.current.clickPattern.push({
-//       question: currentQuestion,
-//       timeRemaining: timeLeft,
-//       selected: answerIndex
-//     });
-//   };
+    // Track analytics
+    analyticsRef.current.clickPattern.push({
+      question: currentQuestion,
+      timeRemaining: timeLeft,
+      selected: answerIndex
+    });
+  };
 
-//   const handleNextQuestion = () => {
-//     if (selectedAnswer === null) return;
+  const handleNextQuestion = () => {
+    if (selectedAnswer === null) return;
     
-//     setIsSubmitting(true);
+    setIsSubmitting(true);
     
-//     setTimeout(() => {
-//       if (currentQuestion < questions.length - 1) {
-//         setCurrentQuestion(prev => prev + 1);
-//         setTimeLeft(15);
-//         setSelectedAnswer(null);
-//         setIsSubmitting(false);
-//       } else {
-//         completeQuiz();
-//       }
-//     }, 500);
-//   };
+    setTimeout(() => {
+      if (currentQuestion < questions.length - 1) {
+        setCurrentQuestion(prev => prev + 1);
+        setTimeLeft(15);
+        setSelectedAnswer(null);
+        setIsSubmitting(false);
+      } else {
+        completeQuiz();
+      }
+    }, 500);
+  };
 
-//   const completeQuiz = () => {
-//     setQuizCompleted(true);
-//     calculateScore();
-//     setShowResults(true);
-//   };
+  const completeQuiz = () => {
+    setQuizCompleted(true);
+    calculateScore();
+    setShowResults(true);
+  };
 
-//   const calculateScore = () => {
-//     let correctAnswers = 0;
-//     questions.forEach((q, index) => {
-//       if (answers[index] === q.correct) {
-//         correctAnswers++;
-//       }
-//     });
-//     setScore((correctAnswers / questions.length) * 100);
-//   };
+  const calculateScore = () => {
+    let correctAnswers = 0;
+    questions.forEach((q, index) => {
+      if (answers[index] === q.correct) {
+        correctAnswers++;
+      }
+    });
+    setScore((correctAnswers / questions.length) * 100);
+  };
 
   const startQuiz = async () => {
     // Request fullscreen
@@ -289,38 +289,38 @@ const DSAQuizEngine = () => {
     setCurrentPage('quiz');
   };
 
-//   const resetQuiz = () => {
-//     setCurrentQuestion(0);
-//     setTimeLeft(15);
-//     setAnswers({});
-//     setQuizStarted(false);
-//     setQuizCompleted(false);
-//     setSelectedAnswer(null);
-//     setScore(0);
-//     setIsSubmitting(false);
-//     setTabSwitches(0);
-//     setWindowBlurs(0);
-//     setSuspiciousActivity([]);
-//     setCheatingWarnings(0);
-//     setIsDisqualified(false);
-//     setShowResults(false);
-//     setShowAnalytics(false);
-//     setCurrentPage('home');
+  const resetQuiz = () => {
+    setCurrentQuestion(0);
+    setTimeLeft(15);
+    setAnswers({});
+    setQuizStarted(false);
+    setQuizCompleted(false);
+    setSelectedAnswer(null);
+    setScore(0);
+    setIsSubmitting(false);
+    setTabSwitches(0);
+    setWindowBlurs(0);
+    setSuspiciousActivity([]);
+    setCheatingWarnings(0);
+    setIsDisqualified(false);
+    setShowResults(false);
+    setShowAnalytics(false);
+    setCurrentPage('home');
     
-//     if (document.fullscreenElement) {
-//       document.exitFullscreen();
-//     }
-//   };
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    }
+  };
 
-//   const getTimerColor = () => {
-//     if (timeLeft <= 3) return 'from-red-500 to-red-600';
-//     if (timeLeft <= 7) return 'from-yellow-500 to-orange-500';
-//     return 'from-green-500 to-blue-500';
-//   };
+  const getTimerColor = () => {
+    if (timeLeft <= 3) return 'from-red-500 to-red-600';
+    if (timeLeft <= 7) return 'from-yellow-500 to-orange-500';
+    return 'from-green-500 to-blue-500';
+  };
 
-//   const getProgressPercentage = () => {
-//     return ((currentQuestion + 1) / questions.length) * 100;
-//   };
+  const getProgressPercentage = () => {
+    return ((currentQuestion + 1) / questions.length) * 100;
+  };
 
   // Home Page Component
   const HomePage = () => (
@@ -400,6 +400,166 @@ const DSAQuizEngine = () => {
       </div>
     </div>
   );
+
+    // Quiz Interface
+  const QuizInterface = () => {
+    const currentQ = questions[currentQuestion];
+    
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 p-4">
+        {/* Header with monitoring */}
+        <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-4 mb-6 border border-white/20">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-6">
+              <div className="flex items-center space-x-2">
+                <Shield className={`w-5 h-5 ${cheatingWarnings === 0 ? 'text-green-400' : cheatingWarnings < 3 ? 'text-yellow-400' : 'text-red-400'}`} />
+                <span className="text-white font-medium">Security: {cheatingWarnings}/3 warnings</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Eye className="w-5 h-5 text-blue-400" />
+                <span className="text-white font-medium">Switches: {tabSwitches}</span>
+              </div>
+            </div>
+            <div className="text-white font-medium">
+              Question {currentQuestion + 1} of {questions.length}
+            </div>
+          </div>
+        </div>
+
+                {/* Progress Bar */}
+        <div className="mb-6">
+          <div className="bg-white/10 rounded-full h-3 overflow-hidden">
+            <div 
+              className="h-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all duration-500 ease-out"
+              style={{ width: `${getProgressPercentage()}%` }}
+            />
+          </div>
+        </div>
+
+        {/* Timer */}
+        <div className="text-center mb-8">
+          <div className={`inline-flex items-center justify-center w-24 h-24 rounded-full bg-gradient-to-r ${getTimerColor()} shadow-2xl`}>
+            <div className="bg-white/20 backdrop-blur-sm rounded-full w-20 h-20 flex items-center justify-center">
+              <span className="text-3xl font-bold text-white">{timeLeft}</span>
+            </div>
+          </div>
+          <div className="mt-2">
+            <div className="w-32 h-2 bg-white/20 rounded-full mx-auto overflow-hidden">
+              <div 
+                className={`h-full bg-gradient-to-r ${getTimerColor()} transition-all duration-1000 ease-linear`}
+                style={{ width: `${(timeLeft / 15) * 100}%` }}
+              />
+            </div>
+          </div>
+        </div>
+
+        
+        {/* Question Card */}
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 mb-6">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center space-x-3">
+                <div className="p-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg">
+                  <Code className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-purple-300">{currentQ.topic}</h3>
+                  <p className="text-sm text-gray-400">Difficulty: {currentQ.difficulty}</p>
+                </div>
+              </div>
+              <div className="flex space-x-2">
+                {currentQ.tags.map((tag, index) => (
+                  <span key={index} className="px-3 py-1 bg-white/10 rounded-full text-xs text-gray-300 border border-white/20">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+            
+            <h2 className="text-xl font-bold text-white mb-8 leading-relaxed">
+              {currentQ.question}
+            </h2>
+
+            <div className="space-y-4">
+              {currentQ.options.map((option, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleAnswerSelect(index)}
+                  disabled={isSubmitting}
+                  className={`w-full p-4 rounded-xl text-left transition-all duration-300 border-2 ${
+                    selectedAnswer === index
+                      ? 'bg-gradient-to-r from-purple-600/50 to-pink-600/50 border-purple-400 shadow-lg shadow-purple-500/25'
+                      : 'bg-white/5 border-white/20 hover:bg-white/10 hover:border-white/30'
+                  } ${isSubmitting ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                >
+                  <div className="flex items-center">
+                    <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center mr-4 ${
+                      selectedAnswer === index ? 'border-purple-400 bg-purple-500' : 'border-white/30'
+                    }`}>
+                      <span className="text-white font-bold text-sm">
+                        {String.fromCharCode(65 + index)}
+                      </span>
+                    </div>
+                    <span className="text-white font-medium">{option}</span>
+                  </div>
+                </button>
+              ))}
+            </div>
+
+            {selectedAnswer !== null && (
+              <div className="mt-8 flex justify-end">
+                <button
+                  onClick={handleNextQuestion}
+                  disabled={isSubmitting}
+                  className="px-8 py-3 bg-gradient-to-r from-green-600 to-blue-600 rounded-xl text-white font-bold transition-all duration-300 hover:from-green-700 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
+                      Submitting...
+                    </>
+                  ) : (
+                    <>
+                      {currentQuestion < questions.length - 1 ? 'Next Question' : 'Complete Quiz'}
+                      <Zap className="w-4 h-4 ml-2" />
+                    </>
+                  )}
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Suspicious Activity Alert */}
+          {suspiciousActivity.length > 0 && (
+            <div className="bg-red-500/20 backdrop-blur-lg rounded-2xl p-4 border border-red-500/30">
+              <div className="flex items-center mb-2">
+                <AlertTriangle className="w-5 h-5 text-red-400 mr-2" />
+                <h4 className="text-red-300 font-semibold">Recent Activity</h4>
+              </div>
+              <div className="space-y-1 max-h-20 overflow-y-auto">
+                {suspiciousActivity.slice(-3).map((activity, index) => (
+                  <div key={index} className="text-sm text-red-200">
+                    <span className="text-red-400">{activity.timestamp}:</span> {activity.activity}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          
+        </div>
+      </div>
+    );
+  };
+
+
+  // Main render logic
+  if (currentPage === 'home') {
+    return <HomePage />;
+  } else if (currentPage === 'quiz' && !quizCompleted) {
+    return <QuizInterface />;
+  } else if (quizCompleted || showResults) {
+    // return <ResultsPage />;
+  }
 
   return <HomePage />;
 };
