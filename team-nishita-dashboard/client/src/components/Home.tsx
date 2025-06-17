@@ -1,70 +1,28 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { Compass, LogOut } from 'lucide-react'; // ✅ Import icons
+import React, { useState, useEffect } from 'react';
+// import { Link } from 'react-router-dom';
+import Navbar from './Navbar';
 
 const Home: React.FC = () => {
-  const token = localStorage.getItem('token');
-  let username = 'User';
-  if (token) {
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      username = payload.username || 'User';
-    } catch (err) {
-      console.error('Invalid token');
-    }
-  }
+  const [user, setUser] = useState<string>('')
+  useEffect(() => {
 
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        const username = payload.username || 'User';
+        setUser(username)
+      } catch (err) {
+        console.error('Error: ', err);
+      }
+    }
+  }, []);
   return (
     <div style={{ minHeight: '100vh', background: '#f0f8ff', display: 'flex', flexDirection: 'column' }}>
-      <header style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: '1rem 2rem',
-        backgroundColor: '#282c34',
-        color: 'white'
-      }}>
-        {/* ✅ Logo with Compass icon */}
-        <div style={{ display: 'flex', alignItems: 'center', fontSize: '1.5rem', fontWeight: 'bold' }}>
-          <Compass size={24} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
-          PathPilot
-        </div>
-
-        <nav>
-          {token ? (
-            <button onClick={() => {
-              localStorage.removeItem('token');
-              window.location.href = '/';
-            }} style={{
-              backgroundColor: '#61dafb',
-              border: 'none',
-              padding: '0.5rem 1rem',
-              borderRadius: '5px',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center'
-            }}>
-              <LogOut size={16} style={{ marginRight: '6px' }} /> {/* ✅ LogOut icon */}
-              Logout
-            </button>
-          ) : (
-            <Link to="/login">
-              <button style={{
-                backgroundColor: '#61dafb',
-                border: 'none',
-                padding: '0.5rem 1rem',
-                borderRadius: '5px',
-                fontWeight: 'bold',
-                cursor: 'pointer'
-              }}>
-                Login
-              </button>
-            </Link>
-          )}
-        </nav>
-      </header>
-
+      <Navbar
+        onLoginClick={() => window.location.href = '/'}
+        onSignUpClick={() => window.location.href = '/'}
+      />
       <main style={{
         flexGrow: 1,
         display: 'flex',
@@ -76,7 +34,7 @@ const Home: React.FC = () => {
           fontWeight: 'bold',
           color: '#2c3e50'
         }}>
-          Welcome, {username}
+          Welcome, {user}
         </h1>
       </main>
 
@@ -85,6 +43,8 @@ const Home: React.FC = () => {
       </footer>
     </div>
   );
+
+
 };
 
 export default Home;
