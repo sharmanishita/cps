@@ -453,7 +453,84 @@ const DSAQuizEngine = () => {
           </div>
         </div>
 
+        
+        {/* Question Card */}
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 mb-6">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center space-x-3">
+                <div className="p-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg">
+                  <Code className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-purple-300">{currentQ.topic}</h3>
+                  <p className="text-sm text-gray-400">Difficulty: {currentQ.difficulty}</p>
+                </div>
+              </div>
+              <div className="flex space-x-2">
+                {currentQ.tags.map((tag, index) => (
+                  <span key={index} className="px-3 py-1 bg-white/10 rounded-full text-xs text-gray-300 border border-white/20">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+            
+            <h2 className="text-xl font-bold text-white mb-8 leading-relaxed">
+              {currentQ.question}
+            </h2>
 
+            <div className="space-y-4">
+              {currentQ.options.map((option, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleAnswerSelect(index)}
+                  disabled={isSubmitting}
+                  className={`w-full p-4 rounded-xl text-left transition-all duration-300 border-2 ${
+                    selectedAnswer === index
+                      ? 'bg-gradient-to-r from-purple-600/50 to-pink-600/50 border-purple-400 shadow-lg shadow-purple-500/25'
+                      : 'bg-white/5 border-white/20 hover:bg-white/10 hover:border-white/30'
+                  } ${isSubmitting ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                >
+                  <div className="flex items-center">
+                    <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center mr-4 ${
+                      selectedAnswer === index ? 'border-purple-400 bg-purple-500' : 'border-white/30'
+                    }`}>
+                      <span className="text-white font-bold text-sm">
+                        {String.fromCharCode(65 + index)}
+                      </span>
+                    </div>
+                    <span className="text-white font-medium">{option}</span>
+                  </div>
+                </button>
+              ))}
+            </div>
+
+            {selectedAnswer !== null && (
+              <div className="mt-8 flex justify-end">
+                <button
+                  onClick={handleNextQuestion}
+                  disabled={isSubmitting}
+                  className="px-8 py-3 bg-gradient-to-r from-green-600 to-blue-600 rounded-xl text-white font-bold transition-all duration-300 hover:from-green-700 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
+                      Submitting...
+                    </>
+                  ) : (
+                    <>
+                      {currentQuestion < questions.length - 1 ? 'Next Question' : 'Complete Quiz'}
+                      <Zap className="w-4 h-4 ml-2" />
+                    </>
+                  )}
+                </button>
+              </div>
+            )}
+          </div>
+
+          
+        </div>
       </div>
     );
   };
