@@ -436,7 +436,23 @@ const DSAQuizEngine = () => {
           </div>
         </div>
 
-        
+        {/* Timer */}
+        <div className="text-center mb-8">
+          <div className={`inline-flex items-center justify-center w-24 h-24 rounded-full bg-gradient-to-r ${getTimerColor()} shadow-2xl`}>
+            <div className="bg-white/20 backdrop-blur-sm rounded-full w-20 h-20 flex items-center justify-center">
+              <span className="text-3xl font-bold text-white">{timeLeft}</span>
+            </div>
+          </div>
+          <div className="mt-2">
+            <div className="w-32 h-2 bg-white/20 rounded-full mx-auto overflow-hidden">
+              <div 
+                className={`h-full bg-gradient-to-r ${getTimerColor()} transition-all duration-1000 ease-linear`}
+                style={{ width: `${(timeLeft / 15) * 100}%` }}
+              />
+            </div>
+          </div>
+        </div>
+
 
       </div>
     );
