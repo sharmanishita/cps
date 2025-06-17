@@ -289,38 +289,38 @@ const DSAQuizEngine = () => {
     setCurrentPage('quiz');
   };
 
-//   const resetQuiz = () => {
-//     setCurrentQuestion(0);
-//     setTimeLeft(15);
-//     setAnswers({});
-//     setQuizStarted(false);
-//     setQuizCompleted(false);
-//     setSelectedAnswer(null);
-//     setScore(0);
-//     setIsSubmitting(false);
-//     setTabSwitches(0);
-//     setWindowBlurs(0);
-//     setSuspiciousActivity([]);
-//     setCheatingWarnings(0);
-//     setIsDisqualified(false);
-//     setShowResults(false);
-//     setShowAnalytics(false);
-//     setCurrentPage('home');
+  const resetQuiz = () => {
+    setCurrentQuestion(0);
+    setTimeLeft(15);
+    setAnswers({});
+    setQuizStarted(false);
+    setQuizCompleted(false);
+    setSelectedAnswer(null);
+    setScore(0);
+    setIsSubmitting(false);
+    setTabSwitches(0);
+    setWindowBlurs(0);
+    setSuspiciousActivity([]);
+    setCheatingWarnings(0);
+    setIsDisqualified(false);
+    setShowResults(false);
+    setShowAnalytics(false);
+    setCurrentPage('home');
     
-//     if (document.fullscreenElement) {
-//       document.exitFullscreen();
-//     }
-//   };
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    }
+  };
 
-//   const getTimerColor = () => {
-//     if (timeLeft <= 3) return 'from-red-500 to-red-600';
-//     if (timeLeft <= 7) return 'from-yellow-500 to-orange-500';
-//     return 'from-green-500 to-blue-500';
-//   };
+  const getTimerColor = () => {
+    if (timeLeft <= 3) return 'from-red-500 to-red-600';
+    if (timeLeft <= 7) return 'from-yellow-500 to-orange-500';
+    return 'from-green-500 to-blue-500';
+  };
 
-//   const getProgressPercentage = () => {
-//     return ((currentQuestion + 1) / questions.length) * 100;
-//   };
+  const getProgressPercentage = () => {
+    return ((currentQuestion + 1) / questions.length) * 100;
+  };
 
   // Home Page Component
   const HomePage = () => (
@@ -400,6 +400,46 @@ const DSAQuizEngine = () => {
       </div>
     </div>
   );
+
+    // Quiz Interface
+  const QuizInterface = () => {
+    const currentQ = questions[currentQuestion];
+    
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 p-4">
+        {/* Header with monitoring */}
+        <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-4 mb-6 border border-white/20">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-6">
+              <div className="flex items-center space-x-2">
+                <Shield className={`w-5 h-5 ${cheatingWarnings === 0 ? 'text-green-400' : cheatingWarnings < 3 ? 'text-yellow-400' : 'text-red-400'}`} />
+                <span className="text-white font-medium">Security: {cheatingWarnings}/3 warnings</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Eye className="w-5 h-5 text-blue-400" />
+                <span className="text-white font-medium">Switches: {tabSwitches}</span>
+              </div>
+            </div>
+            <div className="text-white font-medium">
+              Question {currentQuestion + 1} of {questions.length}
+            </div>
+          </div>
+        </div>
+
+
+      </div>
+    );
+  };
+
+
+  // Main render logic
+  if (currentPage === 'home') {
+    return <HomePage />;
+  } else if (currentPage === 'quiz' && !quizCompleted) {
+    return <QuizInterface />;
+  } else if (quizCompleted || showResults) {
+    // return <ResultsPage />;
+  }
 
   return <HomePage />;
 };
