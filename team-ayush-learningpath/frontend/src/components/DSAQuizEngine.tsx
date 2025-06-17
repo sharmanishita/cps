@@ -184,97 +184,97 @@ const DSAQuizEngine = () => {
     }
   };
 
-//   // Check for disqualification
-//   useEffect(() => {
-//     if (cheatingWarnings >= 3 && !isDisqualified) {
-//       setIsDisqualified(true);
-//       setQuizCompleted(true);
-//       addSuspiciousActivity('DISQUALIFIED: Too many violations', 'critical');
-//     }
-//   }, [cheatingWarnings, isDisqualified]);
+  // Check for disqualification
+  useEffect(() => {
+    if (cheatingWarnings >= 3 && !isDisqualified) {
+      setIsDisqualified(true);
+      setQuizCompleted(true);
+      addSuspiciousActivity('DISQUALIFIED: Too many violations', 'critical');
+    }
+  }, [cheatingWarnings, isDisqualified]);
 
-//   // Timer logic
-//   useEffect(() => {
-//     if (quizStarted && !quizCompleted && timeLeft > 0) {
-//       timerRef.current = setTimeout(() => {
-//         setTimeLeft(timeLeft - 1);
-//       }, 1000);
-//     } else if (timeLeft === 0 && !isSubmitting) {
-//       handleTimeUp();
-//     }
+  // Timer logic
+  useEffect(() => {
+    if (quizStarted && !quizCompleted && timeLeft > 0) {
+      timerRef.current = setTimeout(() => {
+        setTimeLeft(timeLeft - 1);
+      }, 1000);
+    } else if (timeLeft === 0 && !isSubmitting) {
+      handleTimeUp();
+    }
     
-//     return () => {
-//       if (timerRef.current !== null) {
-//         clearTimeout(timerRef.current);
-//       }
-//     };
-//   }, [quizStarted, quizCompleted, timeLeft, isSubmitting]);
+    return () => {
+      if (timerRef.current !== null) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, [quizStarted, quizCompleted, timeLeft, isSubmitting]);
 
-//   const handleTimeUp = () => {
-//     setIsSubmitting(true);
-//     addSuspiciousActivity('Question auto-submitted (timeout)', 'low');
+  const handleTimeUp = () => {
+    setIsSubmitting(true);
+    addSuspiciousActivity('Question auto-submitted (timeout)', 'low');
     
-//     setTimeout(() => {
-//       if (currentQuestion < questions.length - 1) {
-//         setCurrentQuestion(prev => prev + 1);
-//         setTimeLeft(15);
-//         setSelectedAnswer(null);
-//         setIsSubmitting(false);
-//       } else {
-//         completeQuiz();
-//       }
-//     }, 500);
-//   };
+    setTimeout(() => {
+      if (currentQuestion < questions.length - 1) {
+        setCurrentQuestion(prev => prev + 1);
+        setTimeLeft(15);
+        setSelectedAnswer(null);
+        setIsSubmitting(false);
+      } else {
+        completeQuiz();
+      }
+    }, 500);
+  };
 
-//   const handleAnswerSelect = (answerIndex: number) => {
-//     if (isSubmitting) return;
+  const handleAnswerSelect = (answerIndex: number) => {
+    if (isSubmitting) return;
     
-//     setSelectedAnswer(answerIndex);
-//     setAnswers(prev => ({
-//       ...prev,
-//       [currentQuestion]: answerIndex
-//     }));
+    setSelectedAnswer(answerIndex);
+    setAnswers(prev => ({
+      ...prev,
+      [currentQuestion]: answerIndex
+    }));
 
-//     // Track analytics
-//     analyticsRef.current.clickPattern.push({
-//       question: currentQuestion,
-//       timeRemaining: timeLeft,
-//       selected: answerIndex
-//     });
-//   };
+    // Track analytics
+    analyticsRef.current.clickPattern.push({
+      question: currentQuestion,
+      timeRemaining: timeLeft,
+      selected: answerIndex
+    });
+  };
 
-//   const handleNextQuestion = () => {
-//     if (selectedAnswer === null) return;
+  const handleNextQuestion = () => {
+    if (selectedAnswer === null) return;
     
-//     setIsSubmitting(true);
+    setIsSubmitting(true);
     
-//     setTimeout(() => {
-//       if (currentQuestion < questions.length - 1) {
-//         setCurrentQuestion(prev => prev + 1);
-//         setTimeLeft(15);
-//         setSelectedAnswer(null);
-//         setIsSubmitting(false);
-//       } else {
-//         completeQuiz();
-//       }
-//     }, 500);
-//   };
+    setTimeout(() => {
+      if (currentQuestion < questions.length - 1) {
+        setCurrentQuestion(prev => prev + 1);
+        setTimeLeft(15);
+        setSelectedAnswer(null);
+        setIsSubmitting(false);
+      } else {
+        completeQuiz();
+      }
+    }, 500);
+  };
 
-//   const completeQuiz = () => {
-//     setQuizCompleted(true);
-//     calculateScore();
-//     setShowResults(true);
-//   };
+  const completeQuiz = () => {
+    setQuizCompleted(true);
+    calculateScore();
+    setShowResults(true);
+  };
 
-//   const calculateScore = () => {
-//     let correctAnswers = 0;
-//     questions.forEach((q, index) => {
-//       if (answers[index] === q.correct) {
-//         correctAnswers++;
-//       }
-//     });
-//     setScore((correctAnswers / questions.length) * 100);
-//   };
+  const calculateScore = () => {
+    let correctAnswers = 0;
+    questions.forEach((q, index) => {
+      if (answers[index] === q.correct) {
+        correctAnswers++;
+      }
+    });
+    setScore((correctAnswers / questions.length) * 100);
+  };
 
   const startQuiz = async () => {
     // Request fullscreen
