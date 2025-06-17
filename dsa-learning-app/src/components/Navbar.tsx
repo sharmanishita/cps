@@ -28,6 +28,9 @@ const Navbar: React.FC = () => {
             <Link className="nav-link" to="/login">Login</Link>
           </li>
           <li className="nav-item">
+            <Link className="nav-link" to="/language-selection">Languages</Link> {/* ✅ NEW LINK */}
+          </li>
+          <li className="nav-item">
             <span className="nav-link" style={{ cursor: "pointer" }}>
               Logout
             </span>
