@@ -1,19 +1,14 @@
-// src/middlewares/adminMiddleware.ts
 import { Request, Response, NextFunction } from 'express';
 
 /**
- * Middleware to check if the authenticated user is an admin.
- * This should be used *after* the 'protect' middleware.
- * @param req - Express request object, expects req.user to be populated.
- * @param res - Express response object.
- * @param next - Express next middleware function.
+ * Checks if the authenticated user has an 'admin' role.
+ * This middleware must run after the 'protect' middleware.
  */
 export const admin = (req: Request, res: Response, next: NextFunction) => {
+    // req.user is populated by the preceding 'protect' middleware
     if (req.user && req.user.role === 'admin') {
-        // If user exists and has the 'admin' role, proceed to the next middleware/controller
-        next();
+        next(); // User is an admin, proceed
     } else {
-        // If not, send a 403 Forbidden error
-        res.status(403).json({ message: 'Not authorized as an admin. Access denied.' });
+        res.status(403).json({ message: 'Forbidden. Admin access required.' });
     }
 };
