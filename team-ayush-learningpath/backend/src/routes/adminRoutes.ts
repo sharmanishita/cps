@@ -1,4 +1,3 @@
-// src/routes/adminRoutes.ts
 import { Router } from 'express';
 import {
     getAllUsers,
@@ -15,16 +14,20 @@ import { conceptValidationRules, validate } from '../validators/conceptValidator
 
 const router = Router();
 
-// This applies the protect and admin middleware to ALL routes in this file.
-// Any request to /api/admin/* must have a valid token AND be from an admin user.
+// This applies 'protect' and 'admin' middleware to ALL routes in this file
 router.use(protect, admin);
 
-// --- User Management Routes ---
+// User Management Routes
 router.get('/users', getAllUsers);
-router.route('/users/:id').get(getUserById).put(updateUser).delete(deleteUser);
+router.route('/users/:id')
+    .get(getUserById)
+    .put(updateUser)
+    .delete(deleteUser);
 
-// --- Concept (Course) Management Routes ---
+// Concept (Course) Management Routes
 router.post('/concepts', conceptValidationRules(), validate, createConcept);
-router.route('/concepts/:id').put(conceptValidationRules(), validate, updateConcept).delete(deleteConcept);
+router.route('/concepts/:id')
+    .put(conceptValidationRules(), validate, updateConcept)
+    .delete(deleteConcept);
 
 export default router;

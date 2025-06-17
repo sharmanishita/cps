@@ -1,5 +1,3 @@
-// src/routes/authRoutes.ts
-
 import { Router } from 'express';
 import {
     registerUser,
@@ -20,8 +18,8 @@ const router = Router();
 
 router.post('/register', registerRules(), validate, registerUser);
 router.post('/login', loginRules(), validate, loginUser);
+router.post('/logout', protect, logoutUser);
 router.get('/me', protect, getMyProfile);
 router.put('/changepassword', protect, changePasswordRules(), validate, changePassword);
-router.post('/logout', protect, logoutUser);
 
 export default router;

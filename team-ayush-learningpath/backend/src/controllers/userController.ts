@@ -1,45 +1,60 @@
+// src/controllers/userController.ts
 import { Request, Response } from 'express';
 import User from '../models/userModel';
-import Concept from '../models/conceptModel';
 
+/**
+ * @desc    Get the user's dashboard, including their populated learning profile.
+ * @route   GET /api/users/dashboard
+ * @access  Private
+ */
 export const getDashboard = async (req: Request, res: Response) => {
     try {
-        const userProfile = await User.findById(req.user?.id)
-            .populate({ path: 'learningHistory.concept', select: 'title description' });
-        if (!userProfile) return res.status(404).json({ message: 'User not found' });
+        // The user ID is available from the 'protect' middleware via req.user
+        const userProfile = await User.findById(req.user?.id).populate({
+            path: 'learningProfile.concept', // Go into learningProfile and populate the 'concept' field
+            select: 'title description', // From the populated concept, only select these fields
+        });
+
+        if (!userProfile) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
         res.status(200).json(userProfile);
-    } catch (error) { res.status(500).json({ message: 'Server Error' }); }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
 };
 
+/**
+ * @desc    Update the user's own profile details (e.g., name).
+ * @route   PUT /api/users/profile
+ * @access  Private
+ */
 export const updateProfile = async (req: Request, res: Response) => {
     try {
         const user = await User.findById(req.user?.id);
+
         if (user) {
             user.name = req.body.name || user.name;
+            // You can add other updatable fields here, for example:
+            // user.email = req.body.email || user.email;
+            // NOTE: Changing email would require additional verification logic.
+
             const updatedUser = await user.save();
-            res.status(200).json({ id: updatedUser._id, name: updatedUser.name, email: updatedUser.email });
+
+            // Return the updated user data, excluding the password.
+            res.status(200).json({
+                _id: updatedUser._id,
+                name: updatedUser.name,
+                email: updatedUser.email,
+                role: updatedUser.role,
+            });
         } else {
             res.status(404).json({ message: 'User not found' });
         }
-    } catch (error) { res.status(500).json({ message: 'Server Error' }); }
-};
-
-export const logLearningActivity = async (req: Request, res: Response) => {
-    try {
-        const { conceptId } = req.params;
-        const { masteryLevel } = req.body;
-        const concept = await Concept.findById(conceptId);
-        if (!concept) return res.status(404).json({ message: 'Concept not found' });
-        const user = await User.findById(req.user?.id);
-        if (!user) return res.status(404).json({ message: 'User not found' });
-        const alreadyLearnedIndex = user.learningHistory.findIndex(item => item.concept.toString() === conceptId);
-        if (alreadyLearnedIndex > -1) {
-            user.learningHistory[alreadyLearnedIndex].masteryLevel = masteryLevel || 1;
-            user.learningHistory[alreadyLearnedIndex].completedAt = new Date();
-        } else {
-            user.learningHistory.push({ concept: concept._id, masteryLevel: masteryLevel || 1, completedAt: new Date() });
-        }
-        await user.save();
-        res.status(200).json(user.learningHistory);
-    } catch (error) { res.status(500).json({ message: 'Server Error' }); }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
 };

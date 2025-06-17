@@ -1,17 +1,27 @@
 // src/controllers/authController.ts
-
 import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import User from '../models/userModel';
 
-// This helper function generates a JWT for a given user ID.
-const generateToken = (id: string): string => {
-    return jwt.sign({ id }, process.env.JWT_SECRET as string, { expiresIn: '1d' });
+// Helper function to generate a JWT and set it in a cookie
+const generateTokenAndSetCookie = (res: Response, userId: string) => {
+    const token = jwt.sign({ id: userId }, process.env.JWT_SECRET as string, {
+        expiresIn: '1d',
+    });
+
+    res.cookie('token', token, {
+        httpOnly: true, // Prevents client-side JS from accessing the cookie
+        secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+        sameSite: 'strict', // Helps mitigate CSRF attacks
+        maxAge: 24 * 60 * 60 * 1000, // 1 day
+    });
 };
 
-// Each of the functions below MUST have "export" in front of it.
-
+/**
+ * @desc    Register a new user
+ * @route   POST /api/auth/register
+ */
 export const registerUser = async (req: Request, res: Response) => {
     const { name, email, password } = req.body;
     try {
@@ -21,22 +31,24 @@ export const registerUser = async (req: Request, res: Response) => {
         }
 
         const user = await User.create({ name, email, password });
-        const token = generateToken(user._id.toString());
+        generateTokenAndSetCookie(res, user._id.toString());
 
-        res.cookie('token', token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-            maxAge: 24 * 60 * 60 * 1000 // 1 day
+        res.status(201).json({
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
         });
-
-        res.status(201).json({ id: user._id, name: user.name, email: user.email });
     } catch (error) {
-        console.error("Register Error:", error);
+        console.error(error);
         res.status(500).json({ message: 'Server error' });
     }
 };
 
+/**
+ * @desc    Authenticate a user
+ * @route   POST /api/auth/login
+ */
 export const loginUser = async (req: Request, res: Response) => {
     const { email, password } = req.body;
     try {
@@ -44,31 +56,47 @@ export const loginUser = async (req: Request, res: Response) => {
         if (!user || !(await bcrypt.compare(password, user.password))) {
             return res.status(401).json({ message: 'Invalid credentials' });
         }
-        const token = generateToken(user._id.toString());
 
-        res.cookie('token', token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-            maxAge: 24 * 60 * 60 * 1000
+        generateTokenAndSetCookie(res, user._id.toString());
+
+        res.status(200).json({
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
         });
-
-        res.status(200).json({ id: user._id, name: user.name, email: user.email });
     } catch (error) {
-        console.error("Login Error:", error);
+        console.error(error);
         res.status(500).json({ message: 'Server error' });
     }
 };
 
+/**
+ * @desc    Log out a user
+ * @route   POST /api/auth/logout
+ */
 export const logoutUser = (req: Request, res: Response) => {
-    res.cookie('token', '', { httpOnly: true, expires: new Date(0) });
+    // The server clears the authentication cookie, effectively logging the user out.
+    res.cookie('token', '', {
+        httpOnly: true,
+        expires: new Date(0),
+    });
     res.status(200).json({ message: 'Logout successful' });
 };
 
-export const getMyProfile = async (req: Request, res: Response) => {
+/**
+ * @desc    Get the current user's profile
+ * @route   GET /api/auth/me
+ */
+export const getMyProfile = (req: Request, res: Response) => {
+    // The req.user object is attached by the 'protect' middleware.
     res.status(200).json(req.user);
 };
 
+/**
+ * @desc    Change the current user's password
+ * @route   PUT /api/auth/changepassword
+ */
 export const changePassword = async (req: Request, res: Response) => {
     const { oldPassword, newPassword } = req.body;
     try {
@@ -76,11 +104,13 @@ export const changePassword = async (req: Request, res: Response) => {
         if (!user || !(await bcrypt.compare(oldPassword, user.password))) {
             return res.status(401).json({ message: 'Incorrect old password' });
         }
+
         user.password = newPassword;
         await user.save();
+
         res.status(200).json({ message: 'Password changed successfully' });
     } catch (error) {
-        console.error("Change Password Error:", error);
+        console.error(error);
         res.status(500).json({ message: 'Server error' });
     }
 };

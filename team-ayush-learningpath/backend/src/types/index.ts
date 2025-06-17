@@ -1,4 +1,3 @@
-// src/types/index.ts
 import { Document, Types } from 'mongoose';
 
 // Interface for a single quiz question within a Concept
@@ -31,7 +30,6 @@ export interface IUser extends Document {
     email: string;
     password: string;
     role: 'user' | 'admin';
-    // Renamed to 'learningProfile' for clarity
     learningProfile: {
         concept: Types.ObjectId;
         masteryLevel: number; // Represents the user's best score on this concept

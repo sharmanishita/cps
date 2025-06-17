@@ -1,4 +1,3 @@
-// src/models/userModel.ts
 import { Schema, model } from 'mongoose';
 import bcrypt from 'bcryptjs';
 import { IUser, IQuizAttempt } from '../types';
@@ -43,7 +42,7 @@ const userSchema = new Schema<IUser>({
     },
     role: {
         type: String,
-        enum: ['user', 'admin'],
+        enum: ['user', 'admin'], // Users can only have one of these two roles
         default: 'user',
     },
     // This is the user's personal learning profile.

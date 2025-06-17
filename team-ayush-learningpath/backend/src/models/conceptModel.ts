@@ -1,4 +1,3 @@
-// src/models/conceptModel.ts
 import { Schema, model } from 'mongoose';
 import { IConcept } from '../types';
 
@@ -10,7 +9,7 @@ const conceptSchema = new Schema<IConcept>({
     title: {
         type: String,
         required: true,
-        unique: true, // Every course must have a unique title
+        unique: true,
         trim: true,
     },
     description: {
