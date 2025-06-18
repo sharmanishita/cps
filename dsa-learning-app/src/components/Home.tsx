@@ -1,48 +1,21 @@
 import React from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { useTranslation } from 'react-i18next';
+import i18n from '../i18n';
+
 
 const Home: React.FC = () => {
-  const features = [
-    {
-      title: 'Multi-Language Support',
-      desc: 'Learn DSA in C++, Java, Python, or JavaScript – choose your preferred programming language.',
-    },
-    {
-      title: 'Personalized Assessment',
-      desc: 'Get customized quizzes based on your existing knowledge and learning progress.',
-    },
-    {
-      title: 'Adaptive Learning',
-      desc: 'Questions adapt to your skill level, ensuring optimal learning curve.',
-    },
-    {
-      title: 'Progress Tracking',
-      desc: 'Visual timeline and detailed analytics to track your DSA mastery journey.',
-    },
-    {
-      title: 'Performance Insights',
-      desc: 'Get detailed feedback and predictions for your coding interview readiness.',
-    },
-    {
-      title: 'Quick Reviews',
-      desc: 'Review your answers and retake quizzes to reinforce learning.',
-    },
-  ];
+  const { t } = useTranslation();
 
-  const steps = [
-    { number: '1', title: 'Choose Language', desc: 'Select your preferred programming language' },
-    { number: '2', title: 'Assessment', desc: 'Tell us what DSA concepts you already know' },
-    { number: '3', title: 'Take Quizzes', desc: 'Complete personalized quizzes and assessments' },
-    { number: '4', title: 'Track Progress', desc: 'Monitor your learning journey with detailed analytics' },
-  ];
+ 
+  const features = t('features', { returnObjects: true }) as { title: string; desc: string }[];
+  const steps = t('steps', { returnObjects: true }) as { number: string; title: string; desc: string }[];
+  const points = t('points', { returnObjects: true }) as string[];
 
-  const points = [
-    'Comprehensive coverage of all major DSA topics',
-    'Real-time performance analytics',
-    'Interview preparation focus',
-    'Language-specific code examples and explanations',
-    'Concept mastery verification',
-    'Progress visualization tools',
-  ];
+  const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedLang = e.target.value;
+    i18n.changeLanguage(selectedLang);
+  };
 
   return (
     <div>
