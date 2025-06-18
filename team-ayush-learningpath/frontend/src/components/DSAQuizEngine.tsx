@@ -545,12 +545,349 @@ const DSAQuizEngine = () => {
               </div>
             </div>
           )}
-          
         </div>
       </div>
     );
   };
 
+  // Results Page
+  const ResultsPage = () => {
+    const correctAnswers = questions.filter((q, index) => answers[index] === q.correct).length;
+    const accuracy = (correctAnswers / questions.length) * 100;
+    
+    const getScoreColor = () => {
+      if (score >= 80) return 'from-green-500 to-emerald-500';
+      if (score >= 60) return 'from-yellow-500 to-orange-500';
+      return 'from-red-500 to-pink-500';
+    };
+
+    const getScoreGrade = () => {
+      if (score >= 90) return 'A+';
+      if (score >= 80) return 'A';
+      if (score >= 70) return 'B';
+      if (score >= 60) return 'C';
+      return 'F';
+    };
+
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-4">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-8">
+            <div className="flex items-center justify-center mb-4">
+              <div className={`p-6 bg-gradient-to-r ${getScoreColor()} rounded-full shadow-2xl`}>
+                <Trophy className="w-12 h-12 text-white" />
+              </div>
+            </div>
+            <h1 className="text-4xl font-bold text-white mb-2">
+              {isDisqualified ? 'Disqualified' : 'Quiz Complete!'}
+            </h1>
+            <p className="text-xl text-gray-300">
+              {isDisqualified ? 'Too many security violations detected' : 'Here are your detailed results'}
+            </p>
+          </div>
+
+          {!isDisqualified && (
+            <div className="grid lg:grid-cols-3 gap-6 mb-8">
+              {/* Score Overview */}
+              <div className="lg:col-span-1">
+                <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
+                  <h3 className="text-xl font-bold text-white mb-6 flex items-center">
+                    <BarChart3 className="w-6 h-6 mr-2" />
+                    Score Overview
+                  </h3>
+                  
+                  <div className="text-center mb-6">
+                    <div className={`inline-flex items-center justify-center w-32 h-32 rounded-full bg-gradient-to-r ${getScoreColor()} shadow-2xl mb-4`}>
+                      <div className="bg-white/20 backdrop-blur-sm rounded-full w-28 h-28 flex items-center justify-center">
+                        <span className="text-4xl font-bold text-white">{getScoreGrade()}</span>
+                      </div>
+                    </div>
+                    <div className="text-3xl font-bold text-white mb-1">{score.toFixed(1)}%</div>
+                    <div className="text-gray-300">{correctAnswers} out of {questions.length} correct</div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-300">Accuracy</span>
+                      <span className="text-white font-bold">{accuracy.toFixed(1)}%</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-300">Time Efficiency</span>
+                      <span className="text-white font-bold">85%</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-300">Security Score</span>
+                      <span className={`font-bold ${cheatingWarnings === 0 ? 'text-green-400' : 'text-yellow-400'}`}>
+                        {cheatingWarnings === 0 ? 'Perfect' : 'Warnings: ' + cheatingWarnings}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Question Breakdown */}
+              <div className="lg:col-span-2">
+                <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
+                  <h3 className="text-xl font-bold text-white mb-6 flex items-center">
+                    <Target className="w-6 h-6 mr-2" />
+                    Question Breakdown
+                  </h3>
+                  
+                  <div className="space-y-4">
+                    {questions.map((question, index) => {
+                      const userAnswer = answers[index];
+                      const isCorrect = userAnswer === question.correct;
+                      const wasAnswered = userAnswer !== undefined;
+                      
+                      return (
+                        <div key={index} className={`p-4 rounded-xl border-2 ${
+                          isCorrect ? 'bg-green-500/20 border-green-500/50' : 
+                          wasAnswered ? 'bg-red-500/20 border-red-500/50' : 
+                          'bg-gray-500/20 border-gray-500/50'
+                        }`}>
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center space-x-3">
+                              <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                                isCorrect ? 'bg-green-500' : wasAnswered ? 'bg-red-500' : 'bg-gray-500'
+                              }`}>
+                                {isCorrect ? <CheckCircle className="w-5 h-5 text-white" /> : 
+                                 wasAnswered ? <XCircle className="w-5 h-5 text-white" /> : 
+                                 <Clock className="w-5 h-5 text-white" />}
+                              </div>
+                              <div>
+                                <span className="text-white font-medium">Question {index + 1}</span>
+                                <div className="text-sm text-gray-400">{question.topic} • {question.difficulty}</div>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <div className={`text-sm font-bold ${
+                                isCorrect ? 'text-green-400' : wasAnswered ? 'text-red-400' : 'text-gray-400'
+                              }`}>
+                                {isCorrect ? 'Correct' : wasAnswered ? 'Incorrect' : 'No Answer'}
+                              </div>
+                            </div>
+                          </div>
+                          
+                          {wasAnswered && (
+                            <div className="mt-3 text-sm">
+                              <div className="text-gray-300 mb-1">
+                                Your answer: <span className={isCorrect ? 'text-green-400' : 'text-red-400'}>
+                                  {question.options[userAnswer]}
+                                </span>
+                              </div>
+                              {!isCorrect && (
+                                <div className="text-gray-300">
+                                  Correct answer: <span className="text-green-400">
+                                    {question.options[question.correct]}
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Security Report */}
+          <div className="grid lg:grid-cols-2 gap-6 mb-8">
+            <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
+              <h3 className="text-xl font-bold text-white mb-6 flex items-center">
+                <Shield className="w-6 h-6 mr-2" />
+                Security Report
+              </h3>
+              
+              <div className="space-y-4">
+                <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+                  <span className="text-gray-300">Tab Switches</span>
+                  <span className={`font-bold ${tabSwitches === 0 ? 'text-green-400' : 'text-yellow-400'}`}>
+                    {tabSwitches}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+                  <span className="text-gray-300">Window Blurs</span>
+                  <span className={`font-bold ${windowBlurs === 0 ? 'text-green-400' : 'text-yellow-400'}`}>
+                    {windowBlurs}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+                  <span className="text-gray-300">Violations</span>
+                  <span className={`font-bold ${cheatingWarnings === 0 ? 'text-green-400' : cheatingWarnings < 3 ? 'text-yellow-400' : 'text-red-400'}`}>
+                    {cheatingWarnings}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+                  <span className="text-gray-300">Overall Status</span>
+                  <span className={`font-bold flex items-center ${isDisqualified ? 'text-red-400' : 'text-green-400'}`}>
+                    {isDisqualified ? <Lock className="w-4 h-4 mr-1" /> : <Unlock className="w-4 h-4 mr-1" />}
+                    {isDisqualified ? 'Disqualified' : 'Clean'}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
+              <h3 className="text-xl font-bold text-white mb-6 flex items-center">
+                <TrendingUp className="w-6 h-6 mr-2" />
+                Performance Analytics
+              </h3>
+              
+              <div className="space-y-4">
+                <div className="p-3 bg-white/5 rounded-lg">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-gray-300">Response Time</span>
+                    <span className="text-white font-bold">Avg 8.2s</span>
+                  </div>
+                  <div className="w-full bg-white/10 rounded-full h-2">
+                    <div className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full" style={{width: '75%'}}></div>
+                  </div>
+                </div>
+                
+                <div className="p-3 bg-white/5 rounded-lg">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-gray-300">Confidence Level</span>
+                    <span className="text-white font-bold">82%</span>
+                  </div>
+                  <div className="w-full bg-white/10 rounded-full h-2">
+                    <div className="bg-gradient-to-r from-green-500 to-blue-500 h-2 rounded-full" style={{width: '82%'}}></div>
+                  </div>
+                </div>
+                
+                <div className="p-3 bg-white/5 rounded-lg">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-gray-300">Topic Mastery</span>
+                    <span className="text-white font-bold">Good</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 mt-2">
+                    <div className="text-xs text-gray-400">Arrays: 80%</div>
+                    <div className="text-xs text-gray-400">Trees: 75%</div>
+                    <div className="text-xs text-gray-400">DP: 60%</div>
+                    <div className="text-xs text-gray-400">Graphs: 85%</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Activity Log */}
+          {suspiciousActivity.length > 0 && (
+            <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20 mb-8">
+              <h3 className="text-xl font-bold text-white mb-6 flex items-center">
+                <AlertCircle className="w-6 h-6 mr-2" />
+                Activity Log
+              </h3>
+              
+              <div className="max-h-60 overflow-y-auto space-y-2">
+                {suspiciousActivity.map((activity, index) => (
+                  <div key={index} className={`p-3 rounded-lg flex items-center justify-between ${
+                    activity.severity === 'critical' ? 'bg-red-500/20 border border-red-500/30' :
+                    activity.severity === 'high' ? 'bg-orange-500/20 border border-orange-500/30' :
+                    activity.severity === 'medium' ? 'bg-yellow-500/20 border border-yellow-500/30' :
+                    'bg-blue-500/20 border border-blue-500/30'
+                  }`}>
+                    <div className="flex items-center space-x-3">
+                      <div className={`w-2 h-2 rounded-full ${
+                        activity.severity === 'critical' ? 'bg-red-400' :
+                        activity.severity === 'high' ? 'bg-orange-400' :
+                        activity.severity === 'medium' ? 'bg-yellow-400' :
+                        'bg-blue-400'
+                      }`}></div>
+                      <span className="text-white text-sm">{activity.activity}</span>
+                    </div>
+                    <span className="text-gray-400 text-xs">{activity.timestamp}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Action Buttons */}
+          <div className="flex justify-center space-x-4">
+            <button
+              onClick={() => setShowAnalytics(!showAnalytics)}
+              className="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl text-white font-bold transition-all duration-300 hover:from-blue-700 hover:to-purple-700 flex items-center"
+            >
+              <BarChart3 className="w-5 h-5 mr-2" />
+              {showAnalytics ? 'Hide' : 'Show'} Detailed Analytics
+            </button>
+            
+            <button
+              onClick={resetQuiz}
+              className="px-8 py-3 bg-gradient-to-r from-green-600 to-blue-600 rounded-xl text-white font-bold transition-all duration-300 hover:from-green-700 hover:to-blue-700 flex items-center"
+            >
+              <RotateCcw className="w-5 h-5 mr-2" />
+              Retake Quiz
+            </button>
+            
+            <button
+              onClick={() => setCurrentPage('home')}
+              className="px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl text-white font-bold transition-all duration-300 hover:from-purple-700 hover:to-pink-700 flex items-center"
+            >
+              <Home className="w-5 h-5 mr-2" />
+              Home
+            </button>
+          </div>
+
+          {/* Detailed Analytics */}
+          {showAnalytics && (
+            <div className="mt-8 bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
+              <h3 className="text-xl font-bold text-white mb-6 flex items-center">
+                <Brain className="w-6 h-6 mr-2" />
+                Detailed Performance Analysis
+              </h3>
+              
+              <div className="grid lg:grid-cols-2 gap-6">
+                <div>
+                  <h4 className="text-lg font-semibold text-purple-300 mb-4">Strengths</h4>
+                  <ul className="space-y-2 text-gray-300">
+                    {score >= 80 && <li className="flex items-start"><CheckCircle className="w-4 h-4 text-green-400 mr-2 mt-0.5" />Strong overall performance</li>}
+                    {cheatingWarnings === 0 && <li className="flex items-start"><CheckCircle className="w-4 h-4 text-green-400 mr-2 mt-0.5" />Perfect integrity maintained</li>}
+                    <li className="flex items-start"><CheckCircle className="w-4 h-4 text-green-400 mr-2 mt-0.5" />Good time management</li>
+                    <li className="flex items-start"><CheckCircle className="w-4 h-4 text-green-400 mr-2 mt-0.5" />Consistent response pattern</li>
+                  </ul>
+                </div>
+                
+                <div>
+                  <h4 className="text-lg font-semibold text-purple-300 mb-4">Areas for Improvement</h4>
+                  <ul className="space-y-2 text-gray-300">
+                    {score < 60 && <li className="flex items-start"><AlertCircle className="w-4 h-4 text-yellow-400 mr-2 mt-0.5" />Focus on fundamental concepts</li>}
+                    {score < 80 && <li className="flex items-start"><AlertCircle className="w-4 h-4 text-yellow-400 mr-2 mt-0.5" />Practice more complex problems</li>}
+                    <li className="flex items-start"><AlertCircle className="w-4 h-4 text-yellow-400 mr-2 mt-0.5" />Review dynamic programming concepts</li>
+                    <li className="flex items-start"><AlertCircle className="w-4 h-4 text-yellow-400 mr-2 mt-0.5" />Strengthen tree algorithms</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="mt-6 p-4 bg-white/5 rounded-lg">
+                <h4 className="text-lg font-semibold text-purple-300 mb-3">Recommended Next Steps</h4>
+                <div className="grid md:grid-cols-3 gap-4">
+                  <div className="text-center">
+                    <Code className="w-8 h-8 text-blue-400 mx-auto mb-2" />
+                    <h5 className="text-white font-medium mb-1">Practice Coding</h5>
+                    <p className="text-gray-400 text-sm">Solve 20+ problems weekly</p>
+                  </div>
+                  <div className="text-center">
+                    <Database className="w-8 h-8 text-green-400 mx-auto mb-2" />
+                    <h5 className="text-white font-medium mb-1">Study Concepts</h5>
+                    <p className="text-gray-400 text-sm">Review data structures</p>
+                  </div>
+                  <div className="text-center">
+                    <Users className="w-8 h-8 text-purple-400 mx-auto mb-2" />
+                    <h5 className="text-white font-medium mb-1">Mock Interviews</h5>
+                    <p className="text-gray-400 text-sm">Practice with peers</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };      
 
   // Main render logic
   if (currentPage === 'home') {
@@ -558,7 +895,7 @@ const DSAQuizEngine = () => {
   } else if (currentPage === 'quiz' && !quizCompleted) {
     return <QuizInterface />;
   } else if (quizCompleted || showResults) {
-    // return <ResultsPage />;
+    return <ResultsPage />;
   }
 
   return <HomePage />;
