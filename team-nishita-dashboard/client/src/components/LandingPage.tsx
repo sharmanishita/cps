@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import './LandingPage.css';
 import { signup, login } from '../api/api';
 import { useNavigate } from 'react-router-dom';
-import { jwtDecode } from 'jwt-decode';
 import { motion } from 'framer-motion';
+import { useAuth } from '../contexts/AuthContext'
 import Navbar from './Navbar'
 import type { Credentials as Credentials } from '../api/api'
 
@@ -19,12 +19,8 @@ import {
   Moon
 } from 'lucide-react';
 
-interface Props {
-  onLogin: (user: { username: string }) => void;
-}
 
-
-const LandingPage: React.FC<Props> = ({ onLogin }) => {
+const LandingPage: React.FC = () => {
   const [modalType, setModalType] = useState<'login' | 'signup' | null>(null);
   const [credentials, setCredentials] = useState<Credentials>({
     username: '',
@@ -33,8 +29,10 @@ const LandingPage: React.FC<Props> = ({ onLogin }) => {
   })
 
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
   const navigate = useNavigate();
+  const { login: authLogin, isAuthenticated, user } = useAuth();
 
   const closeModal = () => {
     setModalType(null);
@@ -49,24 +47,31 @@ const LandingPage: React.FC<Props> = ({ onLogin }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setLoading(true);
     try {
       const response =
         modalType === 'login' ? await login(credentials) : await signup(credentials);
-      const token = response.data.access_token;
-      localStorage.setItem('token', token);
-      const decoded = jwtDecode<{ username: string }>(token);
-      onLogin({ username: decoded.username });
+      const { access_token, user: userData } = response.data
+      localStorage.setItem('token', access_token);
+      authLogin(userData)
       closeModal();
-      navigate('/home');
+      if (userData.role === 'admin') {
+        navigate('/admin')
+      } else {
+        navigate('/dashboard');
+      }
     } catch (err: any) {
       setError(err.response?.data?.message || 'Something went wrong');
+    } finally {
+      setLoading(false)
     }
   };
-
   useEffect(() => {
-    const logged = Boolean(localStorage.getItem('token'));
-    if (logged) navigate('/home')
-  }, [])
+    if (isAuthenticated && user) {
+      const redirectPath = user.role === 'admin' ? '/admin' : '/dashboard'
+      navigate(redirectPath);
+    }
+  }, [isAuthenticated, user, navigate])
 
   useEffect(() => {
     const hero = document.querySelector('.hero') as HTMLElement;
@@ -163,25 +168,74 @@ const LandingPage: React.FC<Props> = ({ onLogin }) => {
         </div>
       </motion.section>
 
+      {/* {modalType && ( */}
+      {/*   <div className="modal" onClick={closeModal}> */}
+      {/*     <motion.div */}
+      {/*       className="modal-content" */}
+      {/*       onClick={(e) => e.stopPropagation()} */}
+      {/*       initial={{ scale: 0.9, opacity: 0 }} */}
+      {/*       animate={{ scale: 1, opacity: 1 }} */}
+      {/*       style={{ */}
+      {/*         background: darkMode ? '#1a1a1a' : '#ffffff', */}
+      {/*         color: darkMode ? '#f5f5f5' : '#022c22', */}
+      {/*         borderRadius: '12px', */}
+      {/*         padding: '2rem', */}
+      {/*         boxShadow: '0 10px 30px rgba(0, 0, 0, 0.2)', */}
+      {/*         backdropFilter: 'blur(10px)' */}
+      {/*       }} */}
+      {/*     > */}
+      {/*       <span className="close" onClick={closeModal}> */}
+      {/*         &times; */}
+      {/*       </span> */}
+      {/*       <div className="form-container"> */}
+      {/*         <h2>{modalType === 'login' ? 'Login' : 'Sign Up'}</h2> */}
+      {/*         {error && <p style={{ color: 'red' }}>{error}</p>} */}
+      {/*         <form onSubmit={handleSubmit}> */}
+      {/*           <input */}
+      {/*             type="text" */}
+      {/*             placeholder="Username" */}
+      {/*             value={credentials.username} */}
+      {/*             onChange={(e) => setCredentials({ ...credentials, username: e.target.value })} */}
+      {/*             required */}
+      {/*           /> */}
+      {/*           <input */}
+      {/*             type="password" */}
+      {/*             placeholder="Password" */}
+      {/*             value={credentials.password} */}
+      {/*             onChange={(e) => setCredentials({ ...credentials, password: e.target.value })} */}
+      {/*             required */}
+      {/*           /> */}
+      {/*           <select */}
+      {/*             value={credentials.role} */}
+      {/*             onChange={(e) => { setCredentials({ ...credentials, role: e.target.value as 'user' | 'admin' }) }} */}
+      {/*           > <option value="user">User</option> */}
+      {/*             <option value="admin">Admin</option> */}
+      {/*           </select> */}
+      {/*           <button */}
+      {/*             type="submit" */}
+      {/*             style={{ */}
+      {/*               backgroundColor: '#014d4d', */}
+      {/*               color: '#ffffff', */}
+      {/*               padding: '0.5rem 1rem', */}
+      {/*               border: 'none', */}
+      {/*               borderRadius: '6px', */}
+      {/*               marginTop: '1rem', */}
+      {/*               display: 'flex', */}
+      {/*               alignItems: 'center', */}
+      {/*               gap: '6px' */}
+      {/*             }} */}
+      {/*           > */}
+      {/*             {modalType === 'login' ? <LogIn size={16} /> : <UserPlus size={16} />} */}
+      {/*             {modalType === 'login' ? 'Login' : 'Sign Up'} */}
+      {/*           </button> */}
+      {/*         </form> */}
+      {/*       </div> */}
+      {/*     </motion.div> */}
+      {/*   </div> */}
       {modalType && (
         <div className="modal" onClick={closeModal}>
-          <motion.div
-            className="modal-content"
-            onClick={(e) => e.stopPropagation()}
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            style={{
-              background: darkMode ? '#1a1a1a' : '#ffffff',
-              color: darkMode ? '#f5f5f5' : '#022c22',
-              borderRadius: '12px',
-              padding: '2rem',
-              boxShadow: '0 10px 30px rgba(0, 0, 0, 0.2)',
-              backdropFilter: 'blur(10px)'
-            }}
-          >
-            <span className="close" onClick={closeModal}>
-              &times;
-            </span>
+          <motion.div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <span className="close" onClick={closeModal}>&times;</span>
             <div className="form-container">
               <h2>{modalType === 'login' ? 'Login' : 'Sign Up'}</h2>
               {error && <p style={{ color: 'red' }}>{error}</p>}
@@ -192,6 +246,7 @@ const LandingPage: React.FC<Props> = ({ onLogin }) => {
                   value={credentials.username}
                   onChange={(e) => setCredentials({ ...credentials, username: e.target.value })}
                   required
+                  disabled={loading}
                 />
                 <input
                   type="password"
@@ -199,29 +254,23 @@ const LandingPage: React.FC<Props> = ({ onLogin }) => {
                   value={credentials.password}
                   onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
                   required
+                  disabled={loading}
                 />
                 <select
                   value={credentials.role}
-                  onChange={(e) => { setCredentials({ ...credentials, role: e.target.value as 'user' | 'admin' }) }}
-                > <option value="user">User</option>
+                  onChange={(e) => setCredentials({ ...credentials, role: e.target.value as 'user' | 'admin' })}
+                  disabled={loading}
+                >
+                  <option value="user">User</option>
                   <option value="admin">Admin</option>
                 </select>
-                <button
-                  type="submit"
-                  style={{
-                    backgroundColor: '#014d4d',
-                    color: '#ffffff',
-                    padding: '0.5rem 1rem',
-                    border: 'none',
-                    borderRadius: '6px',
-                    marginTop: '1rem',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px'
-                  }}
-                >
-                  {modalType === 'login' ? <LogIn size={16} /> : <UserPlus size={16} />}
-                  {modalType === 'login' ? 'Login' : 'Sign Up'}
+                <button type="submit" disabled={loading}>
+                  {loading ? 'Loading...' : (
+                    <>
+                      {modalType === 'login' ? <LogIn size={16} /> : <UserPlus size={16} />}
+                      {modalType === 'login' ? 'Login' : 'Sign Up'}
+                    </>
+                  )}
                 </button>
               </form>
             </div>

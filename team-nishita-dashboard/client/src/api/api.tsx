@@ -24,7 +24,37 @@ export interface Credentials {
   role: 'user' | 'admin';
 }
 
-export const login = (credentials: Credentials) => api.post('/login', credentials);
-export const signup = (credentials: Credentials) => api.post('/register', credentials);
+export interface User {
+  username: string;
+  role: 'user' | 'admin';
+};
 
+
+export interface AuthResponse {
+  access_token: string;
+  user: User;
+};
+
+export const login = (credentials: Credentials): Promise<{ data: AuthResponse }> => api.post('/login', credentials);
+export const signup = (credentials: Credentials): Promise<{ data: AuthResponse }> => api.post('/register', credentials);
+
+export const getCurrentUser = (): User | null => {
+  const token = localStorage.getItem('token');
+  if (!token) return null;
+
+  try {
+    const decoded = JSON.parse(atob(token.split('.')[1]));
+    return {
+      username: decoded.username,
+      role: decoded.role
+    };
+  } catch {
+    return null;
+  }
+};
+
+export const logout = () => {
+  localStorage.removeItem('token');
+  window.location.href = '/';
+};
 export default api;
