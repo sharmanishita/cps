@@ -1,11 +1,11 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
-import { getCurrentUser, logout } from '../api'
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import type { ReactNode as ReactNode } from 'react'
+import { getCurrentUser, logout as apiLogout } from '../api/api';
 
 interface User {
   username: string;
   role: 'user' | 'admin';
-};
-
+}
 
 interface AuthContextType {
   user: User | null;
@@ -14,21 +14,21 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isAdmin: boolean;
   isUser: boolean;
+  loading: boolean;
 }
-
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const useAuth = () => {
-  const ctx = useContext(AuthContext);
-  if (!ctx) {
+export const useAuth = (): AuthContextType => {
+  const context = useContext(AuthContext);
+  if (!context) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
-  return ctx;
-}
+  return context;
+};
 
 interface AuthProviderProps {
-  childeren: ReactNode;
+  children: ReactNode;
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
@@ -43,24 +43,30 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const handleLogin = (userData: User) => {
     setUser(userData);
-  }
+  };
 
   const handleLogout = () => {
     setUser(null);
-    logout();
-  }
+    apiLogout();
+  };
 
-  const value = {
+  const value: AuthContextType = {
     user,
     login: handleLogin,
     logout: handleLogout,
     isAuthenticated: !!user,
     isAdmin: user?.role === 'admin',
-    isUser: user?.role === 'user'
-  }
+    isUser: user?.role === 'user',
+    loading
+  };
 
   if (loading) {
-    return <div>Loading...</div>
+    return (
+      <div className="loading-container">
+        <div className="loading-spinner">Loading...</div>
+      </div>
+    );
   }
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
-}
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+};

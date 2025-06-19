@@ -4,6 +4,7 @@ import helmet from 'helmet'
 import { errorHandler } from './middleware/errorHandler.js'
 import mongoose from 'mongoose';
 import { authRouter } from './routes/auth.js'
+import { requireRole, requireAuth } from './middleware/roleMiddleware.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;

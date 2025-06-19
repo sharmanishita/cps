@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
@@ -14,7 +13,15 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   requiredRole,
   redirectTo = '/'
 }) => {
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="loading-container">
+        <div className="loading-spinner">Loading...</div>
+      </div>
+    );
+  }
 
   if (!isAuthenticated) {
     return <Navigate to={redirectTo} replace />;
