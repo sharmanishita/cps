@@ -1,4 +1,3 @@
-// src/models/userModel.ts
 import { Schema, model } from 'mongoose';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto'; // Import Node.js crypto library
@@ -37,20 +36,21 @@ userSchema.pre<IUser>('save', async function (next) {
 });
 
 // --- NEW METHOD TO GENERATE RESET TOKEN ---
-userSchema.methods.getResetPasswordToken = function() {
-    // Generate token
+userSchema.methods.getResetPasswordToken = function(): string {
+    // Generate a random token
     const resetToken = crypto.randomBytes(20).toString('hex');
 
-    // Hash token and set to resetPasswordToken field
+    // Hash the token and set it on the user model
     this.resetPasswordToken = crypto
         .createHash('sha256')
         .update(resetToken)
         .digest('hex');
 
-    // Set expiration time (e.g., 15 minutes)
+    // Set an expiration time (e.g., 15 minutes from now)
     this.resetPasswordExpire = Date.now() + 15 * 60 * 1000;
 
-    return resetToken; // Return the un-hashed token to be sent via email
+    // Return the un-hashed token to be sent to the user via email
+    return resetToken;
 };
 
 export default model<IUser>('User', userSchema);

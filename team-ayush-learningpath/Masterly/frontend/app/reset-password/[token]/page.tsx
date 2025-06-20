@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -10,13 +9,20 @@ import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { BookOpen, Lock, Eye, EyeOff, AlertCircle, CheckCircle, X } from "lucide-react"
 import Link from "next/link"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useRouter, useParams } from "next/navigation" // <-- Import useParams
 import { ThemeToggle } from "@/components/theme-toggle"
+import axios from "axios"
+
+// A helper instance of Axios configured to talk to our backend
+const api = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  withCredentials: true,
+});
 
 export default function ResetPasswordPage() {
   const router = useRouter()
-  const searchParams = useSearchParams()
-  const token = searchParams.get("token")
+  const params = useParams(); // <-- Use useParams hook
+  const token = params.token as string; // <-- Get token from route parameters
 
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
@@ -37,7 +43,6 @@ export default function ResetPasswordPage() {
       number: /\d/.test(password),
       special: /[!@#$%^&*(),.?":{}|<>]/.test(password),
     }
-
     strength = Object.values(checks).filter(Boolean).length
     return { strength: (strength / 5) * 100, checks }
   }
@@ -54,7 +59,6 @@ export default function ResetPasswordPage() {
       setIsLoading(false)
       return
     }
-
     if (passwordStrength.strength < 60) {
       setError("Please choose a stronger password")
       setIsLoading(false)
@@ -62,16 +66,18 @@ export default function ResetPasswordPage() {
     }
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500))
+      // --- This is now a real API call to your backend ---
+      await api.put(`/auth/reset-password/${token}`, {
+        password: formData.password,
+      });
       setIsSuccess(true)
 
       // Redirect to login after 3 seconds
       setTimeout(() => {
         router.push("/login")
       }, 3000)
-    } catch (err) {
-      setError("Failed to reset password. Please try again.")
+    } catch (err: any) {
+      setError(err.response?.data?.message || "Failed to reset password. The link may be expired.")
     } finally {
       setIsLoading(false)
     }
