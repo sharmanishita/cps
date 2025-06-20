@@ -2,36 +2,42 @@ import { Router } from 'express';
 import passport from 'passport';
 import jwt from 'jsonwebtoken';
 import {
-    registerUser, loginUser, logoutUser, getMyProfile, changePassword,
+    registerUser,
+    loginUser,
+    getMyProfile,
+    changePassword,
+    logoutUser,
     forgotPassword, // <-- New import
     resetPassword   // <-- New import
-} from '../controllers/authController';import { protect } from '../middlewares/authMiddleware';
+} from '../controllers/authController';
+import { protect } from '../middlewares/authMiddleware';
 import {
-    registerRules, loginRules, changePasswordRules, validate,
+    registerRules,
+    loginRules,
+    changePasswordRules,
+    validate,
     forgotPasswordRules, // <-- New import
     resetPasswordRules   // <-- New import
-} from '../validators/authValidator';import { IUser } from '../types';
+} from '../validators/authValidator';
+import { IUser } from '../types';
 
 const router = Router();
 
-// --- Standard Email/Password Routes ---
+// --- Standard Email/Password & Profile Routes ---
 router.post('/register', registerRules(), validate, registerUser);
 router.post('/login', loginRules(), validate, loginUser);
 router.post('/logout', protect, logoutUser);
 router.get('/me', protect, getMyProfile);
 router.put('/changepassword', protect, changePasswordRules(), validate, changePassword);
 
+// --- NEW PASSWORD RESET ROUTES ---
 router.post('/forgot-password', forgotPasswordRules(), validate, forgotPassword);
 router.put('/reset-password/:resetToken', resetPasswordRules(), validate, resetPassword);
 
-// --- OAuth 2.0 Google Routes ---
 
-// When user clicks "Continue with Google", frontend redirects to this URL.
-router.get('/google', passport.authenticate('google', {
-    scope: ['profile', 'email']
-}));
+// --- Existing OAuth Routes ---
+router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 
-// Google redirects back here after the user grants permission.
 router.get(
     '/google/callback',
     passport.authenticate('google', {

@@ -1,8 +1,11 @@
+// src/controllers/authController.ts
 import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
 import User from '../models/userModel';
 import { IUser } from '../types';
+import { sendEmail } from '../utils/sendEmail'; // <-- THIS IS THE MISSING IMPORT
 
 const generateTokenAndSetCookie = (res: Response, userId: string) => {
     const token = jwt.sign({ id: userId }, process.env.JWT_SECRET as string, { expiresIn: '1d' });
@@ -19,19 +22,11 @@ export const registerUser = async (req: Request, res: Response) => {
     try {
         const userExists = await User.findOne({ email });
         if (userExists) {
-            return res.status(400).json({ message: 'User with this email already exists.' });
+            return res.status(400).json({ message: 'User already exists' });
         }
-
         const user = await User.create({ firstName, lastName, email, password });
         generateTokenAndSetCookie(res, user._id.toString());
-
-        res.status(201).json({
-            _id: user._id,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            email: user.email,
-            role: user.role,
-        });
+        res.status(201).json({ _id: user._id, firstName: user.firstName, lastName: user.lastName, email: user.email, role: user.role });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server error' });
@@ -46,13 +41,7 @@ export const loginUser = async (req: Request, res: Response) => {
             return res.status(401).json({ message: 'Invalid credentials' });
         }
         generateTokenAndSetCookie(res, user._id.toString());
-        res.status(200).json({
-            _id: user._id,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            email: user.email,
-            role: user.role,
-        });
+        res.status(200).json({ _id: user._id, firstName: user.firstName, lastName: user.lastName, email: user.email, role: user.role });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server error' });
@@ -84,91 +73,50 @@ export const changePassword = async (req: Request, res: Response) => {
     }
 };
 
-
-/**
- * @desc    Handle forgot password request
- * @route   POST /api/auth/forgot-password
- */
 export const forgotPassword = async (req: Request, res: Response) => {
     try {
         const user = await User.findOne({ email: req.body.email });
-
-        // We send a success message even if the user isn't found
-        // to prevent attackers from discovering which emails are registered.
         if (!user) {
-            return res.status(200).json({ message: 'Email sent if user exists.' });
+            return res.status(200).json({ message: 'If an account with that email exists, a reset link has been sent.' });
         }
-
-        // Get reset token from the user model method
         const resetToken = user.getResetPasswordToken();
-        await user.save({ validateBeforeSave: false }); // Save the user with the new token fields
-
-        // Create reset URL
+        await user.save({ validateBeforeSave: false });
         const resetUrl = `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
-
-        const message = `You are receiving this email because you (or someone else) has requested the reset of a password. Please make a PUT request to: \n\n ${resetUrl}`;
-
+        const emailMessage = `You are receiving this email because you (or someone else) has requested a password reset. Please click the link below to reset your password. This link will expire in 15 minutes.\n\n${resetUrl}`;
         await sendEmail({
             to: user.email,
-            subject: 'Password Reset Token',
-            text: message,
-            html: `<p>Please click the link to reset your password: <a href="${resetUrl}">${resetUrl}</a></p>`
+            subject: 'Password Reset Request',
+            text: emailMessage,
+            html: `<p>Please click the link to reset your password: <a href="${resetUrl}" target="_blank">${resetUrl}</a></p>`
         });
-
-        res.status(200).json({ message: 'Email sent' });
-
+        res.status(200).json({ message: 'Email sent.' });
     } catch (error) {
-        // Clear token fields if there was an error
-        // const user = await User.findOne({ email: req.body.email });
-        // if (user) {
-        //     user.resetPasswordToken = undefined;
-        //     user.resetPasswordExpire = undefined;
-        //     await user.save({ validateBeforeSave: false });
-        // }
-        console.error(error);
-        res.status(500).json({ message: 'Server error' });
+        console.error('FORGOT PASSWORD ERROR:', error);
+        res.status(500).json({ message: 'Server error while processing request.' });
     }
 };
 
-/**
- * @desc    Handle the actual password reset
- * @route   PUT /api/auth/reset-password/:resetToken
- */
 export const resetPassword = async (req: Request, res: Response) => {
     try {
-        // Get hashed token
         const resetPasswordToken = crypto
             .createHash('sha256')
             .update(req.params.resetToken)
             .digest('hex');
-
         const user = await User.findOne({
             resetPasswordToken,
             resetPasswordExpire: { $gt: Date.now() },
         });
-
         if (!user) {
             return res.status(400).json({ message: 'Invalid or expired token.' });
         }
-
-        // Set new password
         user.password = req.body.password;
-        // Clear the reset token fields
         user.resetPasswordToken = undefined;
         user.resetPasswordExpire = undefined;
         await user.save();
-
-        // Generate a new login token and cookie for immediate login
         generateTokenAndSetCookie(res, user._id.toString());
-
-        res.status(200).json({
-             _id: user._id,
-             firstName: user.firstName,
-             email: user.email,
-        });
-
+        res.status(200).json({ message: 'Password reset successful.' });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Server error' });
+        console.error('RESET PASSWORD ERROR:', error);
+        res.status(500).json({ message: 'Server error while resetting password.' });
     }
 };

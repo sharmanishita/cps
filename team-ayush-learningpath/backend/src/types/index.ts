@@ -57,8 +57,9 @@ export interface IUser extends Document {
         masteryLevel: number;
         quizAttempts: IQuizAttempt[];
     }[];
-    resetPasswordToken?: string; // <-- New optional field
-    resetPasswordExpire?: Date; // <-- New optional field
+    // --- NEW FIELDS AND METHOD ---
+    resetPasswordToken?: string;
+    resetPasswordExpire?: Date;
     isModified: (field: string) => boolean;
-    getResetPasswordToken: () => string; // <-- New method
+    getResetPasswordToken: () => string;
 }
