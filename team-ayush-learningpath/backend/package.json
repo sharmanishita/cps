@@ -8,19 +8,20 @@
     "dev": "ts-node-dev --respawn --transpile-only src/app.ts",
     "start": "node dist/app.js"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Your Name",
+  "license": "MIT",
   "dependencies": {
     "axios": "^1.7.2",
     "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
-    "dotenv": "^16.4.5",
-    "express": "^4.19.2",
+    "dotenv": "^16.5.0",
+    "express": "^4.21.2",
     "express-validator": "^7.1.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.4.1",
     "nodemailer": "^7.0.3",
+    "openai": "^4.104.0",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0"
   },
@@ -28,13 +29,21 @@
     "@types/bcryptjs": "^2.4.6",
     "@types/cookie-parser": "^1.4.7",
     "@types/cors": "^2.8.17",
-    "@types/express": "^4.17.21",
+    "@types/express": "^4.17.23",
     "@types/jsonwebtoken": "^9.0.6",
-    "@types/node": "^20.14.2",
+    "@types/node": "^20.19.1",
     "@types/nodemailer": "^6.4.17",
     "@types/passport": "^1.0.17",
     "@types/passport-google-oauth20": "^2.0.16",
+    "nodemon": "^3.0.2",
+    "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
-    "typescript": "^5.4.5"
-  }
+    "typescript": "^5.8.3"
+  },
+  "keywords": [
+    "nodejs",
+    "express",
+    "openai",
+    "help-system"
+  ]
 }

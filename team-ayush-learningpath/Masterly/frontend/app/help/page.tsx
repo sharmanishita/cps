@@ -8,22 +8,46 @@ import { Textarea } from "@/components/ui/textarea"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { useToast } from "@/hooks/use-toast"
-import { HelpCircle, MessageCircle, Mail, Phone, BookOpen, Video, Search, ExternalLink, Send } from "lucide-react"
+import { HelpCircle, MessageCircle, Mail, Phone, BookOpen, Video, Search, ExternalLink, Send, Bot } from "lucide-react"
+
+// Type definitions
+interface ChatMessage {
+  id: number;
+  sender: string;
+  message: string;
+  time: string;
+}
+
+interface SearchResult {
+  id: number;
+  title: string;
+  content: string;
+  type: string;
+}
+
+interface ContactForm {
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+}
 
 export default function HelpPage() {
   const { toast } = useToast()
-  const [searchQuery, setSearchQuery] = useState("")
-  const [chatOpen, setChatOpen] = useState(false)
-  const [chatMessages, setChatMessages] = useState([
+  const [searchQuery, setSearchQuery] = useState<string>("")
+  const [chatOpen, setChatOpen] = useState<boolean>(false)
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
     { id: 1, sender: "support", message: "Hi! How can I help you today?", time: "Just now" },
   ])
-  const [newMessage, setNewMessage] = useState("")
-  const [contactForm, setContactForm] = useState({
+  const [newMessage, setNewMessage] = useState<string>("")
+  const [contactForm, setContactForm] = useState<ContactForm>({
     name: "",
     email: "",
     subject: "",
     message: "",
   })
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([])
+  const [isSearching, setIsSearching] = useState<boolean>(false)
 
   const faqs = [
     {
@@ -58,16 +82,100 @@ export default function HelpPage() {
     },
   ]
 
-  const handleSearch = () => {
-    if (searchQuery.trim()) {
-      toast({
-        title: "Search Results",
-        description: `Found ${Math.floor(Math.random() * 10) + 1} articles related to "${searchQuery}"`,
-      })
+  // Simple chatbot knowledge base
+  const knowledgeBase = {
+    "progress": "You can track your learning progress through the Progress tab in your dashboard. It shows detailed analytics including concepts mastered, time spent, quiz scores, and skill development across different areas.",
+    "learning path": "You can modify your learning path at any time by going to the Learning Paths section. You can add new courses, remove existing ones, or completely switch to a different path based on your goals.",
+    "mock test": "Mock tests simulate real interview conditions with timed questions across different difficulty levels. After completion, you'll receive detailed feedback, explanations for each question, and recommendations for improvement.",
+    "certificate": "Once you complete a course or learning path, you can download your certificate from the Achievements section. Certificates include verification codes and can be shared on professional networks.",
+    "achievements": "Achievements are based on various metrics like study streaks, quiz performance, course completions, and skill improvements. Each achievement has specific criteria that you can view in the Progress section.",
+    "daily goal": "Missing your daily goal won't affect your overall progress. The system will adjust your recommendations and may suggest shorter sessions to help you get back on track. Consistency is more important than perfection!",
+    "account": "You can manage your account settings by clicking on your profile picture in the top right corner and selecting 'Account Settings'. Here you can update your personal information, change your password, and manage notifications.",
+    "courses": "Browse available courses in the Courses section. You can filter by difficulty, topic, or duration. Each course includes video lessons, practice exercises, and quizzes to test your understanding.",
+    "support": "Our support team is available Monday-Friday 9AM-6PM EST, Saturday 10AM-4PM EST. You can reach us via live chat, email at support@masterly.com, or phone at +1 (555) 123-HELP.",
+    "subscription": "You can view and manage your subscription in Account Settings > Billing. We offer monthly and yearly plans with different features. You can upgrade, downgrade, or cancel at any time.",
+    "mobile app": "Yes! Masterly is developing to available on both iOS and Android. Download the app from your device's app store to learn on the go with offline content support.",
+    "reset password": "To reset your password, click 'Forgot Password' on the login page and enter your email. You'll receive a reset link within a few minutes. If you don't see it, check your spam folder.",
+    "notifications": "You can customize your notification preferences in Account Settings > Notifications. Choose from email, push, or in-app notifications for study reminders, course updates, achievement unlocks, and more.",
+    "offline": "Premium users can download courses for offline viewing in the mobile app. Simply tap the download icon next to any lesson. Downloaded content is available for 30 days and automatically updates when you're online.",
+    "ai tutor": "Our AI tutor provides personalized explanations, answers questions about course content, and adapts to your learning style. Access it from any lesson by clicking the AI Tutor button. It's available 24/7 for Premium users.",
+    "study groups": "Join study groups to learn with peers, share resources, and participate in discussions. Create your own group or join existing ones based on topics or goals. Find them in the Community section.",
+    "export data": "You can export your learning data, progress reports, and certificates from Account Settings > Data Export. Choose from PDF, CSV, or JSON formats. This includes all your course history, achievements, and study statistics.",
+    "quiz test": "Quiz tests are quick knowledge checks within your courses to test your understanding of specific topics. They're shorter than mock tests and focus on individual concepts. You can retake quizzes anytime to reinforce your learning.",
+    "masterly": "masterly is a smart ai learning path that guide,train,test you and your knowledge. Its your learning companion"
+  }
+
+  const getBotResponse = (query: string): string => {
+  const lowerQuery = query.toLowerCase()
+  
+  // Define keyword mappings with multiple aliases
+  const keywordMappings = {
+    "ai tutor": ["tutor", "ai tutor", "ai-tutor", "mentor", "teacher", "guide"],
+    "progress": ["progress", "track", "tracking", "analytics", "stats"],
+    "learning path": ["learning path", "path", "course path", "curriculum"],
+    "mock test": ["mock test", "test", "quiz", "exam", "assessment"],
+    "certificate": ["certificate", "cert", "certification", "diploma"],
+    "achievements": ["achievements", "achievement", "badge", "badges", "reward"],
+    "daily goal": ["daily goal", "goal", "target", "streak"],
+    "account": ["account", "profile", "settings", "my account"],
+    "courses": ["courses", "course", "lessons", "content"],
+    "support": ["support", "help", "assistance", "contact"],
+    "subscription": ["subscription", "plan", "billing", "payment"],
+    "mobile app": ["mobile app", "app", "android", "ios", "phone"],
+    "reset password": ["reset password", "forgot password", "password reset"],
+    "notifications": ["notifications", "alerts", "reminders"],
+    "offline": ["offline", "download", "sync"],
+    "study groups": ["study groups", "group", "community", "peers"],
+    "export data": ["export data", "download data", "backup"],
+    "masterly":["masterly", "this website","webapplication"]
+  }
+  
+  // Find matching keywords using aliases
+  for (const [originalKey, aliases] of Object.entries(keywordMappings)) {
+    if (aliases.some(alias => lowerQuery.includes(alias))) {
+      return knowledgeBase[originalKey as keyof typeof knowledgeBase]
     }
   }
 
-  const handleSendMessage = () => {
+  // Check for common greeting patterns
+  if (lowerQuery.includes('hello') || lowerQuery.includes('hi') || lowerQuery.includes('hey')) {
+    return "Hello! I'm here to help you with any questions about Masterly. You can ask me about courses, progress tracking, certificates, or any other features."
+  }
+
+  if (lowerQuery.includes('help')) {
+    return "I'd be happy to help! You can ask me about:\n• Tracking your progress\n• Managing learning paths\n• Taking mock tests\n• Downloading certificates\n• Account settings\n• And much more!"
+  }
+
+  // Default response for unrecognized queries
+  return "I'm not sure about that specific question, but I can help you with information about courses, progress tracking, certificates, mock tests, and account management. Could you please rephrase your question or ask about one of these topics?"
+}
+
+  const handleSearch = async (): Promise<void> => {
+    if (!searchQuery.trim()) return
+
+    setIsSearching(true)
+    
+    // Simulate API delay
+    setTimeout(() => {
+      const botResponse = getBotResponse(searchQuery)
+      
+      setSearchResults([{
+        id: 1,
+        title: "Chatbot Response",
+        content: botResponse,
+        type: "bot"
+      } as SearchResult])
+      
+      setIsSearching(false)
+      
+      toast({
+        title: "Search Complete",
+        description: "Found relevant information for your query!",
+      })
+    }, 1000)
+  }
+
+  const handleSendMessage = (): void => {
     if (newMessage.trim()) {
       const userMessage = {
         id: chatMessages.length + 1,
@@ -77,13 +185,14 @@ export default function HelpPage() {
       }
       setChatMessages([...chatMessages, userMessage])
 
-      // Simulate support response
+      // Get bot response
+      const botResponse = getBotResponse(newMessage)
+      
       setTimeout(() => {
         const supportResponse = {
           id: chatMessages.length + 2,
           sender: "support",
-          message:
-            "Thanks for your message! I'm looking into that for you. Is there anything specific you'd like me to help you with?",
+          message: botResponse,
           time: "Just now",
         }
         setChatMessages((prev) => [...prev, supportResponse])
@@ -93,7 +202,7 @@ export default function HelpPage() {
     }
   }
 
-  const handleContactSubmit = () => {
+  const handleContactSubmit = (): void => {
     if (contactForm.name && contactForm.email && contactForm.subject && contactForm.message) {
       toast({
         title: "Message Sent",
@@ -109,21 +218,19 @@ export default function HelpPage() {
     }
   }
 
-  const openUserGuide = () => {
+  const openUserGuide = (): void => {
     toast({
       title: "Opening User Guide",
       description: "The comprehensive user guide is opening in a new tab.",
     })
-    // In a real app, this would open a new tab with the user guide
     window.open("#", "_blank")
   }
 
-  const openVideoTutorials = () => {
+  const openVideoTutorials = (): void => {
     toast({
       title: "Opening Video Tutorials",
       description: "Video tutorial library is opening in a new tab.",
     })
-    // In a real app, this would open a new tab with video tutorials
     window.open("#", "_blank")
   }
 
@@ -187,19 +294,79 @@ export default function HelpPage() {
             </Card>
           </div>
 
-          {/* Search */}
+          {/* Search with Chatbot */}
           <Card className="dark:bg-gray-800/80 dark:border-gray-700">
-            <CardContent className="p-6">
+            <CardHeader>
+              <CardTitle className="flex items-center text-gray-900 dark:text-white">
+                <Bot className="w-5 h-5 mr-2 text-blue-600" />
+                AI Help Assistant
+              </CardTitle>
+              <CardDescription className="text-gray-600 dark:text-gray-300">
+                Ask me anything about Masterly - I'm here to help!
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
               <div className="flex items-center space-x-2">
                 <Search className="w-5 h-5 text-gray-400" />
                 <Input
-                  placeholder="Search for help articles, tutorials, or common issues..."
+                  placeholder="Ask me about courses, progress, certificates, or any other questions..."
                   className="flex-1"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyPress={(e) => e.key === "Enter" && handleSearch()}
                 />
-                <Button onClick={handleSearch}>Search</Button>
+                <Button onClick={handleSearch} disabled={isSearching}>
+                  {isSearching ? "Thinking..." : "Ask"}
+                </Button>
+              </div>
+              
+              {/* Search Results */}
+              {searchResults.length > 0 && (
+                <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                  <div className="flex items-start space-x-3">
+                    <Bot className="w-6 h-6 text-blue-600 mt-1 flex-shrink-0" />
+                    <div className="flex-1">
+                      <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2">AI Assistant</h4>
+                      <p className="text-blue-800 dark:text-blue-200 whitespace-pre-line">
+                        {searchResults[0]?.content}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Quick suggestions */}
+              <div className="flex flex-wrap gap-2 mt-4">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setSearchQuery("How do I track my progress?")
+                    handleSearch()
+                  }}
+                >
+                  Track Progress
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setSearchQuery("How do mock tests work?")
+                    handleSearch()
+                  }}
+                >
+                  Mock Tests
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setSearchQuery("How to download certificates?")
+                    handleSearch()
+                  }}
+                >
+                  Certificates
+                </Button>
               </div>
             </CardContent>
           </Card>
@@ -313,7 +480,7 @@ export default function HelpPage() {
               <CardContent className="space-y-3">
                 <div className="flex items-center space-x-3">
                   <Mail className="w-4 h-4 text-blue-600" />
-                  <span className="text-gray-900 dark:text-white">support@Masterly.com</span>
+                  <span className="text-gray-900 dark:text-white">support@masterly.com</span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <Phone className="w-4 h-4 text-green-600" />
@@ -334,8 +501,8 @@ export default function HelpPage() {
             <DialogHeader>
               <DialogTitle className="flex items-center justify-between">
                 <div className="flex items-center">
-                  <MessageCircle className="w-5 h-5 mr-2" />
-                  Live Support Chat
+                  <Bot className="w-5 h-5 mr-2 text-blue-600" />
+                  AI Support Chat
                 </div>
                 <div className="flex items-center space-x-1">
                   <div className="w-2 h-2 bg-green-500 rounded-full"></div>
@@ -354,7 +521,7 @@ export default function HelpPage() {
                         msg.sender === "user" ? "bg-blue-600 text-white" : "bg-white dark:bg-gray-800 border"
                       }`}
                     >
-                      <p className="text-sm">{msg.message}</p>
+                      <p className="text-sm whitespace-pre-line">{msg.message}</p>
                       <p className={`text-xs mt-1 ${msg.sender === "user" ? "text-blue-100" : "text-gray-500"}`}>
                         {msg.time}
                       </p>
