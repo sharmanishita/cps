@@ -1,9 +1,13 @@
-import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import clsx from "clsx";
+import React from 'react';
+import { motion } from 'framer-motion';
+import { useAuth } from '../contexts/AuthContext';
+import { useTheme } from '../contexts/ThemeContext';
+import Navbar from './Navbar';
+import { Users, BarChart3, FileText, Settings, Activity } from 'lucide-react';
 
-const App: React.FC = () => {
-  const [darkMode, setDarkMode] = useState(true);
+const AdminHome: React.FC = () => {
+  const { user } = useAuth();
+  const { darkMode } = useTheme();
 
   const getAnimationProps = (delay = 0) => ({
     initial: { opacity: 0, y: 40 },
@@ -11,164 +15,110 @@ const App: React.FC = () => {
     transition: {
       delay,
       duration: 0.6,
-      type: "spring",
+      type: "spring" as const,
     },
   });
 
+  const stats = [
+    { icon: <Users size={24} />, label: "Total Users", value: "1,240" },
+    { icon: <Activity size={24} />, label: "Active Sessions", value: "342" },
+    { icon: <FileText size={24} />, label: "Reports Generated", value: "87" },
+    { icon: <BarChart3 size={24} />, label: "Completion Rate", value: "78%" },
+  ];
+
+  const recentActivities = [
+    "New user 'jdoe' registered",
+    "System backup completed successfully",
+    "3 new messages received",
+    "Course 'React Basics' updated",
+    "Weekly report generated"
+  ];
+
   return (
-    <AnimatePresence mode="wait">
-      <motion.div
-        key={darkMode ? "dark" : "light"}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.4 }}
-        className={clsx(
-          "flex h-screen font-sans transition-colors duration-500",
-          darkMode
-            ? "bg-gradient-to-br from-black via-[#0d0b1e] to-black text-white"
-            : "bg-gradient-to-br from-white via-[#ccfdef] to-white text-gray-800"
-        )}
-      >
-        {/* Sidebar */}
-        <aside className="w-72 p-6 flex flex-col">
-          <motion.div
-            {...getAnimationProps(0)}
-            className={clsx(
-              "rounded-2xl p-6 backdrop-blur-lg border shadow-xl flex flex-col h-full transition-all duration-500",
-              darkMode
-                ? "bg-white/10 border-purple-900"
-                : "bg-white/80 border-teal-200"
-            )}
-          >
-            <motion.h1
-              {...getAnimationProps(0.1)}
-              className={clsx(
-                "text-4xl font-bold mb-10",
-                darkMode ? "text-white" : "text-teal-700"
-              )}
-            >
-              Admin Panel
-            </motion.h1>
+    <div className={`page-container ${darkMode ? 'dark' : 'light'}`}>
+      <Navbar />
 
-            <nav
-              className={clsx(
-                "flex flex-col gap-4 text-[15px] mb-auto",
-                darkMode ? "text-purple-300" : "text-teal-700"
-              )}
-            >
-              {[
-                ["🏠", "Dashboard"],
-                ["👥", "User Management"],
-                ["📊", "Analytics"],
-                ["⚙", "System Settings"],
-                ["📨", "Messages"],
-                ["🧾", "Reports"],
-              ].map(([icon, label], i) => (
-                <motion.a
-                  key={label}
-                  href="#"
-                  {...getAnimationProps(i * 0.1)}
-                  className="flex items-center gap-3 hover:text-white hover:font-semibold cursor-pointer transition-all"
-                >
-                  <span className="text-lg">{icon}</span> {label}
-                </motion.a>
-              ))}
-            </nav>
-
-            <div
-              className={clsx(
-                "pt-6 border-t space-y-4",
-                darkMode ? "border-purple-800 text-purple-300" : "border-teal-300 text-teal-700"
-              )}
-            >
-              <a className="flex items-center gap-3 hover:font-semibold" href="#">
-                🛠 Settings
-              </a>
-              <a className="flex items-center gap-3 hover:font-semibold" href="#">
-                📕 Logout
-              </a>
-            </div>
-          </motion.div>
-        </aside>
-
-        {/* Main Content */}
-        <main className="flex-1 p-10 overflow-y-auto">
-          <motion.div
-            {...getAnimationProps(0.2)}
-            className="flex justify-between items-center mb-10"
-          >
-            <h2
-              className={clsx(
-                "text-2xl font-bold",
-                darkMode ? "text-white" : "text-teal-800"
-              )}
-            >
-              Welcome, Admin
-            </h2>
-            <button
-              onClick={() => setDarkMode(!darkMode)}
-              className="px-4 py-2 rounded-full border text-sm font-medium transition-all duration-300 hover:scale-105 shadow-sm"
-              style={{
-                backgroundColor: darkMode ? "#4b0082" : "#bafce1",
-                color: darkMode ? "white" : "#065f46",
-              }}
-            >
-              {darkMode ? "☀ Light Mode" : "🌙 Dark Mode"}
-            </button>
+      <main className="main-content">
+        <div className="content-wrapper">
+          <motion.div className="page-header" {...getAnimationProps(0)}>
+            <h1 className="page-title">Admin Dashboard</h1>
+            <p className="page-subtitle">
+              Welcome back, {user?.username}! Here's your system overview.
+            </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
-            {[
-              ["👥", "Users", "1,240"],
-              ["📊", "Active Sessions", "342"],
-              ["🧾", "Reports Generated", "87"],
-            ].map(([icon, label, value], i) => (
+          <motion.div className="admin-stats-grid" {...getAnimationProps(0.1)}>
+            {stats.map((stat, index) => (
               <motion.div
-                key={label}
-                {...getAnimationProps(i * 0.15)}
-                className={clsx(
-                  "p-6 rounded-xl flex items-center gap-4 transform transition-shadow hover:shadow-2xl",
-                  darkMode ? "bg-[#1e1a3a] text-purple-200" : "bg-[#e0fdf4] text-teal-900"
-                )}
+                key={index}
+                className="stat-card"
+                {...getAnimationProps(0.2 + index * 0.1)}
               >
-                <span className="text-4xl">{icon}</span>
-                <div>
-                  <div className="text-sm uppercase font-semibold">{label}</div>
-                  <div className="text-xl font-bold">{value}</div>
+                <div className="stat-icon">{stat.icon}</div>
+                <div className="stat-content">
+                  <div className="stat-label">{stat.label}</div>
+                  <div className="stat-value">{stat.value}</div>
                 </div>
               </motion.div>
             ))}
-          </div>
+          </motion.div>
 
-          <motion.section {...getAnimationProps(0.5)}>
-            <h3
-              className={clsx(
-                "text-md font-medium mb-2",
-                darkMode ? "text-purple-400" : "text-teal-700"
-              )}
-            >
-              Recent Activity
-            </h3>
-            <div
-              className={clsx(
-                "rounded-xl p-6 text-sm shadow-md",
-                darkMode
-                  ? "bg-[#161325] text-purple-300 border border-purple-900"
-                  : "bg-[#f0fdfa] text-teal-800 border border-teal-200"
-              )}
-            >
-              <ul className="list-disc pl-5 space-y-2">
-                <li>New user "jdoe" registered.</li>
-                <li>System backup completed successfully.</li>
-                <li>3 new messages received.</li>
-              </ul>
-            </div>
-          </motion.section>
-        </main>
-      </motion.div>
-    </AnimatePresence>
+          <div className="admin-content-grid">
+            <motion.div className="admin-card" {...getAnimationProps(0.3)}>
+              <div className="card-header">
+                <Settings size={24} />
+                <h3>System Management</h3>
+              </div>
+              <div className="card-content">
+                <div className="admin-actions">
+                  <button className="admin-btn primary">Manage Users</button>
+                  <button className="admin-btn secondary">View Reports</button>
+                  <button className="admin-btn secondary">System Settings</button>
+                  <button className="admin-btn secondary">Backup Data</button>
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.div className="admin-card" {...getAnimationProps(0.4)}>
+              <div className="card-header">
+                <Activity size={24} />
+                <h3>Recent Activity</h3>
+              </div>
+              <div className="card-content">
+                <div className="activity-list">
+                  {recentActivities.map((activity, index) => (
+                    <div key={index} className="activity-item">
+                      <div className="activity-dot"></div>
+                      <span>{activity}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.div className="admin-card chart-card" {...getAnimationProps(0.5)}>
+              <div className="card-header">
+                <BarChart3 size={24} />
+                <h3>Analytics Overview</h3>
+              </div>
+              <div className="card-content">
+                <div className="chart-placeholder">
+                  <p>Analytics charts would be displayed here</p>
+                  <div className="mock-chart">
+                    <div className="chart-bar" style={{ height: '60%' }}></div>
+                    <div className="chart-bar" style={{ height: '80%' }}></div>
+                    <div className="chart-bar" style={{ height: '45%' }}></div>
+                    <div className="chart-bar" style={{ height: '90%' }}></div>
+                    <div className="chart-bar" style={{ height: '70%' }}></div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </main>
+    </div>
   );
 };
 
-export default App;
+export default AdminHome;

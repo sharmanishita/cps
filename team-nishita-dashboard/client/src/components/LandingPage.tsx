@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import './LandingPage.css';
 import { signup, login } from '../api/api';
 import { useNavigate } from 'react-router-dom';
-import { jwtDecode } from 'jwt-decode';
 import { motion } from 'framer-motion';
-import Navbar from './Navbar'
-import type { Credentials as Credentials } from '../api/api'
-
+import { useAuth } from '../contexts/AuthContext';
+import { useTheme } from '../contexts/ThemeContext';
+import Navbar from './Navbar';
+import type { Credentials } from '../api/api';
 import {
   LogIn,
   UserPlus,
@@ -15,26 +14,21 @@ import {
   Bot,
   Sparkles,
   ClipboardCheck,
-  Sun,
-  Moon
 } from 'lucide-react';
 
-interface Props {
-  onLogin: (user: { username: string }) => void;
-}
-
-
-const LandingPage: React.FC<Props> = ({ onLogin }) => {
+const LandingPage: React.FC = () => {
   const [modalType, setModalType] = useState<'login' | 'signup' | null>(null);
   const [credentials, setCredentials] = useState<Credentials>({
     username: '',
     password: '',
     role: 'user'
-  })
-
+  });
   const [error, setError] = useState<string | null>(null);
-  const [darkMode, setDarkMode] = useState(false);
+  const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
+  const { login: authLogin, isAuthenticated, user } = useAuth();
+  const { darkMode } = useTheme();
 
   const closeModal = () => {
     setModalType(null);
@@ -42,212 +36,178 @@ const LandingPage: React.FC<Props> = ({ onLogin }) => {
       username: '',
       password: '',
       role: 'user'
-    })
+    });
     setError(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setLoading(true);
+
     try {
-      const response =
-        modalType === 'login' ? await login(credentials) : await signup(credentials);
-      const token = response.data.access_token;
-      localStorage.setItem('token', token);
-      const decoded = jwtDecode<{ username: string }>(token);
-      onLogin({ username: decoded.username });
+      const response = modalType === 'login'
+        ? await login(credentials)
+        : await signup(credentials);
+
+      const { access_token, user: userData } = response.data;
+      localStorage.setItem('token', access_token);
+      authLogin(userData);
       closeModal();
-      navigate('/home');
+
+      if (userData.role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/dashboard');
+      }
     } catch (err: any) {
       setError(err.response?.data?.message || 'Something went wrong');
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    const logged = Boolean(localStorage.getItem('token'));
-    if (logged) navigate('/home')
-  }, [])
-
-  useEffect(() => {
-    const hero = document.querySelector('.hero') as HTMLElement;
-    if (hero) {
-      hero.style.background = darkMode
-        ? 'linear-gradient(135deg, #000000, #1a0033, #3b0000, #660033, #802900)'
-        : 'linear-gradient(135deg, #7dd3fc, #bbf7d0, #fef08a, #5eead4)';
-      hero.style.transition = 'background 0.6s ease';
+    if (isAuthenticated && user) {
+      const redirectPath = user.role === 'admin' ? '/admin' : '/dashboard';
+      navigate(redirectPath);
     }
-    document.body.classList.toggle('dark-theme', darkMode);
-  }, [darkMode]);
+  }, [isAuthenticated, user, navigate]);
+
+  const features = [
+    {
+      icon: <LineChart size={32} />,
+      title: "Progress Tracking",
+      desc: "Track your learning goals and monitor real-time progress with intuitive charts."
+    },
+    {
+      icon: <Share2 size={32} />,
+      title: "Knowledge Graph",
+      desc: "Visualize concepts you've learned and identify knowledge gaps clearly."
+    },
+    {
+      icon: <Bot size={32} />,
+      title: "AI Chat Assistant",
+      desc: "Ask questions anytime and get smart explanations powered by AI."
+    },
+    {
+      icon: <Sparkles size={32} />,
+      title: "Recommendations",
+      desc: "Receive personalized learning path suggestions based on your progress."
+    },
+    {
+      icon: <ClipboardCheck size={32} />,
+      title: "Assessments",
+      desc: "Take quick quizzes to reinforce concepts and track understanding."
+    }
+  ];
 
   return (
-    <div
-      style={{
-        border: '6px solid black',
-        minHeight: '100vh',
-        boxSizing: 'border-box',
-        backgroundColor: darkMode ? '#0c0c0c' : '#e0fff8',
-        color: darkMode ? '#f5f5f5' : '#022c22',
-        transition: 'background-color 0.6s ease, color 0.6s ease',
-        position: 'relative'
-      }}
-    >
+    <div className={`landing-page ${darkMode ? 'dark' : 'light'}`}>
       <Navbar
         onLoginClick={() => setModalType('login')}
         onSignUpClick={() => setModalType('signup')}
       />
 
-      <motion.section
-        className="hero"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1, transition: { duration: 1.2 } }}
-      >
-        <motion.h1 className="hero-title" initial={{ y: -20 }} animate={{ y: 0 }}>
-          Visualize Your Learning Journey
-        </motion.h1>
-        <motion.p className="hero-subtitle" initial={{ y: 20 }} animate={{ y: 0 }}>
-          PathPilot helps you understand where you are, what to study next, and how close you are to your goals.
-        </motion.p>
+      <section className="hero-section">
+        <div className="hero-content">
+          <motion.h1
+            className="hero-title"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            Visualize Your Learning Journey
+          </motion.h1>
+          <motion.p
+            className="hero-subtitle"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
+            PathPilot helps you understand where you are, what to study next, and how close you are to your goals.
+          </motion.p>
+        </div>
+      </section>
 
-        <div className="features">
-          {[
-            {
-              icon: <LineChart size={32} />,
-              title: "Progress Tracking",
-              desc: "Track your learning goals and monitor real-time progress with intuitive charts."
-            },
-            {
-              icon: <Share2 size={32} />,
-              title: "Knowledge Graph",
-              desc: "Visualize concepts you've learned and identify knowledge gaps clearly."
-            },
-            {
-              icon: <Bot size={32} />,
-              title: "AI Chat Assistant",
-              desc: "Ask questions anytime and get smart explanations powered by AI."
-            },
-            {
-              icon: <Sparkles size={32} />,
-              title: "Recommendations",
-              desc: "Receive personalized learning path suggestions based on your progress."
-            },
-            {
-              icon: <ClipboardCheck size={32} />,
-              title: "Assessments",
-              desc: "Take quick quizzes to reinforce concepts and track understanding."
-            }
-          ].map((feat, idx) => (
+      <section className="features-section">
+        <div className="features-grid">
+          {features.map((feature, idx) => (
             <motion.div
               key={idx}
-              className="feature"
-              whileHover={{ scale: 1.05 }}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0, transition: { delay: 0.2 * idx } }}
-              style={{
-                background: darkMode ? '#1f1f1f' : 'rgba(255, 255, 255, 0.95)',
-                color: darkMode ? '#ffffff' : '#022c22',
-                backdropFilter: 'blur(12px)',
-                borderRadius: '16px',
-                padding: '1.5rem',
-                margin: '1rem',
-                boxShadow: darkMode
-                  ? '0 4px 20px rgba(255, 255, 255, 0.05)'
-                  : '0 6px 24px rgba(0, 150, 136, 0.3)',
-                border: '2px solid rgba(0, 200, 160, 0.3)'
-              }}
+              className="feature-card"
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: idx * 0.1 }}
             >
-              <div className="feature-icon">{feat.icon}</div>
-              <strong>{feat.title}</strong>
-              <p>{feat.desc}</p>
+              <div className="feature-icon">{feature.icon}</div>
+              <h3 className="feature-title">{feature.title}</h3>
+              <p className="feature-desc">{feature.desc}</p>
             </motion.div>
           ))}
         </div>
-      </motion.section>
+      </section>
 
       {modalType && (
-        <div className="modal" onClick={closeModal}>
+        <div className="modal-overlay" onClick={closeModal}>
           <motion.div
             className="modal-content"
             onClick={(e) => e.stopPropagation()}
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            style={{
-              background: darkMode ? '#1a1a1a' : '#ffffff',
-              color: darkMode ? '#f5f5f5' : '#022c22',
-              borderRadius: '12px',
-              padding: '2rem',
-              boxShadow: '0 10px 30px rgba(0, 0, 0, 0.2)',
-              backdropFilter: 'blur(10px)'
-            }}
+            transition={{ duration: 0.3 }}
           >
-            <span className="close" onClick={closeModal}>
-              &times;
-            </span>
-            <div className="form-container">
-              <h2>{modalType === 'login' ? 'Login' : 'Sign Up'}</h2>
-              {error && <p style={{ color: 'red' }}>{error}</p>}
-              <form onSubmit={handleSubmit}>
-                <input
-                  type="text"
-                  placeholder="Username"
-                  value={credentials.username}
-                  onChange={(e) => setCredentials({ ...credentials, username: e.target.value })}
-                  required
-                />
-                <input
-                  type="password"
-                  placeholder="Password"
-                  value={credentials.password}
-                  onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
-                  required
-                />
-                <select
-                  value={credentials.role}
-                  onChange={(e) => { setCredentials({ ...credentials, role: e.target.value as 'user' | 'admin' }) }}
-                > <option value="user">User</option>
-                  <option value="admin">Admin</option>
-                </select>
-                <button
-                  type="submit"
-                  style={{
-                    backgroundColor: '#014d4d',
-                    color: '#ffffff',
-                    padding: '0.5rem 1rem',
-                    border: 'none',
-                    borderRadius: '6px',
-                    marginTop: '1rem',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px'
-                  }}
-                >
-                  {modalType === 'login' ? <LogIn size={16} /> : <UserPlus size={16} />}
-                  {modalType === 'login' ? 'Login' : 'Sign Up'}
-                </button>
-              </form>
-            </div>
+            <button className="modal-close" onClick={closeModal}>×</button>
+
+            <h2 className="modal-title">
+              {modalType === 'login' ? 'Login' : 'Sign Up'}
+            </h2>
+
+            {error && <div className="error-message">{error}</div>}
+
+            <form onSubmit={handleSubmit} className="auth-form">
+              <input
+                type="text"
+                placeholder="Username"
+                value={credentials.username}
+                onChange={(e) => setCredentials({ ...credentials, username: e.target.value })}
+                required
+                disabled={loading}
+                className="form-input"
+              />
+
+              <input
+                type="password"
+                placeholder="Password"
+                value={credentials.password}
+                onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
+                required
+                disabled={loading}
+                className="form-input"
+              />
+
+              <select
+                value={credentials.role}
+                onChange={(e) => setCredentials({ ...credentials, role: e.target.value as 'user' | 'admin' })}
+                disabled={loading}
+                className="form-select"
+              >
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+              </select>
+
+              <button type="submit" disabled={loading} className="form-submit">
+                {loading ? 'Loading...' : (
+                  <>
+                    {modalType === 'login' ? <LogIn size={16} /> : <UserPlus size={16} />}
+                    {modalType === 'login' ? 'Login' : 'Sign Up'}
+                  </>
+                )}
+              </button>
+            </form>
           </motion.div>
         </div>
       )}
-
-      <button
-        onClick={() => setDarkMode(prev => !prev)}
-        style={{
-          position: 'fixed',
-          bottom: '1rem',
-          right: '1rem',
-          backgroundColor: darkMode ? '#eeeeee' : '#014d4d',
-          color: darkMode ? '#000000' : '#ffffff',
-          border: '2px solid black',
-          borderRadius: '50%',
-          padding: '0.6rem',
-          cursor: 'pointer',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
-          transition: 'background-color 0.3s ease, color 0.3s ease'
-        }}
-        title="Toggle Theme"
-      >
-        {darkMode ? <Sun size={20} /> : <Moon size={20} />}
-      </button>
     </div>
   );
 };

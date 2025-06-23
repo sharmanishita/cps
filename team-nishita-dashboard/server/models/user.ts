@@ -7,6 +7,7 @@ interface IUser extends Document {
   currentStreak: number;
   longestStreak: number;
   lastActive: Date;
+  role: 'user' | 'admin';
 };
 
 const userSchema = new mongoose.Schema<IUser>({
@@ -17,6 +18,7 @@ const userSchema = new mongoose.Schema<IUser>({
   currentStreak: { type: Number, default: 0 },
   longestStreak: { type: Number, default: 0 },
   lastActive: { type: Date, default: Date.now }
+  role: { type: String, enum: ['user', 'admin'], default: 'user' }
 })
 
 export const User = mongoose.model('User', userSchema);
