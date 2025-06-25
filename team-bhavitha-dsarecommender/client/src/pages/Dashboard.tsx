@@ -38,19 +38,16 @@ const Dashboard = () => {
   const [recommendedPath, setRecommendedPath] = useState<string[]>([]);
   const [pathError, setPathError] = useState<string | null>(null);
 
-  // Logout - this function is now unused on the Dashboard itself, but kept for clarity if needed elsewhere
   const handleLogout = () => {
     logout();
     clearProfile();
     navigate("/");
   };
 
-  // Navigate to quiz page
   const handleTakeQuiz = (selectedTopic: string) => {
     navigate(`/quiz/${encodeURIComponent(selectedTopic)}`);
   };
 
-  // Fetch quiz history
   useEffect(() => {
     const fetchHistory = async () => {
       try {
@@ -65,7 +62,6 @@ const Dashboard = () => {
     if (username) fetchHistory();
   }, [username]);
 
-  // Get recommendation path
   const handleGetPath = async () => {
     setPathError(null);
     if (!startConcept.trim() || !endConcept.trim()) {
@@ -90,10 +86,9 @@ const Dashboard = () => {
     }
   };
 
-  // Prepare chart data
   const chartData = quizHistory.map((entry) => ({
     topic: entry.topic,
-    mastery: (1 - entry.mastery) * 100, // Convert to percentage for display
+    mastery: (1 - entry.mastery) * 100,
     date: new Date(entry.createdAt).toLocaleDateString(),
   }));
 
@@ -209,12 +204,12 @@ const Dashboard = () => {
         {pathError && <div className="alert alert-danger text-center mt-3">{pathError}</div>}
 
         {recommendedPath.length > 0 && (
-          <div className="recommended-path-section bg-secondary-subtle p-4 rounded shadow mt-4 text-dark-contrast"> {/* Changed text-dark to text-dark-contrast for entire section */}
+          <div className="recommended-path-section bg-secondary-subtle p-4 rounded shadow mt-4 text-dark-contrast">
             <h4 className="text-center mb-4 text-info">Recommended Path:</h4>
             <ul className="list-group list-group-flush">
               {recommendedPath.map((topic, idx) => (
-                <li key={idx} className="list-group-item bg-dark-subtle border-secondary rounded mb-3 shadow-sm d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 py-3 text-dark-contrast"> {/* Changed text-white to text-dark-contrast */}
-                  <span className="fs-5 text-dark-contrast"> {/* Changed text-white to text-dark-contrast */}
+                <li key={idx} className="list-group-item bg-dark-subtle border-secondary rounded mb-3 shadow-sm d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 py-3 text-dark-contrast">
+                  <span className="fs-5 text-dark-contrast">
                     {idx + 1}. <strong>{topic}</strong>
                   </span>
                   <div className="d-flex gap-2 flex-wrap justify-content-center justify-content-md-end">
@@ -239,19 +234,20 @@ const Dashboard = () => {
         {quizHistory.length === 0 ? (
           <p className="text-center text-white mt-3">No quiz attempts recorded yet.</p>
         ) : (
-          <ul className="list-group list-group-flush mx-auto" style={{ maxWidth: '800px' }}>
+          // Changed to row and col-md-6 for 2-column layout on medium screens and up
+          <div className="row row-cols-1 row-cols-md-2 g-3 justify-content-center">
             {quizHistory.map((entry, i) => (
-              <li key={i} className="list-group-item bg-secondary-subtle border-start border-5 border-primary rounded mb-3 shadow-sm text-start text-dark-contrast"> {/* Changed text-dark to text-dark-contrast */}
-                <strong>{entry.topic}</strong> — Score: {entry.score}% — Mastery Weight: {entry.mastery}
-                <br />
-                <small className="text-muted">{new Date(entry.createdAt).toLocaleString()}</small>
-              </li>
+              <div className="col" key={i}>
+                <li className="list-group-item bg-secondary-subtle border-start border-5 border-primary rounded shadow-sm text-start text-dark-contrast h-100 p-3">
+                  <strong>{entry.topic}</strong> — Score: {entry.score}% — Mastery Weight: {entry.mastery}
+                  <br />
+                  <small className="text-muted">{new Date(entry.createdAt).toLocaleString()}</small>
+                </li>
+              </div>
             ))}
-          </ul>
+          </div>
         )}
       </div>
-
-      {/* Removed Actions Section with Logout and Choose Your Own Quiz Topic buttons */}
     </div>
   );
 };
