@@ -59,10 +59,9 @@ In **Continuous Active Learning (CAL)** environments, if a student gets stuck at
 
 ### Team T3
 - **Bhavitha B** (Team Lead) - bhavitha9052004@gmail.com  
-- Anurag Kumar - anurag2003ias@gmail.com  
-- Kona Manasa Lakshmi - manasalakshmik8@gmail.com  
-- Nishant - nishantthakurs7519@gmail.com  
-- Tamalampudi Sameer Reddy - sameerreddy213@gmail.com  
+- Tamalampudi Sameer Reddy - sameerreddy213@gmail.com 
+- Anurag Kumar - anurag2003ias@gmail.com
+- Nishant - nishantthakurs7519@gmail.com   
 
 ### Team T4
 - **Davuluri Siva Sai** (Team Lead) - dsivasai05@gmail.com  
