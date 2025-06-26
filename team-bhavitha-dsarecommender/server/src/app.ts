@@ -23,7 +23,7 @@ app.use(cors({
   origin: 'http://localhost:5173',// frontend port
   credentials: true
 }));
-app.use(bodyParser.json());
+app.use(bodyParseC:\Users\bvenk\Documents\project_codes\cps\team-bhavitha-dsarecommender\server\src\r.json());
 app.use("/api/explore", exploreRoutes);
 app.use("/api", learningPathRoutes);
 app.use('/api', authRoutes);
