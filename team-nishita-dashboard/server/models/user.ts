@@ -2,23 +2,19 @@ import mongoose, { Document } from 'mongoose';
 interface IUser extends Document {
   username: string;
   password: string;
-  totalPoints: number;
-  level: string;
-  currentStreak: number;
-  longestStreak: number;
-  lastActive: Date;
   role: 'user' | 'admin';
+  lastLogin: Date;
+  loginStreak: number;
+  loginDays: Date[];
 };
 
 const userSchema = new mongoose.Schema<IUser>({
   username: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  totalPoints: { type: Number, default: 0 },
-  level: { type: String, default: 'Beginner' },
-  currentStreak: { type: Number, default: 0 },
-  longestStreak: { type: Number, default: 0 },
-  lastActive: { type: Date, default: Date.now }
-  role: { type: String, enum: ['user', 'admin'], default: 'user' }
+  role: { type: String, enum: ['user', 'admin'], default: 'user' },
+  lastLogin: { type: Date },
+  loginStreak: { type: Number, default: 0 },
+  loginDays: [{ type: Date }]
 })
 
 export const User = mongoose.model('User', userSchema);

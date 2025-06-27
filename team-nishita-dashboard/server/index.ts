@@ -4,6 +4,7 @@ import helmet from 'helmet'
 import { errorHandler } from './middleware/errorHandler.js'
 import mongoose from 'mongoose';
 import { authRouter } from './routes/auth.js'
+import { calendarRouter } from './routes/calendar.js'
 import { requireRole, requireAuth } from './middleware/roleMiddleware.js';
 
 const app = express();
@@ -30,7 +31,8 @@ process.on('SIGINT', gracefulShutdown);
 app.get('/', (req: Request, res: Response) => {
   res.status(200).json({ message: "home route" })
 })
-app.use('/api', authRouter)
+app.use('/api/auth', authRouter);
+app.use('/api/calendar', calendarRouter);
 app.use(errorHandler)
 
 app.use((req: Request, res: Response) => {

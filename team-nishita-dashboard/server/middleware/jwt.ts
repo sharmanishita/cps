@@ -10,10 +10,14 @@ export interface JWTPayload {
   role: 'user' | 'admin'
   sub: string;
 }
-interface AuthenticatedRequest extends Request {
-  user?: JWTPayload;
+declare global {
+  namespace Express {
+    interface Request {
+      user?: JWTPayload;
+    }
+  }
 };
-export function jwtMiddleware(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+export function jwtMiddleware(req: Request, res: Response, next: NextFunction) {
   const authHeader = req.header('Authorization');
   if (!authHeader) {
     res.status(401).json({ message: 'Authorization header missing' })

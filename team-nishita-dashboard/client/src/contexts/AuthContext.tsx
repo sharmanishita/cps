@@ -5,6 +5,8 @@ import { getCurrentUser, logout as apiLogout } from '../api/api';
 interface User {
   username: string;
   role: 'user' | 'admin';
+  loginStreak?: number;
+  lastLogin?: string;
 }
 
 interface AuthContextType {
