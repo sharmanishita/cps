@@ -37,6 +37,8 @@ export interface Credentials {
   username: string;
   password: string;
   role: 'user' | 'admin';
+  loginStreak?: number;
+  lastLogin?: string;
 }
 
 export interface User {
@@ -50,10 +52,13 @@ export interface AuthResponse {
 }
 
 export const login = (credentials: Credentials): Promise<{ data: AuthResponse }> =>
-  api.post('/login', credentials);
+  api.post('/auth/login', credentials);
 
 export const signup = (credentials: Credentials): Promise<{ data: AuthResponse }> =>
-  api.post('/register', credentials);
+  api.post('/auth/register', credentials);
+
+export const getCurrentMonthCalendar = () =>
+  api.get('/calendar/current-month');
 
 export const getCurrentUser = (): User | null => {
   const token = localStorage.getItem('token');
