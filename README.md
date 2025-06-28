@@ -93,9 +93,9 @@ In **Continuous Active Learning (CAL)** environments, if a student gets stuck at
 - Vedam Venkata Sarma - venkatasarmavedam@gmail.com  
 
 ### Team T8
-- **Nakshatra Bhandary** (Team Lead) - nakshatra.bhandary@gmail.com  
+- **Nikita S Raj Kapini** (Team Lead) - nikitasraj16@gmail.com
+- Nakshatra Bhandary - nakshatra.bhandary@gmail.com  
 - Manda Rani - ranimanda2006@gmail.com  
-- Nikita S Raj Kapini - nikitasraj16@gmail.com  
 - Shreyas Mene - shreyasmene6@gmail.com  
 - Yeddula Pushkala - pushkalayeddula@gmail.com  
 
