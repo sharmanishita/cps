@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { useToast } from "@/hooks/use-toast"
-import { HelpCircle, MessageCircle, Mail, Phone, BookOpen, Video, Search, ExternalLink, Send, Bot } from "lucide-react"
+import { HelpCircle, MessageCircle, Mail, Phone, BookOpen, Video, ExternalLink, Send, Bot } from "lucide-react"
 
 // Type definitions
 interface ChatMessage {
@@ -16,13 +16,6 @@ interface ChatMessage {
   sender: string;
   message: string;
   time: string;
-}
-
-interface SearchResult {
-  id: number;
-  title: string;
-  content: string;
-  type: string;
 }
 
 interface ContactForm {
@@ -34,7 +27,6 @@ interface ContactForm {
 
 export default function HelpPage() {
   const { toast } = useToast()
-  const [searchQuery, setSearchQuery] = useState<string>("")
   const [chatOpen, setChatOpen] = useState<boolean>(false)
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
     { id: 1, sender: "support", message: "Hi! How can I help you today?", time: "Just now" },
@@ -46,8 +38,6 @@ export default function HelpPage() {
     subject: "",
     message: "",
   })
-  const [searchResults, setSearchResults] = useState<SearchResult[]>([])
-  const [isSearching, setIsSearching] = useState<boolean>(false)
 
   const faqs = [
     {
@@ -86,15 +76,15 @@ export default function HelpPage() {
   const knowledgeBase = {
     "progress": "You can track your learning progress through the Progress tab in your dashboard. It shows detailed analytics including concepts mastered, time spent, quiz scores, and skill development across different areas.",
     "learning path": "You can modify your learning path at any time by going to the Learning Paths section. You can add new courses, remove existing ones, or completely switch to a different path based on your goals.",
-    "mock test": "Mock tests simulate real interview conditions with timed questions across different difficulty levels. After completion, you'll receive detailed feedback, explanations for each question, and recommendations for improvement.",
+    "mock test": "Quizes simulate real interview conditions with timed questions across different difficulty levels. After completion, you'll receive detailed feedback, explanations for each question, and recommendations for improvement.",
     "certificate": "Once you complete a course or learning path, you can download your certificate from the Achievements section. Certificates include verification codes and can be shared on professional networks.",
     "achievements": "Achievements are based on various metrics like study streaks, quiz performance, course completions, and skill improvements. Each achievement has specific criteria that you can view in the Progress section.",
     "daily goal": "Missing your daily goal won't affect your overall progress. The system will adjust your recommendations and may suggest shorter sessions to help you get back on track. Consistency is more important than perfection!",
     "account": "You can manage your account settings by clicking on your profile picture in the top right corner and selecting 'Account Settings'. Here you can update your personal information, change your password, and manage notifications.",
     "courses": "Browse available courses in the Courses section. You can filter by difficulty, topic, or duration. Each course includes video lessons, practice exercises, and quizzes to test your understanding.",
-    "support": "Our support team is available Monday-Friday 9AM-6PM EST, Saturday 10AM-4PM EST. You can reach us via live chat, email at support@masterly.com, or phone at +1 (555) 123-HELP.",
+    "support": "Our support team is available Monday-Friday 9AM-6PM EST, Saturday 10AM-4PM EST. You can reach us via live chat, email at support@masterly.com.",
     "subscription": "You can view and manage your subscription in Account Settings > Billing. We offer monthly and yearly plans with different features. You can upgrade, downgrade, or cancel at any time.",
-    "mobile app": "Yes! Masterly is developing to available on both iOS and Android. Download the app from your device's app store to learn on the go with offline content support.",
+    "application": "Anyone interested in learning new skills — students, professionals, or hobbyists — can use this platform.We are developing a cross platform to available for all user like android, ios,",
     "reset password": "To reset your password, click 'Forgot Password' on the login page and enter your email. You'll receive a reset link within a few minutes. If you don't see it, check your spam folder.",
     "notifications": "You can customize your notification preferences in Account Settings > Notifications. Choose from email, push, or in-app notifications for study reminders, course updates, achievement unlocks, and more.",
     "offline": "Premium users can download courses for offline viewing in the mobile app. Simply tap the download icon next to any lesson. Downloaded content is available for 30 days and automatically updates when you're online.",
@@ -102,77 +92,63 @@ export default function HelpPage() {
     "study groups": "Join study groups to learn with peers, share resources, and participate in discussions. Create your own group or join existing ones based on topics or goals. Find them in the Community section.",
     "export data": "You can export your learning data, progress reports, and certificates from Account Settings > Data Export. Choose from PDF, CSV, or JSON formats. This includes all your course history, achievements, and study statistics.",
     "quiz test": "Quiz tests are quick knowledge checks within your courses to test your understanding of specific topics. They're shorter than mock tests and focus on individual concepts. You can retake quizzes anytime to reinforce your learning.",
-    "masterly": "masterly is a smart ai learning path that guide,train,test you and your knowledge. Its your learning companion"
+    "masterly": "masterly is a smart ai learning path that guide,train,test you and your knowledge. Its your learning companion",
+    "take": "You can find the quizess at the end of each course or you can find at quiz section",
+    "code":"You can write or practice code during quizes and also we are trying to develop a practice page for learners",
+    "data":"We use encryption and follow best practices to keep your data secure.",
+    "bug": "You can report bugs through the ‘Help & Feedback’ section or by emailing our support team.",
+    "api":"We are planning to release developer APIs in the future.",
+    "tutorial":"We provide beginner tutorials and walkthroughs to help you navigate and use the platform efficiently."
   }
 
   const getBotResponse = (query: string): string => {
-  const lowerQuery = query.toLowerCase()
-  
-  // Define keyword mappings with multiple aliases
-  const keywordMappings = {
-    "ai tutor": ["tutor", "ai tutor", "ai-tutor", "mentor", "teacher", "guide"],
-    "progress": ["progress", "track", "tracking", "analytics", "stats"],
-    "learning path": ["learning path", "path", "course path", "curriculum"],
-    "mock test": ["mock test", "test", "quiz", "exam", "assessment"],
-    "certificate": ["certificate", "cert", "certification", "diploma"],
-    "achievements": ["achievements", "achievement", "badge", "badges", "reward"],
-    "daily goal": ["daily goal", "goal", "target", "streak"],
-    "account": ["account", "profile", "settings", "my account"],
-    "courses": ["courses", "course", "lessons", "content"],
-    "support": ["support", "help", "assistance", "contact"],
-    "subscription": ["subscription", "plan", "billing", "payment"],
-    "mobile app": ["mobile app", "app", "android", "ios", "phone"],
-    "reset password": ["reset password", "forgot password", "password reset"],
-    "notifications": ["notifications", "alerts", "reminders"],
-    "offline": ["offline", "download", "sync"],
-    "study groups": ["study groups", "group", "community", "peers"],
-    "export data": ["export data", "download data", "backup"],
-    "masterly":["masterly", "this website","webapplication"]
-  }
-  
-  // Find matching keywords using aliases
-  for (const [originalKey, aliases] of Object.entries(keywordMappings)) {
-    if (aliases.some(alias => lowerQuery.includes(alias))) {
-      return knowledgeBase[originalKey as keyof typeof knowledgeBase]
-    }
-  }
-
-  // Check for common greeting patterns
-  if (lowerQuery.includes('hello') || lowerQuery.includes('hi') || lowerQuery.includes('hey')) {
-    return "Hello! I'm here to help you with any questions about Masterly. You can ask me about courses, progress tracking, certificates, or any other features."
-  }
-
-  if (lowerQuery.includes('help')) {
-    return "I'd be happy to help! You can ask me about:\n• Tracking your progress\n• Managing learning paths\n• Taking mock tests\n• Downloading certificates\n• Account settings\n• And much more!"
-  }
-
-  // Default response for unrecognized queries
-  return "I'm not sure about that specific question, but I can help you with information about courses, progress tracking, certificates, mock tests, and account management. Could you please rephrase your question or ask about one of these topics?"
-}
-
-  const handleSearch = async (): Promise<void> => {
-    if (!searchQuery.trim()) return
-
-    setIsSearching(true)
+    const lowerQuery = query.toLowerCase()
     
-    // Simulate API delay
-    setTimeout(() => {
-      const botResponse = getBotResponse(searchQuery)
-      
-      setSearchResults([{
-        id: 1,
-        title: "Chatbot Response",
-        content: botResponse,
-        type: "bot"
-      } as SearchResult])
-      
-      setIsSearching(false)
-      
-      toast({
-        title: "Search Complete",
-        description: "Found relevant information for your query!",
-      })
-    }, 1000)
+    // Define keyword mappings with multiple aliases
+    const keywordMappings = {
+      "ai tutor": ["tutor", "ai tutor", "ai-tutor", "mentor", "teacher", "guide"],
+      "progress": ["progress", "track", "tracking", "analytics", "stats"],
+      "learning path": ["learning path", "path", "course path", "curriculum","customize learning path"],  
+      "mock test": ["mock test", "test","quiz", "exam", "assessment"],
+      "certificate": ["certificate", "cert", "certification", "diploma"],
+      "achievements": ["achievements", "achievement", "badge", "badges", "reward"],
+      "daily goal": ["daily goal", "goal", "target", "streak"],
+      "account": ["account", "profile", "settings", "my account"],
+      "courses": ["courses", "course", "lessons", "content"],
+      "support": ["support", "help", "assistance", "contact"],
+      "subscription": ["subscription", "plan", "billing", "payment"],
+      "application": ["mobile app", "app", "android", "ios", "phone"],
+      "reset password": ["reset password", "forgot password", "password reset"],
+      "notifications": ["notifications", "alerts", "reminders"],
+      "offline": ["offline", "download", "sync"],
+      "study groups": ["study groups", "group", "community", "peers"],
+      "export data": ["export data", "download data", "backup"],
+      "masterly":["masterly", "this website","webapplication"],
+      "code": ["code","practice","upskill"],
+      "data":["data","safe","data safe"],
+      "bug":["bug","bugs"],
+      "api":["api","api key"],
+      "tutorial":["tutorial","help-section","help"]
+    }
+    
+    // Find matching keywords using aliases
+    for (const [originalKey, aliases] of Object.entries(keywordMappings)) {
+      if (aliases.some(alias => lowerQuery.includes(alias))) {
+        return knowledgeBase[originalKey as keyof typeof knowledgeBase]
+      }
+    }
+
+    // Check for common greeting patterns
+    if (lowerQuery.includes('hello') || lowerQuery.includes('hi') || lowerQuery.includes('hey')) {
+      return "Hello! I'm here to help you with any questions about Masterly. You can ask me about courses, progress tracking, certificates, or any other features."
+    }
+
+    if (lowerQuery.includes('help')) {
+      return "I'd be happy to help! You can ask me about:\n• Tracking your progress\n• Managing learning paths\n• Taking mock tests\n• Downloading certificates\n• Account settings\n• And much more!"
+    }
+
+    // Default response for unrecognized queries
+    return "I'm not sure about that specific question, but I can help you with information about courses, progress tracking, certificates, mock tests, and account management. Could you please rephrase your question or ask about one of these topics?"
   }
 
   const handleSendMessage = (): void => {
@@ -202,21 +178,52 @@ export default function HelpPage() {
     }
   }
 
-  const handleContactSubmit = (): void => {
-    if (contactForm.name && contactForm.email && contactForm.subject && contactForm.message) {
-      toast({
-        title: "Message Sent",
-        description: "Your support request has been submitted. We'll get back to you within 24 hours.",
+  const handleContactSubmit = async (): Promise<void> => {
+  if (contactForm.name && contactForm.email && contactForm.subject && contactForm.message) {
+    try {
+      const response = await fetch("https://formspree.io/f/xnnvllzb", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          name: contactForm.name,
+          email: contactForm.email,
+          subject: contactForm.subject,
+          message: contactForm.message,
+        }),
       })
-      setContactForm({ name: "", email: "", subject: "", message: "" })
-    } else {
+
+      if (response.ok) {
+        toast({
+          title: "Message Sent",
+          description: "Your support request has been submitted. We'll get back to you within 24 hours.",
+        })
+        setContactForm({ name: "", email: "", subject: "", message: "" })
+      } else {
+        toast({
+          title: "Error",
+          description: "Something went wrong. Please try again later.",
+          variant: "destructive",
+        })
+      }
+    } catch (error) {
       toast({
         title: "Error",
-        description: "Please fill in all required fields.",
+        description: "Network error. Please try again later.",
         variant: "destructive",
       })
     }
+  } else {
+    toast({
+      title: "Error",
+      description: "Please fill in all required fields.",
+      variant: "destructive",
+    })
   }
+}
+
 
   const openUserGuide = (): void => {
     toast({
@@ -285,7 +292,7 @@ export default function HelpPage() {
               <CardContent className="p-6 text-center">
                 <MessageCircle className="w-8 h-8 mx-auto mb-3 text-purple-600" />
                 <h3 className="font-semibold mb-2 text-gray-900 dark:text-white">Live Chat</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">Chat with our support team</p>
+                <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">Chat with our AI support assistant</p>
                 <Button variant="outline" size="sm">
                   <MessageCircle className="w-4 h-4 mr-2" />
                   Start Chat
@@ -293,83 +300,6 @@ export default function HelpPage() {
               </CardContent>
             </Card>
           </div>
-
-          {/* Search with Chatbot */}
-          <Card className="dark:bg-gray-800/80 dark:border-gray-700">
-            <CardHeader>
-              <CardTitle className="flex items-center text-gray-900 dark:text-white">
-                <Bot className="w-5 h-5 mr-2 text-blue-600" />
-                AI Help Assistant
-              </CardTitle>
-              <CardDescription className="text-gray-600 dark:text-gray-300">
-                Ask me anything about Masterly - I'm here to help!
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center space-x-2">
-                <Search className="w-5 h-5 text-gray-400" />
-                <Input
-                  placeholder="Ask me about courses, progress, certificates, or any other questions..."
-                  className="flex-1"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyPress={(e) => e.key === "Enter" && handleSearch()}
-                />
-                <Button onClick={handleSearch} disabled={isSearching}>
-                  {isSearching ? "Thinking..." : "Ask"}
-                </Button>
-              </div>
-              
-              {/* Search Results */}
-              {searchResults.length > 0 && (
-                <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-                  <div className="flex items-start space-x-3">
-                    <Bot className="w-6 h-6 text-blue-600 mt-1 flex-shrink-0" />
-                    <div className="flex-1">
-                      <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2">AI Assistant</h4>
-                      <p className="text-blue-800 dark:text-blue-200 whitespace-pre-line">
-                        {searchResults[0]?.content}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Quick suggestions */}
-              <div className="flex flex-wrap gap-2 mt-4">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    setSearchQuery("How do I track my progress?")
-                    handleSearch()
-                  }}
-                >
-                  Track Progress
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    setSearchQuery("How do mock tests work?")
-                    handleSearch()
-                  }}
-                >
-                  Mock Tests
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    setSearchQuery("How to download certificates?")
-                    handleSearch()
-                  }}
-                >
-                  Certificates
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
 
           {/* FAQ */}
           <Card className="dark:bg-gray-800/80 dark:border-gray-700">
@@ -488,7 +418,7 @@ export default function HelpPage() {
                 </div>
                 <div className="flex items-center space-x-3">
                   <MessageCircle className="w-4 h-4 text-purple-600" />
-                  <span className="text-gray-900 dark:text-white">Live chat available 24/7</span>
+                  <span className="text-gray-900 dark:text-white">AI chat available 24/7</span>
                 </div>
               </CardContent>
             </Card>
@@ -497,7 +427,7 @@ export default function HelpPage() {
 
         {/* Live Chat Dialog */}
         <Dialog open={chatOpen} onOpenChange={setChatOpen}>
-          <DialogContent className="max-w-md">
+          <DialogContent className="max-w-2xl h-[80vh]">
             <DialogHeader>
               <DialogTitle className="flex items-center justify-between">
                 <div className="flex items-center">
@@ -513,7 +443,7 @@ export default function HelpPage() {
 
             <div className="space-y-4">
               {/* Chat Messages */}
-              <div className="h-64 overflow-y-auto space-y-3 p-3 border rounded-lg bg-gray-50 dark:bg-gray-900">
+              <div className="h-[60vh] overflow-y-auto space-y-3 p-3 border rounded-lg bg-gray-50 dark:bg-gray-900">
                 {chatMessages.map((msg) => (
                   <div key={msg.id} className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}>
                     <div
