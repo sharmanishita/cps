@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import axios from "axios";
+import api from "../lib/api"; 
 import { useAuthStore } from "../store/authStore";
 import { useUserStore } from "../store/userStore";
+import LoadingSpinner from "../components/LoadingSpinner"; // Added: Import LoadingSpinner
 
 const RegisterPage = () => {
   const [name, setName] = useState("");
@@ -11,6 +12,7 @@ const RegisterPage = () => {
   const [email, setEmail] = useState("");
   const [topics, setTopics] = useState("");
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false); // Added: Loading state
 
   const login = useAuthStore((state) => state.login);
   const setProfile = useUserStore((state) => state.setProfile);
@@ -19,6 +21,7 @@ const RegisterPage = () => {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(""); // Clear previous errors
+    setIsLoading(true); // Added: Set loading to true on submission start
 
     try {
       const userPayload = {
@@ -29,7 +32,7 @@ const RegisterPage = () => {
         progress: topics.split(",").map((topic) => topic.trim()).filter(Boolean),
       };
 
-      const res = await axios.post("http://localhost:5000/api/register", userPayload);
+      const res = await api.post("/register", userPayload);
 
       if (res.status === 201) {
         const userData = res.data.user;
@@ -39,6 +42,8 @@ const RegisterPage = () => {
       }
     } catch (err: any) {
       setError(err.response?.data?.error || "Registration failed. Please try again.");
+    } finally {
+      setIsLoading(false); // Added: Set loading to false when submission finishes
     }
   };
 
@@ -54,8 +59,9 @@ const RegisterPage = () => {
             className="form-control form-control-lg bg-dark-subtle text-dark-contrast border-secondary"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="Enter your full name" // Added placeholder
+            placeholder="Enter your full name"
             required
+            disabled={isLoading} // Added: Disable input when loading
           />
         </div>
 
@@ -67,8 +73,9 @@ const RegisterPage = () => {
             className="form-control form-control-lg bg-dark-subtle text-dark-contrast border-secondary"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            placeholder="Choose a username" // Added placeholder
+            placeholder="Choose a username"
             required
+            disabled={isLoading} // Added: Disable input when loading
           />
         </div>
 
@@ -80,8 +87,9 @@ const RegisterPage = () => {
             className="form-control form-control-lg bg-dark-subtle text-dark-contrast border-secondary"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="Create a password" // Added placeholder
+            placeholder="Create a password"
             required
+            disabled={isLoading} // Added: Disable input when loading
           />
         </div>
 
@@ -93,7 +101,8 @@ const RegisterPage = () => {
             className="form-control form-control-lg bg-dark-subtle text-dark-contrast border-secondary"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="Enter your email address" // Added placeholder
+            placeholder="Enter your email address"
+            disabled={isLoading} // Added: Disable input when loading
           />
         </div>
 
@@ -106,10 +115,17 @@ const RegisterPage = () => {
             onChange={(e) => setTopics(e.target.value)}
             placeholder="e.g. Recursion, Loops, Functions"
             rows={4}
+            disabled={isLoading} // Added: Disable input when loading
           ></textarea>
         </div>
 
-        <button type="submit" className="btn btn-primary btn-lg w-100">Register</button>
+        <button
+          type="submit"
+          className="btn btn-primary btn-lg w-100"
+          disabled={isLoading} // Added: Disable button when loading
+        >
+          {isLoading ? <LoadingSpinner size="sm" /> : "Register"} {/* Added: Display spinner or text */}
+        </button>
       </form>
 
       {error && <div className="alert alert-danger mt-4 text-center">{error}</div>}

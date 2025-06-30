@@ -1,0 +1,5 @@
+{
+  "title": "abstraction",
+  "lecture": "04",
+  "content": "Abstraction is the process of hiding details and showing only the essential features of a concept. It helps manage complexity by focusing on what an object does instead of how it does it. In programming, abstraction can be achieved by designing functions or modules with clearly defined inputs and outputs, allowing the internal workings to change without affecting the overall system."
+}

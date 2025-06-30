@@ -1,33 +1,77 @@
-/* App.css - All custom styles removed, rely on Bootstrap */
-/* Basic dark theme adjustments for the body and root if Bootstrap's defaults aren't enough */
+/* client/src/App.css - Add these styles */
+
+/* Basic Spinner */
+.spinner {
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top: 4px solid #a872e6; /* Primary color for spinner */
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  animation: spin 1s linear infinite;
+  display: inline-block; /* To allow text beside it */
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Full-page Overlay for major loading states */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent dark background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1050; /* Above Bootstrap navbars, etc. */
+  color: white;
+  flex-direction: column;
+}
+
+.loading-overlay .spinner {
+    width: 50px; /* Larger spinner for overlay */
+    height: 50px;
+    border-width: 6px;
+    margin-bottom: 15px;
+}
+
+/* --- Existing App.css styles (keep these) --- */
 body {
-  background-color: #1a1a1a; /* Dark background for the entire page */
-  color: #e0e0e0; /* Default light text color for most elements */
+  background-color: #1a1a1a;
+  color: #e0e0e0;
 }
 
 #root {
-  background-color: #1a1a1a; /* Ensure the root element also has the dark background */
-  color: #e0e0e0; /* Light text color for root content */
+  background-color: #1a1a1a;
+  color: #e0e0e0;
 }
 
-/* Custom text color for better contrast on subtle dark backgrounds */
 .text-dark-contrast {
-  color: #333333 !important; /* A dark grey, almost black */
+  color: #333333 !important;
 }
 
-/* Custom purple color for headings */
 .text-purple {
-  color: #a872e6 !important; /* !important to override Bootstrap if needed */
+  color: #a872e6 !important;
 }
 .border-dashed {
   border-style: dashed !important;
 }
 
-/* --- Placeholder Text Color Fix --- */
-/* Target placeholders specifically and make them a noticeable light grey */
 .form-control::placeholder,
-.form-control:-ms-input-placeholder, /* For IE 10-11 */
-.form-control::-ms-input-placeholder { /* For Microsoft Edge */
-  color: #aaaaaa; /* A clear, light grey */
-  opacity: 1; /* Ensure opacity is 1, as some browsers reduce it by default */
+.form-control:-ms-input-placeholder,
+.form-control::-ms-input-placeholder {
+  color: #aaaaaa;
+  opacity: 1;
+}
+
+.clickable-badge {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+.clickable-badge:hover {
+    background-color: #555555 !important;
 }

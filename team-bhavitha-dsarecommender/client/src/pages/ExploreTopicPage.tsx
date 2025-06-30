@@ -1,6 +1,8 @@
+// client/src/pages/ExploreTopicPage.tsx
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom"; // Import useNavigate
-import axios from "axios";
+import { useParams, useNavigate } from "react-router-dom";
+import api from "../lib/api";
+import LoadingSpinner from "../components/LoadingSpinner"; // Import LoadingSpinner
 
 interface Concept {
   name: string;
@@ -16,16 +18,20 @@ const ExploreTopicPage = () => {
   const { topic } = useParams<{ topic: string }>();
   const [concept, setConcept] = useState<Concept | null>(null);
   const [error, setError] = useState("");
-  const navigate = useNavigate(); // Initialize useNavigate
+  const [loading, setLoading] = useState(true); // Initial loading state for data fetch
+  const [isTakingQuiz, setIsTakingQuiz] = useState(false); // State for quiz button loading
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!topic) {
       setError("No topic specified for exploration.");
+      setLoading(false);
       return;
     }
 
-    axios
-      .get(`/api/explore/${encodeURIComponent(topic)}`)
+    setLoading(true); // Set loading true on fetch start
+    api
+      .get(`/explore/${encodeURIComponent(topic)}`)
       .then((res) => {
         setConcept(res.data);
         setError("");
@@ -34,11 +40,19 @@ const ExploreTopicPage = () => {
         console.error("Error fetching concept:", err);
         setError("Couldn't load concept information. Please try again later.");
         setConcept(null);
+      })
+      .finally(() => {
+        setLoading(false); // Set loading false on fetch end
       });
   }, [topic]);
 
   const handleTakeQuiz = (selectedTopic: string) => {
-    navigate(`/quiz/${encodeURIComponent(selectedTopic)}`);
+    setIsTakingQuiz(true); // Start loading animation for the button
+    // Simulate a network delay or processing time before navigation
+    setTimeout(() => {
+      navigate(`/quiz/${encodeURIComponent(selectedTopic)}`);
+      setIsTakingQuiz(false); // End loading (though navigation changes page)
+    }, 800); // 800ms delay for demonstration
   };
 
   if (error) {
@@ -54,10 +68,10 @@ const ExploreTopicPage = () => {
     );
   }
 
-  if (!concept) {
+  if (loading) {
     return (
       <div className="container py-5 bg-dark text-white rounded shadow-lg text-center">
-        <p className="text-white fs-5">Loading concept information...</p>
+        <LoadingSpinner size="lg" message="Loading concept information..." /> {/* Use spinner here */}
         <button onClick={() => navigate('/dashboard')} className="btn btn-secondary mt-3">
           Back to Dashboard
         </button>
@@ -78,7 +92,7 @@ const ExploreTopicPage = () => {
       {concept.examples && concept.examples.length > 0 && (
         <div className="card bg-dark-subtle text-dark-contrast p-4 mb-4 shadow-sm">
           <h5 className="card-title text-info mb-3">
-            <i className="bi bi-lightbulb-fill me-2"></i> Examples: {/* Icon added */}
+            <i className="bi bi-lightbulb-fill me-2"></i> Examples:
           </h5>
           <ul className="list-group list-group-flush bg-dark-subtle">
             {concept.examples.map((ex, i) => (
@@ -93,7 +107,7 @@ const ExploreTopicPage = () => {
       {concept.related_topics && concept.related_topics.length > 0 && (
         <div className="card bg-dark-subtle text-dark-contrast p-4 mb-4 shadow-sm">
           <h5 className="card-title text-info mb-3">
-            <i className="bi bi-link-45deg me-2"></i> Related Topics: {/* Icon added */}
+            <i className="bi bi-link-45deg me-2"></i> Related Topics:
           </h5>
           <ul className="list-group list-group-flush bg-dark-subtle">
             {concept.related_topics.map((related, i) => (
@@ -105,19 +119,20 @@ const ExploreTopicPage = () => {
         </div>
       )}
 
-      <div className="card bg-dark-subtle p-4 mb-4 d-flex justify-content-between align-items-center flex-wrap shadow-sm"> {/* Added flex utilities */}
-        <p className="mb-0 fs-5 text-dark-contrast"> {/* Increased font size */}
+      <div className="card bg-dark-subtle p-4 mb-4 d-flex justify-content-between align-items-center flex-wrap shadow-sm">
+        <p className="mb-0 fs-5 text-dark-contrast">
           <strong>Quiz Available:</strong>{" "}
           <span className={concept.quiz_available ? "text-success fw-bold" : "text-danger fw-bold"}>
-            {concept.quiz_available ? "Yes!" : "No."} {/* More emphatic text */}
+            {concept.quiz_available ? "Yes!" : "No."}
           </span>
         </p>
         {concept.quiz_available && (
           <button
             onClick={() => handleTakeQuiz(concept.name)}
-            className="btn btn-primary btn-lg mt-3 mt-md-0" // Added margin top for small screens
+            className="btn btn-primary btn-lg mt-3 mt-md-0"
+            disabled={isTakingQuiz} // Disable button when loading
           >
-            Take Quiz Now <i className="bi bi-arrow-right-circle-fill ms-2"></i> {/* Icon added */}
+            {isTakingQuiz ? <LoadingSpinner size="sm" /> : "Take Quiz Now"} <i className="bi bi-arrow-right-circle-fill ms-2"></i>
           </button>
         )}
       </div>

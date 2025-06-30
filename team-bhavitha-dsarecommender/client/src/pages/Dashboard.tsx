@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import { useAuthStore } from "../store/authStore";
+import api from "../lib/api";
 import { useUserStore } from "../store/userStore";
 import LearnedConceptCard from "../components/LearnedConceptCard";
 import QuizCard from "../components/QuizCard";
+import { validTopics } from "../data/validTopic";
 import {
   LineChart,
   Line,
@@ -23,26 +23,22 @@ interface QuizHistoryEntry {
 }
 
 const Dashboard = () => {
-  const logout = useAuthStore((state) => state.logout);
-  const clearProfile = useUserStore((state) => state.clearProfile);
   const username = useUserStore((state) => state.username);
   const mastery = useUserStore((state) => state.mastery);
   const progress = useUserStore((state) => state.progress);
   const recommendations = useUserStore((state) => state.recommendations);
+  const quizHistory = useUserStore((state) => state.quizHistory);
+  const setQuizHistory = useUserStore((state) => state.setQuizHistory);
+  const setProfile = useUserStore((state) => state.setProfile);
+  const addLearnedTopic = useUserStore((state) => state.addLearnedTopic);
+  const removeLearnedTopic = useUserStore((state) => state.removeLearnedTopic);
 
   const navigate = useNavigate();
 
-  const [quizHistory, setQuizHistory] = useState<QuizHistoryEntry[]>([]);
   const [startConcept, setStartConcept] = useState("");
   const [endConcept, setEndConcept] = useState("");
   const [recommendedPath, setRecommendedPath] = useState<string[]>([]);
   const [pathError, setPathError] = useState<string | null>(null);
-
-  const handleLogout = () => {
-    logout();
-    clearProfile();
-    navigate("/");
-  };
 
   const handleTakeQuiz = (selectedTopic: string) => {
     navigate(`/quiz/${encodeURIComponent(selectedTopic)}`);
@@ -51,8 +47,37 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchHistory = async () => {
       try {
-        const res = await axios.get(`/api/quiz-history/${username}`);
-        setQuizHistory(Array.isArray(res.data) ? res.data : []);
+        const res = await api.get(`/quiz-history/${username}`);
+        if (Array.isArray(res.data)) {
+          setQuizHistory(res.data);
+
+          // Group scores per topic
+          const topicScoresMap: Record<string, number[]> = {};
+          res.data.forEach((entry: QuizHistoryEntry) => {
+            if (!topicScoresMap[entry.topic]) {
+              topicScoresMap[entry.topic] = [];
+            }
+            topicScoresMap[entry.topic].push(entry.mastery);
+          });
+
+          // Compute average mastery per topic
+          const updatedMastery: Record<string, number> = {};
+          Object.entries(topicScoresMap).forEach(([topic, scores]) => {
+            const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
+            updatedMastery[topic] = avg;
+
+            const confidence = 1 - avg;
+            const isLearned = progress.includes(topic);
+
+            if (confidence >= 0.7 && !isLearned) {
+              addLearnedTopic(topic);
+            } else if (confidence < 0.7 && isLearned) {
+              removeLearnedTopic(topic);
+            }
+          });
+
+          setProfile({ mastery: updatedMastery });
+        }
       } catch (err) {
         console.error("Failed to fetch quiz history", err);
         setQuizHistory([]);
@@ -60,7 +85,7 @@ const Dashboard = () => {
     };
 
     if (username) fetchHistory();
-  }, [username]);
+  }, [username, setQuizHistory, setProfile, progress, addLearnedTopic, removeLearnedTopic]);
 
   const handleGetPath = async () => {
     setPathError(null);
@@ -70,13 +95,13 @@ const Dashboard = () => {
       return;
     }
     try {
-      const res = await axios.post("http://localhost:5000/api/recommendation", {
+      const res = await api.post("/recommendation", {
         start: startConcept.trim(),
         end: endConcept.trim(),
-        username: username
+        username,
       });
       setRecommendedPath(res.data.path || []);
-      if (res.data.path && res.data.path.length === 0) {
+      if (res.data.path?.length === 0) {
         setPathError("No path found between the specified concepts.");
       }
     } catch (err: any) {
@@ -97,8 +122,8 @@ const Dashboard = () => {
       <h2 className="text-center mb-4 text-purple">Welcome, {username}!</h2>
       <p className="text-center text-white mb-5">This is your personalized dashboard.</p>
 
+      {/* Mastery Over Time */}
       <hr className="my-5 border-secondary border-dashed" />
-      {/* Mastery Progress Line Chart */}
       <div className="dashboard-section mb-5 pt-3">
         <h3 className="text-center mb-4 text-info">Mastery Over Time</h3>
         {chartData.length === 0 ? (
@@ -106,10 +131,7 @@ const Dashboard = () => {
         ) : (
           <div className="chart-container bg-dark-subtle p-3 rounded shadow">
             <ResponsiveContainer width="100%" height={400}>
-              <LineChart
-                data={chartData}
-                margin={{ top: 15, right: 30, left: 20, bottom: 5 }}
-              >
+              <LineChart data={chartData} margin={{ top: 15, right: 30, left: 20, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#444444" />
                 <XAxis dataKey="topic" interval={0} angle={-30} textAnchor="end" stroke="#b0b0b0" />
                 <YAxis domain={[0, 100]} label={{ value: 'Confidence (%)', angle: -90, position: 'insideLeft', fill: '#b0b0b0' }} stroke="#b0b0b0" />
@@ -121,8 +143,8 @@ const Dashboard = () => {
         )}
       </div>
 
+      {/* Mastery Levels */}
       <hr className="my-5 border-secondary border-dashed" />
-      {/* Current Mastery Levels */}
       <div className="dashboard-section mb-5 pt-3">
         <h3 className="text-center mb-4 text-info">Current Mastery Levels</h3>
         {Object.keys(mastery).length === 0 ? (
@@ -131,15 +153,16 @@ const Dashboard = () => {
           <ul className="list-group list-group-flush mx-auto" style={{ maxWidth: '800px' }}>
             {Object.entries(mastery).map(([topic, score]) => (
               <li key={topic} className="list-group-item bg-secondary-subtle border-start border-5 border-success rounded mb-3 shadow-sm d-flex justify-content-between align-items-center text-dark">
-                <strong>{topic}</strong> <span className="badge bg-primary text-white fs-6">{(1 - score).toFixed(2)} Confidence</span>
+                <strong>{topic}</strong>
+                <span className="badge bg-primary text-white fs-6">{(1 - score).toFixed(2)} Confidence</span>
               </li>
             ))}
           </ul>
         )}
       </div>
 
-      <hr className="my-5 border-secondary border-dashed" />
       {/* Topics Learned */}
+      <hr className="my-5 border-secondary border-dashed" />
       <div className="dashboard-section mb-5 pt-3">
         <h3 className="text-center mb-4 text-info">Topics Learned</h3>
         <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 justify-content-center">
@@ -155,86 +178,13 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <hr className="my-5 border-secondary border-dashed" />
-      {/* Recommended Topics */}
-      <div className="dashboard-section mb-5 pt-3">
-        <h3 className="text-center mb-4 text-info">Recommended Next Topics</h3>
-        <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 justify-content-center">
-          {recommendations.length === 0 ? (
-            <p className="text-center text-white mt-3 col-12">No current recommendations. Explore new topics!</p>
-          ) : (
-            recommendations.map((topic) => (
-              <div className="col" key={topic}>
-                <QuizCard
-                  topic={topic}
-                  onTakeQuiz={handleTakeQuiz}
-                />
-              </div>
-            ))
-          )}
-        </div>
-      </div>
-
-      <hr className="my-5 border-secondary border-dashed" />
-      {/* Get Learning Path Recommendation */}
-      <div className="dashboard-section mb-5 pt-3">
-        <h3 className="text-center mb-4 text-info">Get Learning Path Recommendation</h3>
-        <div className="d-flex flex-column flex-md-row justify-content-center gap-3 mb-4 align-items-center">
-          <input
-            type="text"
-            placeholder="Start Concept (e.g., Variables)"
-            value={startConcept}
-            onChange={(e) => setStartConcept(e.target.value)}
-            className="form-control form-control-lg bg-dark-subtle text-dark-contrast border-secondary"
-            style={{ maxWidth: '300px' }}
-          />
-          <input
-            type="text"
-            placeholder="Target Concept (e.g., Recursion)"
-            value={endConcept}
-            onChange={(e) => setEndConcept(e.target.value)}
-            className="form-control form-control-lg bg-dark-subtle text-dark-contrast border-secondary"
-            style={{ maxWidth: '300px' }}
-          />
-          <button onClick={handleGetPath} className="btn btn-primary btn-lg flex-shrink-0">
-            Get Path
-          </button>
-        </div>
-
-        {pathError && <div className="alert alert-danger text-center mt-3">{pathError}</div>}
-
-        {recommendedPath.length > 0 && (
-          <div className="recommended-path-section bg-secondary-subtle p-4 rounded shadow mt-4 text-dark-contrast">
-            <h4 className="text-center mb-4 text-info">Recommended Path:</h4>
-            <ul className="list-group list-group-flush">
-              {recommendedPath.map((topic, idx) => (
-                <li key={idx} className="list-group-item bg-dark-subtle border-secondary rounded mb-3 shadow-sm d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 py-3 text-dark-contrast">
-                  <span className="fs-5 text-dark-contrast">
-                    {idx + 1}. <strong>{topic}</strong>
-                  </span>
-                  <div className="d-flex gap-2 flex-wrap justify-content-center justify-content-md-end">
-                    <button onClick={() => handleTakeQuiz(topic)} className="btn btn-success btn-sm">
-                      Take Quiz
-                    </button>
-                    <button onClick={() => navigate(`/explore/${topic}`)} className="btn btn-info btn-sm">
-                      Explore
-                    </button>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </div>
-
-      <hr className="my-5 border-secondary border-dashed" />
       {/* Quiz History */}
+      <hr className="my-5 border-secondary border-dashed" />
       <div className="dashboard-section mb-5 pt-3">
         <h3 className="text-center mb-4 text-info">Quiz History</h3>
         {quizHistory.length === 0 ? (
           <p className="text-center text-white mt-3">No quiz attempts recorded yet.</p>
         ) : (
-          // Changed to row and col-md-6 for 2-column layout on medium screens and up
           <div className="row row-cols-1 row-cols-md-2 g-3 justify-content-center">
             {quizHistory.map((entry, i) => (
               <div className="col" key={i}>

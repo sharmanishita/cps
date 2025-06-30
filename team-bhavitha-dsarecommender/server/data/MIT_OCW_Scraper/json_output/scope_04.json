@@ -1,0 +1,5 @@
+{
+  "title": "scope",
+  "lecture": "04",
+  "content": "Scope defines where a variable can be accessed in a program. Variables declared inside a function are local to that function and cannot be accessed outside. Global variables, on the other hand, can be accessed throughout the entire program. Python also allows nested functions, where inner functions can access variables from enclosing functions (nonlocal scope). Understanding scope is critical to avoid bugs and manage data flow between parts of a program."
+}
