@@ -44,9 +44,9 @@ In **Continuous Active Learning (CAL)** environments, if a student gets stuck at
 ## 👥 Internship Team Structure
 
 ### Team T1
-- **Adwaidh Payattuparambil** (Team Lead) - adwaidhp48@gmail.com  
+- **Parthan Rajesh** (Team Lead) - parthanrajesh683@gmail.com  
 - Manjistha Bidkar - manjisthabidkar@gmail.com  
-- Parthan Rajesh - parthanrajesh683@gmail.com  
+- Adwaidh Payattuparambil - adwaidhp48@gmail.com  
 - Srishti Koni - konisrishti12@gmail.com  
 - Vansh Tuteja - vanshtuteja140704@gmail.com  
 
