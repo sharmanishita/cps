@@ -1,8 +1,6 @@
-// client/src/pages/ExploreTopicPage.tsx
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import api from "../lib/api";
-import LoadingSpinner from "../components/LoadingSpinner"; // Import LoadingSpinner
+import { useParams, useNavigate } from "react-router-dom"; // Import useNavigate
+import axios from "axios";
 
 interface Concept {
   name: string;
@@ -18,20 +16,16 @@ const ExploreTopicPage = () => {
   const { topic } = useParams<{ topic: string }>();
   const [concept, setConcept] = useState<Concept | null>(null);
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(true); // Initial loading state for data fetch
-  const [isTakingQuiz, setIsTakingQuiz] = useState(false); // State for quiz button loading
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // Initialize useNavigate
 
   useEffect(() => {
     if (!topic) {
       setError("No topic specified for exploration.");
-      setLoading(false);
       return;
     }
 
-    setLoading(true); // Set loading true on fetch start
-    api
-      .get(`/explore/${encodeURIComponent(topic)}`)
+    axios
+      .get(`/api/explore/${encodeURIComponent(topic)}`)
       .then((res) => {
         setConcept(res.data);
         setError("");
@@ -40,19 +34,11 @@ const ExploreTopicPage = () => {
         console.error("Error fetching concept:", err);
         setError("Couldn't load concept information. Please try again later.");
         setConcept(null);
-      })
-      .finally(() => {
-        setLoading(false); // Set loading false on fetch end
       });
   }, [topic]);
 
   const handleTakeQuiz = (selectedTopic: string) => {
-    setIsTakingQuiz(true); // Start loading animation for the button
-    // Simulate a network delay or processing time before navigation
-    setTimeout(() => {
-      navigate(`/quiz/${encodeURIComponent(selectedTopic)}`);
-      setIsTakingQuiz(false); // End loading (though navigation changes page)
-    }, 800); // 800ms delay for demonstration
+    navigate(`/quiz/${encodeURIComponent(selectedTopic)}`);
   };
 
   if (error) {
@@ -68,10 +54,10 @@ const ExploreTopicPage = () => {
     );
   }
 
-  if (loading) {
+  if (!concept) {
     return (
       <div className="container py-5 bg-dark text-white rounded shadow-lg text-center">
-        <LoadingSpinner size="lg" message="Loading concept information..." /> {/* Use spinner here */}
+        <p className="text-white fs-5">Loading concept information...</p>
         <button onClick={() => navigate('/dashboard')} className="btn btn-secondary mt-3">
           Back to Dashboard
         </button>
@@ -92,7 +78,7 @@ const ExploreTopicPage = () => {
       {concept.examples && concept.examples.length > 0 && (
         <div className="card bg-dark-subtle text-dark-contrast p-4 mb-4 shadow-sm">
           <h5 className="card-title text-info mb-3">
-            <i className="bi bi-lightbulb-fill me-2"></i> Examples:
+            <i className="bi bi-lightbulb-fill me-2"></i> Examples: {/* Icon added */}
           </h5>
           <ul className="list-group list-group-flush bg-dark-subtle">
             {concept.examples.map((ex, i) => (
@@ -107,7 +93,7 @@ const ExploreTopicPage = () => {
       {concept.related_topics && concept.related_topics.length > 0 && (
         <div className="card bg-dark-subtle text-dark-contrast p-4 mb-4 shadow-sm">
           <h5 className="card-title text-info mb-3">
-            <i className="bi bi-link-45deg me-2"></i> Related Topics:
+            <i className="bi bi-link-45deg me-2"></i> Related Topics: {/* Icon added */}
           </h5>
           <ul className="list-group list-group-flush bg-dark-subtle">
             {concept.related_topics.map((related, i) => (
@@ -119,20 +105,19 @@ const ExploreTopicPage = () => {
         </div>
       )}
 
-      <div className="card bg-dark-subtle p-4 mb-4 d-flex justify-content-between align-items-center flex-wrap shadow-sm">
-        <p className="mb-0 fs-5 text-dark-contrast">
+      <div className="card bg-dark-subtle p-4 mb-4 d-flex justify-content-between align-items-center flex-wrap shadow-sm"> {/* Added flex utilities */}
+        <p className="mb-0 fs-5 text-dark-contrast"> {/* Increased font size */}
           <strong>Quiz Available:</strong>{" "}
           <span className={concept.quiz_available ? "text-success fw-bold" : "text-danger fw-bold"}>
-            {concept.quiz_available ? "Yes!" : "No."}
+            {concept.quiz_available ? "Yes!" : "No."} {/* More emphatic text */}
           </span>
         </p>
         {concept.quiz_available && (
           <button
             onClick={() => handleTakeQuiz(concept.name)}
-            className="btn btn-primary btn-lg mt-3 mt-md-0"
-            disabled={isTakingQuiz} // Disable button when loading
+            className="btn btn-primary btn-lg mt-3 mt-md-0" // Added margin top for small screens
           >
-            {isTakingQuiz ? <LoadingSpinner size="sm" /> : "Take Quiz Now"} <i className="bi bi-arrow-right-circle-fill ms-2"></i>
+            Take Quiz Now <i className="bi bi-arrow-right-circle-fill ms-2"></i> {/* Icon added */}
           </button>
         )}
       </div>

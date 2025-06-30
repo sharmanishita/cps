@@ -1,15 +1,13 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import api from "../lib/api"; // or "../../lib/api" based on depth
+import axios from "axios";
 import { useAuthStore } from "../store/authStore";
 import { useUserStore } from "../store/userStore";
-import LoadingSpinner from "../components/LoadingSpinner"; // Import LoadingSpinner
 
 const LoginPage = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false); // Added: Loading state
 
   const login = useAuthStore((state) => state.login);
   const setProfile = useUserStore((state) => state.setProfile);
@@ -18,10 +16,12 @@ const LoginPage = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(""); // Clear previous errors
-    setIsLoading(true); // Added: Set loading to true when login starts
 
     try {
-      const res = await api.post("/login", { username, password });
+      const res = await axios.post("http://localhost:5000/api/login", {
+        username,
+        password,
+      });
 
       if (res.status === 200) {
         const userData = res.data.user;
@@ -31,8 +31,6 @@ const LoginPage = () => {
       }
     } catch (err: any) {
       setError(err.response?.data?.error || "Login failed. Please check your credentials.");
-    } finally {
-      setIsLoading(false); // Added: Set loading to false when login attempt finishes
     }
   };
 
@@ -48,9 +46,8 @@ const LoginPage = () => {
             className="form-control form-control-lg bg-dark-subtle text-dark-contrast border-secondary"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            placeholder="Enter your username"
+            placeholder="Enter your username" // Added placeholder
             required
-            disabled={isLoading} // Added: Disable input when loading
           />
         </div>
         <div className="mb-4">
@@ -61,18 +58,11 @@ const LoginPage = () => {
             className="form-control form-control-lg bg-dark-subtle text-dark-contrast border-secondary"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="Enter your password"
+            placeholder="Enter your password" // Added placeholder
             required
-            disabled={isLoading} // Added: Disable input when loading
           />
         </div>
-        <button
-          type="submit"
-          className="btn btn-primary btn-lg w-100"
-          disabled={isLoading} // Added: Disable button when loading
-        >
-          {isLoading ? <LoadingSpinner size="sm" /> : "Login"} {/* Added: Display spinner or text */}
-        </button>
+        <button type="submit" className="btn btn-primary btn-lg w-100">Login</button>
       </form>
 
       {error && <div className="alert alert-danger mt-4 text-center">{error}</div>}

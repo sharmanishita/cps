@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
 import { useUserStore } from "../store/userStore";
-//import { useState } from "react";
+import { useState } from "react";
 
 const Navbar = () => {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
@@ -55,7 +55,7 @@ const Navbar = () => {
             <li className="nav-item">
               {/* Direct to dashboard to find recommendation */}
               <Link
-                to={protectedLink("/recommend")}
+                to={protectedLink("/dashboard")}
                 className="nav-link text-white fw-semibold mx-2"
               >
                 Get Recommendation

@@ -1,246 +1,100 @@
-// // // import { OpenAI } from "openai";
-// // // import dotenv from "dotenv";
-//  import path from "path";
-// // // dotenv.config({ path: path.join(__dirname, "../../.env") });
+import { GoogleGenerativeAI, HarmBlockThreshold, HarmCategory } from '@google/generative-ai';
 
+// Make sure your .env file in the 'server' directory has GEMINI_API_KEY=YOUR_API_KEY
+const API_KEY = process.env.GEMINI_API_KEY;
 
-// // // const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-
-// // // interface RawQuestion {
-// // //   question: string;
-// // //   options: string[];
-// // //   answer: string;
-// // // }
-
-// // // export async function generateQuizFromText(text: string, topic: string) {
-// // //   const prompt = `
-// // // You are a quiz generation assistant.
-
-// // // Generate exactly 10 medium-to-hard multiple choice questions (MCQs) on the topic: "${topic}".
-// // // Each question must have 4 answer options and one correct answer.
-
-// // // Return ONLY valid JSON like:
-// // // [
-// // //   {
-// // //     "question": "....",
-// // //     "options": ["A", "B", "C", "D"],
-// // //     "answer": "..."
-// // //   },
-// // //   ...
-// // // ]
-
-// // // Lecture content:
-// // // """ 
-// // // ${text.slice(0, 4000)}
-// // // """
-// // // `;
-
-// // //   const response = await openai.chat.completions.create({
-// // //     model: "gpt-4o",
-// // //     messages: [{ role: "user", content: prompt }],
-// // //     temperature: 0.7,
-// // //   });
-
-// // //   const raw = response.choices[0].message.content || "[]";
-// // //   const parsed: RawQuestion[] = JSON.parse(raw);
-
-// // //   return {
-// // //     questions: parsed.map(({ question, options }) => ({ question, options })),
-// // //     _correctAnswers: parsed.map(({ answer }) => answer)
-// // //   };
-// // // }
-// // import axios from "axios";
-// // import dotenv from "dotenv";
-// // dotenv.config({ path: path.join(__dirname, "../../.env") });
-
-// // const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent";
-
-// // export async function generateQuizFromText(text: string, topic: string) {
-// //   const prompt = `
-// // Generate exactly 10 multiple choice questions (MCQs) of medium to hard difficulty on the topic: "${topic}".
-// // Each question should include:
-// // - a clear question
-// // - 4 options
-// // - one correct answer
-
-// // Respond ONLY in valid JSON format:
-// // [
-// //   {
-// //     "question": "...",
-// //     "options": ["...", "...", "...", "..."],
-// //     "answer": "..."
-// //   }
-// // ]
-
-// // Context:
-// // """
-// // ${text.slice(0, 4000)}
-// // """`;
-
-// //   try {
-// //     const response = await axios.post(
-// //       `${GEMINI_API_URL}?key=${process.env.GEMINI_API_KEY}`,
-// //       {
-// //         contents: [
-// //           {
-// //             parts: [{ text: prompt }],
-// //           },
-// //         ],
-// //       }
-// //     );
-
-// //     // Assert the type of response.data to inform TypeScript about its structure
-// //     const data = response.data as {
-// //       candidates?: { content?: { parts?: { text?: string }[] } }[];
-// //     };
-
-// //     const textResponse = data.candidates?.[0]?.content?.parts?.[0]?.text;
-// //     const json = textResponse?.replace(/```json|```/g, "").trim() ?? ""; // Remove code block wrappers
-
-// //     const parsed = JSON.parse(json);
-
-// //     return {
-// //       questions: parsed.map(({ question, options }: any) => ({ question, options })),
-// //       _correctAnswers: parsed.map((q: any) => q.answer),
-// //     };
-// //   } catch (err) {
-// //     console.error("❌ Gemini API error:", err);
-// //     throw new Error("Gemini quiz generation failed.");
-// //   }
-// // }
-// import axios from "axios";
-// import dotenv from "dotenv";
-// dotenv.config({ path: path.join(__dirname, "../../.env") });
-
-// const GEMINI_API_URL =
-//   "https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent";
-
-// interface MCQ {
-//   question: string;
-//   options: string[];
-//   answer: string;
-// }
-
-// export async function generateQuizFromText(text: string, topic: string) {
-//   const prompt = `
-// Generate 10 MCQs on the topic "${topic}". Return them in this format:
-// [
-//   {
-//     "question": "...",
-//     "options": ["A", "B", "C", "D"],
-//     "answer": "..."
-//   }
-// ]
-
-// Lecture content:
-// """
-// ${text.slice(0, 4000)}
-// """`;
-
-//   try {
-//     const res = await axios.post(
-//       `${GEMINI_API_URL}?key=${process.env.GEMINI_API_KEY}`,
-//       {
-//         contents: [{ parts: [{ text: prompt }] }],
-//       }
-//     );
-
-//     // Assert the type of res.data to inform TypeScript about its structure
-//     const data = res.data as {
-//       candidates?: { content?: { parts?: { text?: string }[] } }[];
-//     };
-
-//     const textResponse = data.candidates?.[0]?.content?.parts?.[0]?.text;
-//     const cleaned = textResponse?.replace(/```json|```/g, "").trim() ?? "";
-//     const parsed: MCQ[] = JSON.parse(cleaned);
-
-//     return {
-//       questions: parsed.map(({ question, options }) => ({ question, options })),
-//       _correctAnswers: parsed.map((q) => q.answer),
-//     };
-//   } catch (err: any) {
-//     console.warn("⚠️ Gemini failed. Using fallback questions.", err?.response?.data || err);
-
-//     // ✅ Fallback mock data
-//     const mockQuestions: MCQ[] = Array.from({ length: 10 }).map((_, i) => ({
-//       question: `What is a mock question ${i + 1} on ${topic}?`,
-//       options: ["Option A", "Option B", "Option C", "Option D"],
-//       answer: "Option A",
-//     }));
-
-//     return {
-//       questions: mockQuestions.map(({ question, options }) => ({ question, options })),
-//       _correctAnswers: mockQuestions.map((q) => q.answer),
-//     };
-//   }
-// }
-// generateQuizFromText.ts
-import { GoogleGenAI } from "@google/genai";
-import dotenv from "dotenv";
-import path from "path";
-//dotenv.config({ path: path.join(__dirname, "../../.env") });
-dotenv.config();
-
-
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
-
-interface RawQuestion {
-  question: string;
-  options: string[];
-  answer: string;
+// Check if API key is set
+if (!API_KEY) {
+    console.error("Error: GEMINI_API_KEY environment variable is not set. Please set it in your .env file in the server directory.");
+    // You might want to throw an error or handle this more gracefully
+    // For now, we'll proceed but API calls will fail.
+    // throw new Error("GEMINI_API_KEY environment variable is not set.");
 }
 
-export async function generateQuizFromText(text: string, topic: string) {
-  const prompt = `
-Generate exactly 10 multiple choice questions (MCQs) of medium to hard difficulty on the topic: "${topic}".
+const genAI = new GoogleGenerativeAI(API_KEY || ''); // Provide a fallback empty string if API_KEY is undefined
 
-Each question should have:
-- a clear question
-- 4 options
-- one correct answer
+// For text-only input, use the gemini-pro model
+const model = genAI.getGenerativeModel({ model: "gemini-pro"});
 
-Respond ONLY in valid JSON like:
-[
-  {
-    "question": "...",
-    "options": ["...", "...", "...", "..."],
-    "answer": "..."
-  }
-]
+export async function generateQuiz(topic: string, difficulty: string, numQuestions: number): Promise<any> {
+    try {
+        // --- YOU NEED TO RECREATE YOUR SPECIFIC PROMPT LOGIC HERE ---
+        // This is where you craft the detailed instructions for Gemini.
+        // If you were using RAG, this is where you'd include your retrieved context.
+        const prompt = `Generate a ${difficulty} difficulty quiz with ${numQuestions} multiple-choice questions on the topic of "${topic}". Each question should have 4 options (A, B, C, D) and specify the correct answer. Provide the output in a JSON array format, where each object has "question", "options" (an array of strings), and "correctAnswer" (the letter A, B, C, or D). Ensure the JSON is valid and only the JSON is returned, no extra text.`;
 
-Lecture content:
-"""
-${text.slice(0, 4000)}
-"""
-`;
+        // Optional: Configuration for generation (adjust as needed for output control)
+        const generationConfig = {
+            maxOutputTokens: 2000,
+            temperature: 0.7, // Lower for more deterministic, higher for more creative
+            topP: 0.95,
+            topK: 64,
+        };
 
-  try {
-    const result = await ai.models.generateContent({
-      model: "gemini-1.5-flash",
-      contents: [{ role: "user", parts: [{ text: prompt }] }],
-    });
+        // Optional: Safety settings (adjust as needed for content moderation)
+        const safetySettings = [
+            {
+                category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+                threshold: HarmBlockThreshold.BLOCK_NONE, // Or BLOCK_MEDIUM_AND_ABOVE etc.
+            },
+            {
+                category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+                threshold: HarmBlockThreshold.BLOCK_NONE,
+            },
+            {
+                category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+                threshold: HarmBlockThreshold.BLOCK_NONE,
+            },
+            {
+                category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+                threshold: HarmBlockThreshold.BLOCK_NONE,
+            },
+        ];
 
-    const textResponse = result.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
-    const cleaned = textResponse.replace(/```json|```/g, "").trim();
-    const parsed: RawQuestion[] = JSON.parse(cleaned);
+        console.log("Sending prompt to Gemini:", prompt);
+        const result = await model.generateContent({
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig,
+            safetySettings,
+        });
 
-    return {
-      questions: parsed.map(({ question, options }) => ({ question, options })),
-      _correctAnswers: parsed.map((q) => q.answer),
-    };
-  } catch (err) {
-    console.warn("⚠️ Gemini failed, using fallback questions.\n", err);
+        const response = result.response;
+        const text = response.text();
 
-    //Fallback mock questions
-    const mockQuestions: RawQuestion[] = Array.from({ length: 10 }).map((_, i) => ({
-      question: `What is a mock question ${i + 1} on ${topic}?`,
-      options: ["Option A", "Option B", "Option C", "Option D"],
-      answer: "Option A",
-    }));
+        console.log("Gemini API Raw Response:", text); // Log raw response for debugging
 
-    return {
-      questions: mockQuestions.map(({ question, options }) => ({ question, options })),
-      _correctAnswers: mockQuestions.map((q) => q.answer),
-    };
-  }
+        // --- YOU NEED TO RECREATE YOUR PARSING LOGIC HERE ---
+        // The AI might return text that needs cleaning or specific JSON parsing.
+        // For example, if it wraps JSON in markdown code blocks (```json ... ```)
+        let cleanedText = text.replace(/```json\n|\n```/g, '').trim();
+
+        let quizData;
+        try {
+            quizData = JSON.parse(cleanedText);
+            // Basic validation to ensure it's an array of objects
+            if (!Array.isArray(quizData) || !quizData.every(q => typeof q === 'object' && q !== null)) {
+                throw new Error("Parsed data is not an array of quiz objects.");
+            }
+        } catch (parseError) {
+            console.error("Failed to parse Gemini response as JSON:", parseError);
+            console.error("Raw text attempted to parse:", cleanedText);
+            // Implement a fallback or more robust parsing if necessary
+            // For example, try to extract JSON using regex if parsing fails due to extra text
+            throw new Error("Could not parse AI response into valid JSON for quiz. Raw response might be malformed.");
+        }
+
+        return quizData;
+
+    } catch (error: any) {
+        console.error('Error in generateQuiz:', error);
+        // Add more specific error handling for Gemini API errors like rate limits, safety blocks etc.
+        if (error.message.includes("SAFETY")) {
+             throw new Error("Quiz generation failed due to safety filters. Please try a different topic or wording.");
+        }
+        if (error.message.includes("rate limit")) {
+            throw new Error("Quiz generation failed due to API rate limits. Please try again in a few minutes or check your quota.");
+        }
+        // General error
+        throw new Error(`Quiz generation failed: ${error.message || "Unknown error"}`);
+    }
 }

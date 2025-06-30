@@ -1,24 +1,26 @@
-// client/src/components/QuizCard.tsx
-import LoadingSpinner from "./LoadingSpinner"; // Import LoadingSpinner
+import { useNavigate } from "react-router-dom";
 
 interface QuizCardProps {
   topic: string;
-  onTakeQuiz: (topic: string) => void;
-  isLoading?: boolean; // Add isLoading prop
+  onTakeQuiz: (selectedTopic: string) => void; // Keeping this prop for consistency, though direct navigate is used
 }
 
-const QuizCard = ({ topic, onTakeQuiz, isLoading }: QuizCardProps) => {
+const QuizCard = ({ topic }: QuizCardProps) => {
+  const navigate = useNavigate();
+
+  const handleTakeQuiz = () => {
+    navigate(`/quiz/${encodeURIComponent(topic)}`);
+  };
+
   return (
-    <div className="card text-center bg-secondary-subtle text-white h-100 shadow-sm border border-info">
-      <div className="card-body d-flex flex-column justify-content-between">
-        <h4 className="card-title text-info mb-3">{topic}</h4>
-        <p className="card-text text-muted">Ready to test your knowledge?</p>
+    <div className="card text-center bg-secondary-subtle text-white h-100 shadow-sm border border-warning">
+      <div className="card-body d-flex flex-column justify-content-between align-items-center">
+        <h4 className="card-title text-warning mb-3">{topic}</h4>
         <button
-          onClick={() => onTakeQuiz(topic)}
-          className="btn btn-primary mt-auto"
-          disabled={isLoading} // Disable button when loading
+          onClick={handleTakeQuiz}
+          className="btn btn-warning mt-auto"
         >
-          {isLoading ? <LoadingSpinner size="sm" /> : "Take Quiz"}
+          Take Quiz
         </button>
       </div>
     </div>
