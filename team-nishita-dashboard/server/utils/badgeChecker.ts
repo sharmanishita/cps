@@ -1,7 +1,7 @@
 // utils/badgeChecker.ts
-import Achievement, { IAchievement } from '../models/Achievement.js';
+import { Achievement } from '../models/Achievement.js';
 import UserBadge from '../models/UserBadge.js';
-import UserProgress from '../models/UserProgress.js';
+import { UserProgress } from '../models/UserProgress.js';
 import { User } from '../models/user.js';
 import { Types } from 'mongoose';
 
