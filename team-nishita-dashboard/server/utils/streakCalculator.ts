@@ -1,4 +1,4 @@
-import UserProgress from '../models/UserProgress.js';
+import { UserProgress } from '../models/UserProgress.js';
 import { User } from '../models/user.js';
 
 export const calculateStreak = async (userId: string): Promise<number> => {
@@ -61,8 +61,6 @@ export const updateUserLevel = async (userId: string, totalPoints: number): Prom
 
 // server/middleware/pointsTracker.ts
 import { Request, Response, NextFunction } from 'express';
-import { updateUserLevel } from '../utils/badgeChecker.js';
-
 export const pointsTracker = async (req: Request, res: Response, next: NextFunction) => {
   // This middleware can be used to automatically update user level after points change
   const originalSend = res.json;
