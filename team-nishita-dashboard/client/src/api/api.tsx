@@ -44,6 +44,8 @@ export interface Credentials {
 export interface User {
   username: string;
   role: 'user' | 'admin';
+  loginStreak?: number;
+  lastLogin?: string;
 }
 
 export interface AuthResponse {
@@ -51,15 +53,60 @@ export interface AuthResponse {
   user: User;
 }
 
+export interface Course {
+  _id: string;
+  courseId: number;
+  courseName: string;
+  slug: string;
+  syllabusPDF: string;
+  materialPDF: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CourseResponse {
+  message: string;
+  course: Course;
+}
+
+export interface CoursesResponse {
+  courses: Course[];
+}
+
+// Auth API functions
 export const login = (credentials: Credentials): Promise<{ data: AuthResponse }> =>
   api.post('/auth/login', credentials);
 
 export const signup = (credentials: Credentials): Promise<{ data: AuthResponse }> =>
   api.post('/auth/register', credentials);
 
+// Calendar API functions
 export const getCurrentMonthCalendar = () =>
   api.get('/calendar/current-month');
 
+// Course API functions
+export const addCourse = (courseData: {
+  courseId: number;
+  courseName: string;
+  slug: string;
+  syllabusPDF: string;
+  materialPDF: string;
+}): Promise<{ data: CourseResponse }> =>
+  api.post('/courses/add-course', courseData);
+
+export const getAllCourses = (): Promise<{ data: CoursesResponse }> =>
+  api.get('/courses/all');
+
+export const getCourseBySlug = (slug: string): Promise<{ data: { course: Course } }> =>
+  api.get(`/courses/slug/${slug}`);
+
+export const getCourseById = (courseId: number): Promise<{ data: { course: Course } }> =>
+  api.get(`/courses/${courseId}`);
+
+export const deleteCourse = (courseId: number): Promise<{ data: { message: string } }> =>
+  api.delete(`/courses/${courseId}`);
+
+// Utility functions
 export const getCurrentUser = (): User | null => {
   const token = localStorage.getItem('token');
   if (!token) return null;

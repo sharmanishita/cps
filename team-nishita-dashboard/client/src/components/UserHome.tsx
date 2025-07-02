@@ -1,92 +1,140 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { useNavigate } from 'react-router-dom';
 import Navbar from './Navbar';
-import { BookOpen, TrendingUp, Award, Play } from 'lucide-react';
+import { BookOpen, Play, Award, Clock, Users } from 'lucide-react';
+import { getAllCourses } from '../api/api';
+import type { Course as Course } from '../api/api'
 
 const UserHome: React.FC = () => {
   const { user } = useAuth();
   const { darkMode } = useTheme();
+  const navigate = useNavigate();
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const getAnimationProps = (delay = 0) => ({
+    initial: { opacity: 0, y: 40 },
+    animate: { opacity: 1, y: 0 },
+    transition: {
+      delay,
+      duration: 0.6,
+      type: "spring" as const,
+    },
+  });
+
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const response = await getAllCourses();
+        setCourses(response.data.courses);
+      } catch (error) {
+        console.error('Error fetching courses:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCourses();
+  }, []);
+
+  const handleCourseClick = (course: Course) => {
+    navigate(`/course/${course.slug}`);
+  };
+
+  const stats = [
+    { icon: BookOpen, label: 'Enrolled Courses', value: '3' },
+    { icon: Award, label: 'Certificates', value: '1' },
+    { icon: Clock, label: 'Hours Learned', value: '24' },
+    { icon: Users, label: 'Study Groups', value: '2' }
+  ];
 
   return (
     <div className={`page-container ${darkMode ? 'dark' : 'light'}`}>
       <Navbar />
-
-      <main className="main-content">
+      <div className="main-content">
         <div className="content-wrapper">
-          <div className="page-header">
-            <h1 className="page-title">Welcome to Your Learning Hub!</h1>
+          <motion.div className="page-header" {...getAnimationProps()}>
+            <h1 className="page-title">Welcome back, {user?.username}!</h1>
             <p className="page-subtitle">
-              Hello {user?.username}! This is your central space to discover new content,
-              track your progress, and embark on exciting learning adventures.
+              Continue your learning journey and explore new courses.
             </p>
-          </div>
+          </motion.div>
 
-          <div className="dashboard-grid">
-            <div className="dashboard-card featured-card">
-              <div className="card-header">
-                <BookOpen size={24} />
-                <h3>Featured Course</h3>
-              </div>
-              <div className="card-content">
-                <h4 className="course-title">Introduction to AI</h4>
-                <p className="course-desc">
-                  Discover the fundamentals of Artificial Intelligence and its applications.
-                </p>
-                <button className="course-btn">
-                  <Play size={16} />
-                  Start Learning
-                </button>
-              </div>
-            </div>
-
-            <div className="dashboard-card">
-              <div className="card-header">
-                <TrendingUp size={24} />
-                <h3>Your Progress</h3>
-              </div>
-              <div className="card-content">
-                <div className="progress-item">
-                  <span>Courses Completed</span>
-                  <span className="progress-value">3</span>
-                </div>
-                <div className="progress-item">
-                  <span>Hours Learned</span>
-                  <span className="progress-value">24</span>
-                </div>
-                <div className="progress-item">
-                  <span>Certificates Earned</span>
-                  <span className="progress-value">2</span>
+          {/* Stats Grid */}
+          <motion.div className="user-stats-grid" {...getAnimationProps(0.1)}>
+            {stats.map((stat, index) => (
+              <div key={index} className="stat-card">
+                <stat.icon size={24} className="stat-icon" />
+                <div className="stat-content">
+                  <div className="stat-label">{stat.label}</div>
+                  <div className="stat-value">{stat.value}</div>
                 </div>
               </div>
+            ))}
+          </motion.div>
+
+          {/* Available Courses */}
+          <motion.div className="courses-section" {...getAnimationProps(0.2)}>
+            <div className="section-header">
+              <h2>Available Courses</h2>
+              <p>Explore our comprehensive course catalog</p>
             </div>
 
-            <div className="dashboard-card">
-              <div className="card-header">
-                <Award size={24} />
-                <h3>Achievements</h3>
+            {loading ? (
+              <div className="loading-grid">
+                {[...Array(6)].map((_, index) => (
+                  <div key={index} className="course-card-skeleton">
+                    <div className="skeleton-header"></div>
+                    <div className="skeleton-content">
+                      <div className="skeleton-line"></div>
+                      <div className="skeleton-line short"></div>
+                    </div>
+                  </div>
+                ))}
               </div>
-              <div className="card-content">
-                <p>Keep learning to unlock new achievements and badges!</p>
-                <div className="achievement-badges">
-                  <div className="badge">🏆 First Course</div>
-                  <div className="badge">📚 Bookworm</div>
-                </div>
+            ) : (
+              <div className="courses-grid">
+                {courses.map((course, index) => (
+                  <motion.div
+                    key={course._id}
+                    className="course-card"
+                    onClick={() => handleCourseClick(course)}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    whileHover={{ y: -5, transition: { duration: 0.2 } }}
+                  >
+                    <div className="course-header">
+                      <div className="course-id">Course {course.courseId}</div>
+                      <BookOpen size={20} className="course-icon" />
+                    </div>
+                    <div className="course-content">
+                      <h3 className="course-title">{course.courseName}</h3>
+                      <div className="course-actions">
+                        <button className="course-btn primary">
+                          <Play size={16} />
+                          Start Learning
+                        </button>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
               </div>
-            </div>
+            )}
 
-            <div className="dashboard-card recommendations-card">
-              <div className="card-header">
-                <h3>Personalized for You</h3>
+            {!loading && courses.length === 0 && (
+              <div className="empty-state">
+                <BookOpen size={48} />
+                <h3>No courses available</h3>
+                <p>Check back later for new courses!</p>
               </div>
-              <div className="card-content">
-                <p>You don't have any recommendations yet. Explore some courses to get started!</p>
-                <button className="explore-btn">Explore Courses</button>
-              </div>
-            </div>
-          </div>
+            )}
+          </motion.div>
         </div>
-      </main>
+      </div>
     </div>
   );
 };
