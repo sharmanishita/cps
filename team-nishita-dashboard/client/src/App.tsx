@@ -8,6 +8,14 @@ import CoursePage from './components/CoursePage';
 import ProtectedRoute from './contexts/ProtectedRoute';
 import ChatWidget from "./ChatWidget.tsx";
 
+// New pages
+import ProgressPage from './components/ProgressPage';
+import MyCoursesPage from './components/MyCoursePage';
+import AllCoursesPage from './components/AllCoursesPage';
+import AchievementsPage from './components/AchievementPage';
+import RecommendationsPage from './components/RecommendationPage';
+import KnowledgeGraphPage from './components/KnowledgeGraphPage';
+
 function App() {
   return (
     <ThemeProvider>
@@ -16,6 +24,7 @@ function App() {
         <Router>
           <Routes>
             <Route path="/" element={<LandingPage />} />
+            
             <Route
               path="/dashboard"
               element={
@@ -24,6 +33,61 @@ function App() {
                 </ProtectedRoute>
               }
             />
+
+            <Route
+              path="/progress"
+              element={
+                <ProtectedRoute requiredRole="user">
+                  <ProgressPage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/my-courses"
+              element={
+                <ProtectedRoute requiredRole="user">
+                  <MyCoursesPage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/all-courses"
+              element={
+                <ProtectedRoute requiredRole="user">
+                  <AllCoursesPage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/achievements"
+              element={
+                <ProtectedRoute requiredRole="user">
+                  <AchievementsPage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/recommendations"
+              element={
+                <ProtectedRoute requiredRole="user">
+                  <RecommendationsPage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/knowledge-graph"
+              element={
+                <ProtectedRoute requiredRole="user">
+                  <KnowledgeGraphPage />
+                </ProtectedRoute>
+              }
+            />
+
             <Route
               path="/admin"
               element={
@@ -32,6 +96,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
+
             <Route
               path="/course/:slug"
               element={
