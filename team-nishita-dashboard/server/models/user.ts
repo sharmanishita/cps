@@ -6,6 +6,8 @@ interface IUser extends Document {
   lastLogin: Date;
   loginStreak: number;
   loginDays: Date[];
+  currentStreak: number;
+  totalPoints: number;
 };
 
 const userSchema = new mongoose.Schema<IUser>({
@@ -14,7 +16,9 @@ const userSchema = new mongoose.Schema<IUser>({
   role: { type: String, enum: ['user', 'admin'], default: 'user' },
   lastLogin: { type: Date },
   loginStreak: { type: Number, default: 0 },
-  loginDays: [{ type: Date }]
+  loginDays: [{ type: Date }],
+  currentStreak: { type: Number, default: 0 },
+  totalPoints: { type: Number, default: 0 }
 })
 
 export const User = mongoose.model('User', userSchema);
