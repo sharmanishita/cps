@@ -5,6 +5,7 @@ import { errorHandler } from './middleware/errorHandler.js'
 import mongoose from 'mongoose';
 import { authRouter } from './routes/auth.js'
 import { calendarRouter } from './routes/calendar.js'
+import { courseRouter } from './routes/course.js'
 import { requireRole, requireAuth } from './middleware/roleMiddleware.js';
 
 const app = express();
@@ -33,6 +34,7 @@ app.get('/', (req: Request, res: Response) => {
 })
 app.use('/api/auth', authRouter);
 app.use('/api/calendar', calendarRouter);
+app.use('/api/courses', courseRouter);
 app.use(errorHandler)
 
 app.use((req: Request, res: Response) => {
