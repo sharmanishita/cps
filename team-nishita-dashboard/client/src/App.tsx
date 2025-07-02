@@ -6,11 +6,13 @@ import UserHome from './components/UserHome';
 import AdminHome from './components/AdminHome';
 import CoursePage from './components/CoursePage';
 import ProtectedRoute from './contexts/ProtectedRoute';
+import ChatWidget from "./ChatWidget.tsx";
 
 function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
+        <ChatWidget />
         <Router>
           <Routes>
             <Route path="/" element={<LandingPage />} />
