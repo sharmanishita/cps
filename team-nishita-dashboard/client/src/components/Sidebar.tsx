@@ -22,6 +22,11 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed }) => {
     { name: 'Achievements', icon: <Award size={20} />, path: '/achievements' },
     { name: 'Recommendations', icon: <ThumbsUp size={20} />, path: '/recommendations' },
     { name: 'Knowledge Graph', icon: <Share2 size={20} />, path: '/knowledge-graph' },
+    {
+      to: "/admin/add-course",
+      label: "Add New Course",
+      icon: <span role="img" aria-label="add-course">➕</span>
+    },
   ];
 
   return (

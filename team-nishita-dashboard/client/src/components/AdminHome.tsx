@@ -2,17 +2,20 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
-import Navbar from './Navbar';
 import { Upload, X, Users, Plus, BarChart3, FileText, Settings, Activity } from 'lucide-react';
 import { useDropzone } from 'react-dropzone';
 import { uploadToCloudinary } from '../utils/cloudinaryUpload';
 import { addCourse } from '../api/api';
 import slugify from 'slugify';
 
-const AdminHome: React.FC = () => {
+interface AdminHomeProps {
+  showAddCourseForm?: boolean;
+}
+
+const AdminHome: React.FC<AdminHomeProps> = ({ showAddCourseForm = false }) => {
   const { user } = useAuth();
   const { darkMode } = useTheme();
-  const [showCourseForm, setShowCourseForm] = useState(false);
+  const [showCourseForm, setShowCourseForm] = useState(showAddCourseForm);
   const [uploading, setUploading] = useState(false);
   const [courseData, setCourseData] = useState({
     courseId: '',
@@ -146,7 +149,6 @@ const AdminHome: React.FC = () => {
 
   return (
     <div className={`page-container ${darkMode ? 'dark' : 'light'}`}>
-      <Navbar />
       <div className="main-content">
         <div className="content-wrapper">
           <motion.div className="page-header" {...getAnimationProps()}>
