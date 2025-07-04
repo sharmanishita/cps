@@ -17,6 +17,7 @@ import type {
 import dagre from "dagre";
 import "reactflow/dist/style.css";
 import Layout from "./Layout";
+import { useTheme } from '../contexts/ThemeContext';
 
 type ModuleNode = {
   id: string;
@@ -80,6 +81,7 @@ const GraphInner: React.FC = () => {
   const [graphNodes, setGraphNodes] = useState<Node[]>([]);
   const [graphEdges, setGraphEdges] = useState<Edge[]>([]);
   const { fitView, setViewport } = useReactFlow();
+  const { darkMode } = useTheme();
 
   const getPrerequisiteChain = (targetId: string): string[] => {
     const visited = new Set<string>();
@@ -109,14 +111,16 @@ const GraphInner: React.FC = () => {
         position: { x: 0, y: 0 },
         style: {
           backgroundColor: isHighlighted
-            ? "#e0f2fe"
+            ? darkMode ? "#1e3a8a" : "#e0f2fe"
             : isCompleted
-              ? "#dcfce7"
-              : "#ffffff",
+              ? darkMode ? "#064e3b" : "#dcfce7"
+              : darkMode ? "#374151" : "#ffffff",
           border: isCompleted
             ? "2px solid #22c55e"
-            : "1px solid #d1d5db",
-          color: isCompleted ? "#166534" : "#111827",
+            : darkMode ? "1px solid #6b7280" : "1px solid #d1d5db",
+          color: isCompleted 
+            ? darkMode ? "#4ade80" : "#166534" 
+            : darkMode ? "#f9fafb" : "#111827",
           fontWeight: 500,
           borderRadius: 8,
           padding: 10,
@@ -135,7 +139,7 @@ const GraphInner: React.FC = () => {
           stroke:
             highlight.includes(prereq) && highlight.includes(module.id)
               ? "#0284c7"
-              : "#888",
+              : darkMode ? "#9ca3af" : "#888",
           strokeWidth:
             highlight.includes(prereq) && highlight.includes(module.id)
               ? 2.5
@@ -152,7 +156,7 @@ const GraphInner: React.FC = () => {
       fitView({ padding: 0.2 });
       setViewport({ x: 40, y: 0, zoom: 1 });
     }, 0);
-  }, [fitView, setViewport]);
+  }, [fitView, setViewport, darkMode]);
 
   useEffect(() => {
     buildGraph();
@@ -199,20 +203,22 @@ const GraphInner: React.FC = () => {
 };
 
 const KnowledgeGraphPage: React.FC = () => {
+  const { darkMode } = useTheme();
+  
   return (
     <Layout>
-      <div className="min-h-screen bg-gray-50 px-4 py-6 sm:px-6 lg:px-8">
+      <div className={`min-h-screen px-4 py-6 sm:px-6 lg:px-8 transition-all duration-300 ${darkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
         <div className="max-w-7xl mx-auto">
           <header className="mb-6">
-            <h1 className="text-3xl font-bold text-gray-900">
+            <h1 className={`text-3xl font-bold transition-all duration-300 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
               Knowledge Prerequisite Graph
             </h1>
-            <p className="mt-2 text-gray-600 text-sm max-w-2xl">
+            <p className={`mt-2 text-sm max-w-2xl transition-all duration-300 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
               Visualize how different modules build upon each other. Click on any module to highlight its learning chain.
             </p>
           </header>
 
-          <div className="w-full h-[75vh] rounded-lg overflow-hidden bg-white border shadow">
+          <div className={`w-full h-[75vh] rounded-lg overflow-hidden border shadow transition-all duration-300 ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
             <ReactFlowProvider>
               <GraphInner />
             </ReactFlowProvider>

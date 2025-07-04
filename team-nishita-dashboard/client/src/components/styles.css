@@ -203,3 +203,20 @@ button:hover {
   justify-content: space-between;
   width: 100%;
 }
+
+.stat-card.light {
+  background: #fffbe6;
+  border: 2px solid #ffe58f;
+  color: #222;
+  box-shadow: 0 2px 8px rgba(255, 215, 64, 0.08);
+}
+
+.stat-card.light .stat-label {
+  color: #b8860b;
+  font-weight: 500;
+}
+
+.stat-card.light .stat-value {
+  color: #faad14;
+  font-weight: bold;
+}

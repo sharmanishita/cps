@@ -1,6 +1,7 @@
 import React from 'react';
 import { Flame, Trophy, CalendarCheck, Star, BadgeCheck } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useTheme } from '../contexts/ThemeContext';
 
 interface TopStatsProps {
   currentStreak: number;
@@ -50,6 +51,7 @@ const TopStatsGrid: React.FC<TopStatsProps> = ({
   totalPoints,
   level
 }) => {
+  const { darkMode } = useTheme();
   const dataMap = {
     currentStreak,
     highestStreak,
@@ -68,13 +70,13 @@ const TopStatsGrid: React.FC<TopStatsProps> = ({
       {stats.map((stat) => (
         <div
           key={stat.key}
-          className="bg-white rounded-2xl shadow-lg p-4 text-center flex flex-col items-center justify-center hover:shadow-xl transition-all"
+          className={`soft-orange-card ${darkMode ? 'bg-gray-800 border-gray-700' : ''} p-6 m-2 text-center flex flex-col items-center justify-center transition-all duration-300`}
         >
-          <div className="flex items-center gap-2 text-sm text-gray-500 mb-1">
+          <div className="flex items-center gap-2 text-sm mb-1">
             {stat.icon}
             <span>{stat.label}</span>
           </div>
-          <p className="text-xl font-bold text-gray-800">
+          <p className="text-2xl font-bold mt-2">
             {dataMap[stat.key as keyof typeof dataMap] || 0} {stat.unit}
           </p>
         </div>
