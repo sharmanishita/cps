@@ -9,8 +9,6 @@ const adminLinks = [
   { name: "Dashboard", icon: <Home size={20} />, path: "/admin" },
   { name: "User Management", icon: <Users size={20} />, path: "/admin/users" },
   { name: "Analytics", icon: <BarChart2 size={20} />, path: "/admin/analytics" },
-  { name: "System Settings", icon: <Settings size={20} />, path: "/admin/settings" },
-  { name: "Messages", icon: <MessageSquare size={20} />, path: "/admin/messages" },
   { name: "Reports", icon: <FileText size={20} />, path: "/admin/reports" },
   { name: "Add New Course", icon: <Plus size={20} />, path: "/admin/add-course" },
 ];

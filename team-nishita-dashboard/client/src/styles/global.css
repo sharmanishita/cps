@@ -753,7 +753,7 @@ main.dark-theme * {
 
 /* Course Form Modal Styles */
 .course-form-modal {
-  background: white;
+  background: #f3f6fa;
   border-radius: 1rem;
   padding: 0;
   width: 90%;

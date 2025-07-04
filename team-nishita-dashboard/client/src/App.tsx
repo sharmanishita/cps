@@ -25,8 +25,8 @@ import AchievementPage from './components/AchievementPage';
 import KnowledgeGraphPage from './components/KnowledgeGraphPage';
 import AdminUserManagement from './components/AdminUserManagement';
 import AdminAnalytics from './components/AdminAnalytics';
-import AdminSystemSettings from './components/AdminSystemSettings';
-import AdminMessages from './components/AdminMessages';
+// import AdminSystemSettings from './components/AdminSystemSettings';
+// import AdminMessages from './components/AdminMessages';
 
 // ✅ Import Tooltip Provider from radix
 import * as Tooltip from '@radix-ui/react-tooltip';
@@ -144,26 +144,6 @@ function App() {
                   <ProtectedRoute requiredRole="admin">
                     <AdminLayout>
                       <AdminAnalytics />
-                    </AdminLayout>
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/admin/settings"
-                element={
-                  <ProtectedRoute requiredRole="admin">
-                    <AdminLayout>
-                      <AdminSystemSettings />
-                    </AdminLayout>
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/admin/messages"
-                element={
-                  <ProtectedRoute requiredRole="admin">
-                    <AdminLayout>
-                      <AdminMessages />
                     </AdminLayout>
                   </ProtectedRoute>
                 }
