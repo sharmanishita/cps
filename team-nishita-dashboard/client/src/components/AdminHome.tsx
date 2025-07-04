@@ -7,6 +7,7 @@ import { useDropzone } from 'react-dropzone';
 import { uploadToCloudinary } from '../utils/cloudinaryUpload';
 import { addCourse } from '../api/api';
 import slugify from 'slugify';
+import './AdminHome.css';
 
 interface AdminHomeProps {
   showAddCourseForm?: boolean;
@@ -149,12 +150,12 @@ const AdminHome: React.FC<AdminHomeProps> = ({ showAddCourseForm = false }) => {
   ];
 
   return (
-    <div className={`page-container ${darkMode ? 'dark' : 'light'}`}>
-      <div className="main-content">
-        <div className="content-wrapper">
-          <motion.div className="page-header" {...getAnimationProps()}>
-            <h1 className="page-title">Admin Dashboard</h1>
-            <p className="page-subtitle">
+    <div className={`admin-page-container ${darkMode ? 'dark' : 'light'}`}>
+      <div className="admin-main-content">
+        <div className="admin-content-wrapper">
+          <motion.div className="admin-page-header" {...getAnimationProps()}>
+            <h1 className="admin-page-title">Admin Dashboard</h1>
+            <p className="admin-page-subtitle">
               Welcome back, {user?.username}! Here's your system overview.
             </p>
           </motion.div>
