@@ -13,7 +13,6 @@ import "./TeamAndFAQPage.css";
 interface TeamMember {
   name: string;
   role: string;
-  img: string;
   quote: string;
   funFact: string;
   contact?: string;
@@ -23,47 +22,41 @@ interface TeamMember {
 const teamMembers: TeamMember[] = [
   {
     name: "Nishita Sharma",
-    role: "Team Leader",
-    img: "/images/nishita.jpg",
-    quote: "Turning ideas into impact.",
-    funFact: "Loves hiking and AI.",
+    role: "Team Lead- Full Stack Dev",
+    quote: "Manifesting: ‘Congrats, your internship has been extended!’",
+    funFact: "Code. Coffee. Repeat",
     contact: "9818431058",
     email: "nishita.d.sharma@gmail.com"
   },
   {
     name: "Devansh Srivastava",
     role: "Full Stack Dev",
-    img: "/images/devansh.jpg",
-    quote: "Code. Coffee. Repeat.",
-    funFact: "Chess enthusiast."
+    quote: "APIs are my playground.",
+    funFact: "Ideality is a virtual phenomenon."
   },
   {
     name: "Sonali",
     role: "Frontend Dev",
-    img: "/images/sonali.jpg",
-    quote: "Design is intelligence made visible.",
+    quote: "Tech is the art of turning coffee into software.",
     funFact: "Sketches in her free time."
   },
   {
     name: "Deepali",
     role: "Backend Dev",
-    img: "/images/deepali.jpg",
-    quote: "APIs are my playground.",
+    quote: "Innovation is my default setting.",
     funFact: "Loves mystery novels."
   },
   {
     name: "Tanisha",
-    role: "UI/UX Designer",
-    img: "/images/tanisha.jpg",
+    role: "MERN Stack Dev",
     quote: "User first, always.",
-    funFact: "Plays the ukulele."
+    funFact: "MERN-ifying ideas into Reality."
   },
   {
     name: "Shiv Kumar Behera",
-    role: "DevOps",
-    img: "/images/shiv.jpg",
+    role: "Developer",
     quote: "Automate everything.",
-    funFact: "Runs marathons."
+    funFact: "Building projects."
   }
 ];
 
@@ -178,11 +171,9 @@ const FAQAccordion: React.FC<{ faqs: FAQ[] }> = ({ faqs }) => {
   );
 };
 
+// TeamCard without image
 const TeamCard: React.FC<{ member: TeamMember }> = ({ member }) => (
   <div className="team-card">
-    <div className="card-img-wrapper">
-      <img src={member.img} alt={member.name} className="card-img" />
-    </div>
     <h3>{member.name}</h3>
     <p className="role">{member.role}</p>
     <p className="quote">“{member.quote}”</p>
