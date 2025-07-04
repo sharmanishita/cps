@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import Sidebar from './Sidebar';
 import Navbar from './Navbar';
+import { useTheme } from '../contexts/ThemeContext';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -9,6 +10,7 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [collapsed, setCollapsed] = useState(false);
+  const { darkMode } = useTheme();
   const sidebarWidth = collapsed ? 64 : 220;
 
   return (
@@ -24,7 +26,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       {/* Main content area */}
       <div className="flex-1 flex flex-col overflow-hidden">
         <Navbar />
-        <main className="p-6 overflow-auto bg-white dark:bg-gray-950 text-black dark:text-white">
+        <main className={`p-6 overflow-auto transition-all duration-300 ${darkMode ? 'dark-theme' : ''}`}>
           {children}
         </main>
       </div>

@@ -23,6 +23,82 @@ body.dark-theme {
   color: #f7fafc;
 }
 
+/* Ensure proper text color inheritance for all elements */
+* {
+  color: inherit;
+}
+
+/* Light theme text colors */
+body:not(.dark-theme) * {
+  color: #1a202c;
+}
+
+/* Dark theme text colors */
+body.dark-theme * {
+  color: #f7fafc;
+}
+
+/* Override specific elements that need different colors */
+body:not(.dark-theme) .text-primary,
+body:not(.dark-theme) .text-secondary,
+body:not(.dark-theme) .text-muted {
+  color: #6b7280;
+}
+
+body.dark-theme .text-primary,
+body.dark-theme .text-secondary,
+body.dark-theme .text-muted {
+  color: #d1d5db;
+}
+
+/* Ensure all text elements follow theme */
+body:not(.dark-theme) h1, body:not(.dark-theme) h2, body:not(.dark-theme) h3, 
+body:not(.dark-theme) h4, body:not(.dark-theme) h5, body:not(.dark-theme) h6 {
+  color: #1a202c;
+}
+
+body.dark-theme h1, body.dark-theme h2, body.dark-theme h3, 
+body.dark-theme h4, body.dark-theme h5, body.dark-theme h6 {
+  color: #f7fafc;
+}
+
+body:not(.dark-theme) p, body:not(.dark-theme) span, body:not(.dark-theme) div {
+  color: #1a202c;
+}
+
+body.dark-theme p, body.dark-theme span, body.dark-theme div {
+  color: #f7fafc;
+}
+
+/* Ensure form elements follow theme */
+body:not(.dark-theme) input, body:not(.dark-theme) textarea, body:not(.dark-theme) select {
+  color: #1a202c;
+}
+
+body.dark-theme input, body.dark-theme textarea, body.dark-theme select {
+  color: #f7fafc;
+}
+
+/* Override any remaining Tailwind text color classes */
+body:not(.dark-theme) .text-gray-900, body:not(.dark-theme) .text-gray-800, 
+body:not(.dark-theme) .text-gray-700, body:not(.dark-theme) .text-gray-600 {
+  color: #1a202c !important;
+}
+
+body.dark-theme .text-gray-900, body.dark-theme .text-gray-800, 
+body.dark-theme .text-gray-700, body.dark-theme .text-gray-600 {
+  color: #f7fafc !important;
+}
+
+/* Ensure proper contrast for secondary text */
+body:not(.dark-theme) .text-gray-500, body:not(.dark-theme) .text-gray-400 {
+  color: #6b7280 !important;
+}
+
+body.dark-theme .text-gray-500, body.dark-theme .text-gray-400 {
+  color: #d1d5db !important;
+}
+
 /* Loading Styles */
 .loading-container {
   display: flex;
@@ -555,11 +631,37 @@ body.dark-theme {
 /* Main Content Styles */
 .main-content {
   padding: 2rem;
+  transition: all 0.3s ease;
 }
 
 .content-wrapper {
   max-width: 1200px;
   margin: 0 auto;
+}
+
+/* Main content theme styles */
+main {
+  background-color: #f8fafc;
+  color: #1a202c;
+  transition: all 0.3s ease;
+}
+
+main.dark-theme {
+  background-color: #1a202c;
+  color: #f7fafc;
+}
+
+/* Ensure all text in main content follows theme */
+main * {
+  color: inherit;
+}
+
+main:not(.dark-theme) * {
+  color: #1a202c;
+}
+
+main.dark-theme * {
+  color: #f7fafc;
 }
 
 .page-header {
@@ -1706,4 +1808,104 @@ body.dark-theme {
 
 .navbar.light .navbar-icon {
   color: #ffd700;
+}
+
+/* Soft orange card for light theme (solid, bold border, rounded, no shadow) */
+.soft-orange-card {
+  background: #FFECB3; /* more saturated pale orange */
+  border: 3px solid #FFC107; /* bold orange border */
+  border-radius: 18px;
+  box-shadow: 0 4px 16px 0 rgba(255, 193, 7, 0.10);
+  transition: background 0.3s, border 0.3s;
+}
+
+body.dark-theme .soft-orange-card {
+  background: #232837;
+  border: 1.5px solid #353a4a;
+  border-radius: 18px;
+  box-shadow: none;
+}
+
+/* Progress Page Light Theme Container */
+.progress-page-container {
+  background: #FFFDE7; /* very light orange */
+  min-height: 100vh;
+  transition: background 0.3s;
+}
+
+body.dark-theme .progress-page-container {
+  background: #181A20;
+}
+
+/* Progress Page Card */
+.progress-orange-card {
+  background: #FFECB3;
+  border: 2px solid #FFC107;
+  border-radius: 18px;
+  box-shadow: 0 4px 16px 0 rgba(255, 193, 7, 0.10);
+  transition: background 0.3s, border 0.3s;
+}
+
+body.dark-theme .progress-orange-card {
+  background: #232837;
+  border: 1.5px solid #353a4a;
+  border-radius: 18px;
+  box-shadow: none;
+}
+
+.progress-latest-container {
+  background: #FFFDE7;
+  border: 2px solid #FFC107;
+  border-radius: 18px;
+  box-shadow: 0 4px 16px 0 rgba(255, 193, 7, 0.08);
+  transition: background 0.3s, border 0.3s;
+}
+
+body.dark-theme .progress-latest-container {
+  background: #181A20;
+  border: 1.5px solid #353a4a;
+  border-radius: 18px;
+  box-shadow: none;
+}
+
+.stat-orange-card {
+  background: #FFF3CD;
+  border: 2px solid #FFC107;
+  border-radius: 16px;
+  box-shadow: none;
+  color: #222;
+  transition: background 0.3s, border 0.3s;
+}
+body.dark-theme .stat-orange-card {
+  background: #232837;
+  border: 1.5px solid #353a4a;
+  color: #f7fafc;
+}
+
+/* ProgressPage Latest Progress Card Colors */
+.progress-card-lessons, .progress-card-quizzes, .progress-card-study,
+.progress-card-points, .progress-card-streak, .progress-card-checkins {
+  padding: 2.5rem 2rem;
+  min-width: 220px;
+  min-height: 140px;
+  margin: 0.5rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+body:not(.dark-theme) .progress-card-lessons, body:not(.dark-theme) .progress-card-quizzes, body:not(.dark-theme) .progress-card-study,
+body:not(.dark-theme) .progress-card-points, body:not(.dark-theme) .progress-card-streak, body:not(.dark-theme) .progress-card-checkins {
+  background: #e3f0ff;
+  color: #223a5f;
+}
+
+@media (max-width: 900px) {
+  .progress-card-lessons, .progress-card-quizzes, .progress-card-study,
+  .progress-card-points, .progress-card-streak, .progress-card-checkins {
+    min-width: 160px;
+    padding: 1.5rem 1rem;
+  }
 }

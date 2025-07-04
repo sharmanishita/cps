@@ -64,7 +64,7 @@ const UserHome: React.FC = () => {
         {/* Stats Grid */}
         <motion.div className="user-stats-grid" {...getAnimationProps(0.1)}>
           {stats.map((stat, index) => (
-            <div key={index} className="stat-card">
+            <div key={index} className={`stat-card ${!darkMode ? 'stat-orange-card' : ''}`}>
               <stat.icon size={24} className="stat-icon" />
               <div className="stat-content">
                 <div className="stat-label">{stat.label}</div>

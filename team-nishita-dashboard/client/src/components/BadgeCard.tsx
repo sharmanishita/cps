@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Lock } from 'lucide-react';
 import Confetti from 'react-confetti';
 import * as Tooltip from '@radix-ui/react-tooltip';
+import { useTheme } from '../contexts/ThemeContext';
 
 interface BadgeCardProps {
   badge: {
@@ -21,6 +22,7 @@ interface BadgeCardProps {
 
 const BadgeCard: React.FC<BadgeCardProps> = ({ badge, isNew = false }) => {
   const [showConfetti, setShowConfetti] = useState(isNew);
+  const { darkMode } = useTheme();
 
   useEffect(() => {
     if (isNew) {
@@ -69,10 +71,10 @@ const BadgeCard: React.FC<BadgeCardProps> = ({ badge, isNew = false }) => {
                 }`}
               />
               {badge.isLocked && (
-                <Lock className="absolute inset-0 m-auto w-6 h-6 text-gray-600" />
+                <Lock className={`absolute inset-0 m-auto w-6 h-6 transition-all duration-300 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`} />
               )}
             </div>
-            <p className="mt-2 text-center text-sm font-medium text-gray-700 group-hover:text-blue-600">
+            <p className={`mt-2 text-center text-sm font-medium transition-all duration-300 group-hover:text-blue-600 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
               {badge.name}
             </p>
           </motion.div>
@@ -82,12 +84,12 @@ const BadgeCard: React.FC<BadgeCardProps> = ({ badge, isNew = false }) => {
           <Tooltip.Content
             side="top"
             align="center"
-            className="z-40 max-w-xs p-4 bg-white rounded-xl shadow-lg border border-gray-200 text-sm text-gray-800 animate-fade-in"
+            className={`z-40 max-w-xs p-4 rounded-xl shadow-lg border text-sm animate-fade-in transition-all duration-300 ${darkMode ? 'bg-gray-800 border-gray-700 text-gray-200' : 'bg-white border-gray-200 text-gray-800'}`}
           >
             <div className="font-semibold text-blue-600 mb-1">{badge.name}</div>
             
-            <div className="mt-1 text-xs text-gray-500 italic">How to Earn: {getConditionText()}</div>
-            <Tooltip.Arrow className="fill-white" />
+            <div className={`mt-1 text-xs italic transition-all duration-300 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>How to Earn: {getConditionText()}</div>
+            <Tooltip.Arrow className={`${darkMode ? 'fill-gray-800' : 'fill-white'}`} />
           </Tooltip.Content>
         </Tooltip.Portal>
       </Tooltip.Root>

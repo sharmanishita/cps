@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   FaGithub,
   FaEnvelope,
@@ -23,7 +23,7 @@ const teamMembers: TeamMember[] = [
   {
     name: "Nishita Sharma",
     role: "Team Lead- Full Stack Dev",
-    quote: "Manifesting: ‘Congrats, your internship has been extended!’",
+    quote: "Manifesting: 'Congrats, your internship has been extended!'",
     funFact: "Code. Coffee. Repeat",
     contact: "9818431058",
     email: "nishita.d.sharma@gmail.com"
@@ -117,7 +117,7 @@ const generalFAQ: FAQ[] = [
   },
   {
     question: "Can I suggest new features?",
-    answer: "We love feedback! ✉️ Drop your ideas on our GitHub or email us directly—we’re always eager to improve."
+    answer: "We love feedback! ✉️ Drop your ideas on our GitHub or email us directly—we're always eager to improve."
   },
   {
     question: "How do I contact support?",
@@ -125,24 +125,8 @@ const generalFAQ: FAQ[] = [
   }
 ];
 
-const ThemeToggle: React.FC = () => {
-  const [theme, setTheme] = useState(
-    document.documentElement.getAttribute("data-theme") || "light"
-  );
-  const toggleTheme = () => {
-    const newTheme = theme === "dark" ? "light" : "dark";
-    document.documentElement.setAttribute("data-theme", newTheme);
-    setTheme(newTheme);
-  };
-  return (
-    <button className="theme-toggle" onClick={toggleTheme}>
-      {theme === "dark" ? "🌞" : "🌙"}
-    </button>
-  );
-};
-
 const FAQAccordion: React.FC<{ faqs: FAQ[] }> = ({ faqs }) => {
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const [openIndex, setOpenIndex] = React.useState<number | null>(null);
   return (
     <div className="faq-accordion">
       {faqs.map((faq, idx) => (
@@ -176,7 +160,7 @@ const TeamCard: React.FC<{ member: TeamMember }> = ({ member }) => (
   <div className="team-card">
     <h3>{member.name}</h3>
     <p className="role">{member.role}</p>
-    <p className="quote">“{member.quote}”</p>
+    <p className="quote">"{member.quote}"</p>
     <p className="fun-fact">💡 {member.funFact}</p>
     {member.contact && (
       <div className="contact-icons">
@@ -190,6 +174,22 @@ const TeamCard: React.FC<{ member: TeamMember }> = ({ member }) => (
     )}
   </div>
 );
+
+const ThemeToggle: React.FC = () => {
+  const [theme, setTheme] = React.useState(
+    document.documentElement.getAttribute("data-theme") || "light"
+  );
+  const toggleTheme = () => {
+    const newTheme = theme === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", newTheme);
+    setTheme(newTheme);
+  };
+  return (
+    <button className="theme-toggle" onClick={toggleTheme}>
+      {theme === "dark" ? "🌞" : "🌙"}
+    </button>
+  );
+};
 
 const TeamAndFAQPage: React.FC = () => (
   <div className="team-faq-page">
