@@ -1,0 +1,4 @@
+dotenv
+flask
+flask_cors
+huggingface_hub
