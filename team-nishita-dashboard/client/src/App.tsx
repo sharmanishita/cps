@@ -20,7 +20,7 @@ import AchievementsPage from './components/AchievementPage';
 import TeamAndFAQPage from './components/TeamAndFAQPage.tsx';
 
 import AchievementPage from './components/AchievementPage';
-import RecommendationsPage from './components/RecommendationPage';
+// import RecommendationsPage from './components/RecommendationPage';
 
 import KnowledgeGraphPage from './components/KnowledgeGraphPage';
 import AdminUserManagement from './components/AdminUserManagement';
@@ -248,14 +248,14 @@ function App() {
                 }
               />
 
-              <Route
+              {/* <Route
                 path="/recommendations"
                 element={
                   <ProtectedRoute requiredRole="user">
                     <RecommendationsPage />
                   </ProtectedRoute>
                 }
-              />
+              /> */}
 
               <Route
                 path="/knowledge-graph"
