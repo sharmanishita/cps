@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { Users, BarChart2, Settings, FileText, MessageSquare, Plus, Home } from "lucide-react";
+import { Users, BarChart2, Settings, FileText, MessageSquare, Plus, Home, Menu } from "lucide-react";
 import "./Sidebar.styles.css";
 import { useTheme } from '../contexts/ThemeContext';
 
@@ -30,7 +30,7 @@ const AdminSidebar: React.FC = () => {
           className="collapse-btn"
           title="Toggle Sidebar"
         >
-          <span>{collapsed ? "→" : "←"}</span>
+          <Menu size={20} />
         </button>
       </div>
       <nav className="sidebar-nav">
@@ -43,6 +43,7 @@ const AdminSidebar: React.FC = () => {
                   "sidebar-item" + (isActive ? " active" : "")
                 }
                 title={collapsed ? link.name : ""}
+                {...(link.path === "/admin" ? { end: true } : {})}
               >
                 <span className="sidebar-icon">{link.icon}</span>
                 {!collapsed && <span className="sidebar-label">{link.name}</span>}
