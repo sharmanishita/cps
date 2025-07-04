@@ -31,16 +31,8 @@ const DUMMY_STATS = [
 
 const isEmptySummary = (summary: any) => {
   if (!summary) return true;
-  // Consider empty if all values are 0
   return Object.values(summary).every((v) => v === 0);
 };
-
-const MILESTONES = [
-  { label: 'First Quiz', achieved: (summary: any) => summary.totalQuizzesTaken > 0 },
-  { label: '5 Lessons', achieved: (summary: any) => summary.totalLessonsCompleted >= 5 },
-  { label: '7-Day Streak', achieved: (summary: any) => summary.loginStreak >= 7 },
-  { label: '100 Points', achieved: (summary: any) => summary.totalPoints >= 100 },
-];
 
 const ProgressPage: React.FC = () => {
   const { darkMode } = useTheme();
@@ -57,7 +49,6 @@ const ProgressPage: React.FC = () => {
     fetchProgressStats();
   }, [fetchProgressSummary, fetchProgressStats]);
 
-  // Decide which data to show
   const summaryToShow: ProgressSummary = isEmptySummary(realSummary) ? DUMMY_SUMMARY : (realSummary || DUMMY_SUMMARY);
   const statsToShow = (realStats && realStats.length > 0 && !isEmptySummary(realSummary)) ? realStats : DUMMY_STATS;
 
@@ -70,7 +61,7 @@ const ProgressPage: React.FC = () => {
   const calculateOverallProgress = () => {
     if (!summaryToShow) return 0;
     const totalActivities = summaryToShow.totalLessonsCompleted + summaryToShow.totalQuizzesTaken;
-    const maxActivities = 100; // Assuming 100 activities is 100% progress
+    const maxActivities = 100;
     return Math.min((totalActivities / maxActivities) * 100, 100);
   };
 
@@ -86,80 +77,121 @@ const ProgressPage: React.FC = () => {
 
   return (
     <Layout>
-      <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-16 py-24 bg-[#181A20] min-h-screen">
-        <div className="mb-20 mt-8">
-          <h1 className="text-3xl font-extrabold text-white mb-8 tracking-tight">
+      <div
+        className="max-w-7xl mx-auto min-h-screen flex flex-col bg-[#181A20]"
+        style={{
+          paddingTop: 48,
+          paddingLeft: 32,
+          paddingRight: 32,
+        }}
+      >
+        {/* Header Section */}
+        <div className="flex flex-col items-center" style={{ marginTop: 32, marginBottom: 16 }}>
+          <h1
+            className="text-3xl font-extrabold text-white tracking-tight text-center"
+            style={{ marginBottom: 10, paddingTop: 8, paddingBottom: 8 }}
+          >
             Your Learning Progress
           </h1>
-          <p className="text-gray-400 text-lg">
+          <p
+            className="text-gray-400 text-lg text-center"
+            style={{ marginBottom: 18, paddingLeft: 8, paddingRight: 8 }}
+          >
             Continue your learning journey and celebrate your achievements
           </p>
         </div>
 
-        {/* Modern Stat Cards - horizontally scrollable on small screens */}
-        <div className="flex gap-12 md:gap-20 mb-32 mt-16 px-4 md:px-20 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900">
-          {/* Blue (primary) */}
-          <div className="rounded-2xl shadow-lg p-10 flex flex-col items-center bg-gradient-to-br from-blue-700 to-blue-400 bg-opacity-90 min-w-[260px] max-w-[320px] mx-2">
-            <BookOpen size={48} className="mb-4 text-blue-200" />
-            <div className="text-3xl font-bold text-white mb-2">{summaryToShow.totalLessonsCompleted}</div>
-            <div className="text-md font-medium text-blue-100">Lessons Completed</div>
+        {/* Stat Cards */}
+        <div
+          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 mb-16 justify-center"
+          style={{ marginTop: 40 }}
+        >
+          {[
+            {
+              icon: <BookOpen size={44} className="mb-3 text-blue-200" />,
+              value: summaryToShow.totalLessonsCompleted,
+              label: 'Lessons Completed',
+              gradient: 'from-blue-700 to-blue-400',
+            },
+            {
+              icon: <Award size={44} className="mb-3 text-teal-200" />,
+              value: summaryToShow.totalQuizzesTaken,
+              label: 'Quizzes Taken',
+              gradient: 'from-teal-700 to-teal-400',
+            },
+            {
+              icon: <Clock size={44} className="mb-3 text-purple-200" />,
+              value: formatTime(summaryToShow.totalStudyTime),
+              label: 'Study Time',
+              gradient: 'from-purple-700 to-purple-400',
+            },
+            {
+              icon: <Medal size={44} className="mb-3 text-yellow-200" />,
+              value: summaryToShow.totalPoints,
+              label: 'Total Points',
+              gradient: 'from-orange-600 to-yellow-400',
+            },
+          ].map((card) => (
+            <div
+              key={card.label}
+              className={`rounded-2xl shadow-lg flex flex-col items-center justify-center bg-gradient-to-br ${card.gradient} bg-opacity-90`}
+              style={{
+                minWidth: 200,
+                maxWidth: 260,
+                width: 220,
+                height: 180,
+                margin: '0 auto',
+              }}
+            >
+              {card.icon}
+              <div className="text-2xl font-bold text-white mb-1">{card.value}</div>
+              <div className="text-md font-medium text-blue-100">{card.label}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Space below stat cards */}
+        <div style={{ height: 32 }} />
+
+        {/* Circular Progress Section */}
+        <div className="flex flex-col md:flex-row items-center justify-center gap-12 mb-16 mt-2">
+          <div className="flex flex-col items-center p-2">
+            <CircularProgress progress={calculateOverallProgress()} size={120} strokeWidth={12} color="#60a5fa" label="Overall" />
+            <span className="mt-6 text-blue-200 font-semibold text-lg">Overall Progress</span>
           </div>
-          {/* Teal (secondary) */}
-          <div className="rounded-2xl shadow-lg p-10 flex flex-col items-center bg-gradient-to-br from-teal-700 to-teal-400 bg-opacity-90 min-w-[260px] max-w-[320px] mx-2">
-            <Award size={48} className="mb-4 text-teal-200" />
-            <div className="text-3xl font-bold text-white mb-2">{summaryToShow.totalQuizzesTaken}</div>
-            <div className="text-md font-medium text-teal-100">Quizzes Taken</div>
+          <div className="flex flex-col items-center p-2">
+            <CircularProgress progress={(summaryToShow.currentStreak / Math.max(summaryToShow.loginStreak, 1)) * 100} size={120} strokeWidth={12} color="#f59e42" label="Streak" />
+            <span className="mt-6 text-orange-200 font-semibold text-lg">Current Streak: {summaryToShow.currentStreak}</span>
           </div>
-          {/* Purple (secondary) */}
-          <div className="rounded-2xl shadow-lg p-10 flex flex-col items-center bg-gradient-to-br from-purple-700 to-purple-400 bg-opacity-90 min-w-[260px] max-w-[320px] mx-2">
-            <Clock size={48} className="mb-4 text-purple-200" />
-            <div className="text-3xl font-bold text-white mb-2">{formatTime(summaryToShow.totalStudyTime)}</div>
-            <div className="text-md font-medium text-purple-100">Study Time</div>
-          </div>
-          {/* Orange/Yellow (secondary) */}
-          <div className="rounded-2xl shadow-lg p-10 flex flex-col items-center bg-gradient-to-br from-orange-600 to-yellow-400 bg-opacity-90 min-w-[260px] max-w-[320px] mx-2">
-            <Medal size={48} className="mb-4 text-yellow-200" />
-            <div className="text-3xl font-bold text-white mb-2">{summaryToShow.totalPoints}</div>
-            <div className="text-md font-medium text-yellow-100">Total Points</div>
+          <div className="flex flex-col items-center p-2">
+            <CircularProgress progress={(summaryToShow.totalCheckIns / 30) * 100} size={120} strokeWidth={12} color="#38bdf8" label="Check-ins" />
+            <span className="mt-6 text-cyan-200 font-semibold text-lg">Check-ins: {summaryToShow.totalCheckIns}</span>
           </div>
         </div>
 
-        {/* Circular Progress Section above the bar chart */}
-        <div className="flex flex-col md:flex-row items-center justify-center gap-32 mb-32 mt-24 px-4 md:px-20">
-          <div className="flex flex-col items-center p-6">
-            <CircularProgress progress={calculateOverallProgress()} size={200} strokeWidth={18} color="#60a5fa" label="Overall" />
-            <span className="mt-10 text-blue-200 font-semibold text-xl">Overall Progress</span>
-          </div>
-          <div className="flex flex-col items-center p-6">
-            <CircularProgress progress={(summaryToShow.currentStreak / Math.max(summaryToShow.loginStreak, 1)) * 100} size={200} strokeWidth={18} color="#f59e42" label="Streak" />
-            <span className="mt-10 text-orange-200 font-semibold text-xl">Current Streak: {summaryToShow.currentStreak}</span>
-          </div>
-          <div className="flex flex-col items-center p-6">
-            <CircularProgress progress={(summaryToShow.totalCheckIns / 30) * 100} size={200} strokeWidth={18} color="#38bdf8" label="Check-ins" />
-            <span className="mt-10 text-cyan-200 font-semibold text-xl">Check-ins: {summaryToShow.totalCheckIns}</span>
-          </div>
-        </div>
+        {/* Space below circles */}
+        <div style={{ height: 32 }} />
 
-        {/* Bar Chart Section */}
-        <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl shadow-lg p-20 mb-32 mt-24 flex flex-col items-center justify-center">
+        {/* Improved Bar Chart Section */}
+        <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl shadow-lg p-12 mb-12 mt-2 flex flex-col items-center justify-center w-full">
           <h3
-            className="text-5xl font-extrabold text-purple-200 mb-16 mt-24 flex items-center justify-center"
+            className="text-2xl font-extrabold text-purple-200 mb-6 mt-6 flex items-center justify-center"
             style={{
               letterSpacing: '0.05em',
               textAlign: 'center',
               lineHeight: 1.2,
             }}
           >
-            <BarChart3 size={56} className="mr-8 text-purple-200" />
+            <BarChart3 size={32} className="mr-3 text-purple-200" />
             Daily Activity (Last 7 Days)
           </h3>
-          <div className="relative w-full max-w-5xl mx-auto px-8">
-            {/* Dynamic Y Axis */}
+          <div className="relative w-full max-w-4xl mx-auto px-2">
+            {/* Improved Bar Chart */}
             {(() => {
               const studyTimes = statsToShow.slice(-7).map(day => day.studyTime);
               const maxMinutes = Math.max(...studyTimes, 60);
               let yLabels = [];
-              const yStep = 10;
+              const yStep = 15;
               for (let m = Math.ceil(maxMinutes / yStep) * yStep; m >= 0; m -= yStep) {
                 if (m % 60 === 0 && m !== 0) {
                   yLabels.push(`${m / 60}h`);
@@ -170,8 +202,9 @@ const ProgressPage: React.FC = () => {
                 }
               }
               return (
-                <>
-                  <div className="absolute left-0 top-0 bottom-10 flex flex-col justify-between h-[28rem] z-10 pointer-events-none">
+                <div className="flex w-full">
+                  {/* Y Axis */}
+                  <div className="flex flex-col justify-between h-96 mr-2">
                     {yLabels.map((label, i) => (
                       <div
                         key={label}
@@ -182,70 +215,87 @@ const ProgressPage: React.FC = () => {
                       </div>
                     ))}
                   </div>
-                  <div className="flex items-end gap-24 h-[28rem] w-full overflow-x-auto scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900 justify-center pl-32">
+                  {/* Bars */}
+                  <div className="flex items-end gap-10 h-96 w-full">
                     {statsToShow.slice(-7).map((day, idx) => {
                       let value = day.studyTime;
                       let maxValue = Math.max(...studyTimes, 60);
                       if (maxValue === 0) maxValue = 1;
-                      const barHeight = (value / maxValue) * 400;
+                      const barHeight = (value / maxValue) * 320;
                       return (
-                        <div key={idx} className="flex flex-col items-center group">
+                        <div key={idx} className="flex flex-col items-center group w-14">
                           <div
-                            className="w-32 rounded-t-2xl bg-gradient-to-t from-blue-400 to-purple-400 transition-all duration-500 relative shadow-xl"
+                            className="w-full rounded-t-lg bg-gradient-to-t from-blue-400 to-purple-400 transition-all duration-500 relative shadow"
                             style={{ height: `${barHeight}px` }}
                           >
-                            <div className="absolute bottom-full mb-6 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 pointer-events-none text-base bg-gray-900 text-white px-8 py-4 rounded shadow-lg z-10">
+                            <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 pointer-events-none text-xs bg-gray-900 text-white px-2 py-1 rounded shadow z-10">
                               {`${day.lessonsCompleted} lessons, ${day.quizzesTaken} quizzes, ${formatTime(day.studyTime)} study`}
                             </div>
                           </div>
-                          {/* X Axis label */}
-                          <span className="text-lg text-blue-200 mt-6 font-semibold">
+                          <span className="text-sm text-blue-200 mt-2 font-semibold">
                             {new Date(day._id).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                           </span>
                         </div>
                       );
                     })}
                   </div>
-                  {/* X Axis line */}
-                  <div className="absolute left-0 right-0 bottom-10 h-0.5 bg-blue-900 opacity-60 z-0" />
-                </>
+                </div>
               );
             })()}
           </div>
         </div>
 
-        {/* Progress Tracker */}
-        <div className="mb-32 mt-32 flex justify-center w-full">
-          <div className="bg-gradient-to-br from-gray-900 to-gray-800 border border-gray-700 rounded-2xl shadow-lg px-16 py-24 max-w-full w-full flex flex-col gap-12 items-center">
-            <h2 className="text-2xl font-bold text-blue-200 mb-8">Your Latest Progress (Sample Data)</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 w-full">
-              <div className="flex flex-col items-center justify-center bg-gray-800 rounded-xl p-8 w-full">
-                <span className="text-4xl font-extrabold text-blue-300 mb-2">{DUMMY_SUMMARY.totalLessonsCompleted}</span>
-                <span className="text-lg text-blue-100">Lessons Completed</span>
+        {/* Space after graph for stats */}
+        <div style={{ height: 24 }} />
+
+        {/* Progress Tracker / Stats Section */}
+        <div className="mb-12 mt-6 flex justify-center w-full">
+          <div className="bg-gradient-to-br from-gray-900 to-gray-800 border border-gray-700 rounded-2xl shadow-lg px-6 py-8 max-w-full w-full flex flex-col gap-6 items-center">
+            <h2 className="text-lg font-bold text-blue-200 mb-2">Your Latest Progress (Sample Data)</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+              <div className="flex flex-col items-center justify-center bg-gray-800 rounded-xl p-4 w-full">
+                <span className="text-2xl font-extrabold text-blue-300 mb-1">{DUMMY_SUMMARY.totalLessonsCompleted}</span>
+                <span className="text-md text-blue-100">Lessons Completed</span>
               </div>
-              <div className="flex flex-col items-center justify-center bg-gray-800 rounded-xl p-8 w-full">
-                <span className="text-4xl font-extrabold text-teal-300 mb-2">{DUMMY_SUMMARY.totalQuizzesTaken}</span>
-                <span className="text-lg text-teal-100">Quizzes Taken</span>
+              <div className="flex flex-col items-center justify-center bg-gray-800 rounded-xl p-4 w-full">
+                <span className="text-2xl font-extrabold text-teal-300 mb-1">{DUMMY_SUMMARY.totalQuizzesTaken}</span>
+                <span className="text-md text-teal-100">Quizzes Taken</span>
               </div>
-              <div className="flex flex-col items-center justify-center bg-gray-800 rounded-xl p-8 w-full">
-                <span className="text-4xl font-extrabold text-purple-300 mb-2">{formatTime(DUMMY_SUMMARY.totalStudyTime)}</span>
-                <span className="text-lg text-purple-100">Study Time</span>
+              <div className="flex flex-col items-center justify-center bg-gray-800 rounded-xl p-4 w-full">
+                <span className="text-2xl font-extrabold text-purple-300 mb-1">{formatTime(DUMMY_SUMMARY.totalStudyTime)}</span>
+                <span className="text-md text-purple-100">Study Time</span>
               </div>
-              <div className="flex flex-col items-center justify-center bg-gray-800 rounded-xl p-8 w-full">
-                <span className="text-4xl font-extrabold text-yellow-300 mb-2">{DUMMY_SUMMARY.totalPoints}</span>
-                <span className="text-lg text-yellow-100">Total Points</span>
+              <div className="flex flex-col items-center justify-center bg-gray-800 rounded-xl p-4 w-full">
+                <span className="text-2xl font-extrabold text-yellow-300 mb-1">{DUMMY_SUMMARY.totalPoints}</span>
+                <span className="text-md text-yellow-100">Total Points</span>
               </div>
-              <div className="flex flex-col items-center justify-center bg-gray-800 rounded-xl p-8 w-full">
-                <span className="text-4xl font-extrabold text-orange-300 mb-2">{DUMMY_SUMMARY.currentStreak}</span>
-                <span className="text-lg text-orange-100">Current Streak</span>
+              <div className="flex flex-col items-center justify-center bg-gray-800 rounded-xl p-4 w-full">
+                <span className="text-2xl font-extrabold text-orange-300 mb-1">{DUMMY_SUMMARY.currentStreak}</span>
+                <span className="text-md text-orange-100">Current Streak</span>
               </div>
-              <div className="flex flex-col items-center justify-center bg-gray-800 rounded-xl p-8 w-full">
-                <span className="text-4xl font-extrabold text-cyan-300 mb-2">{DUMMY_SUMMARY.totalCheckIns}</span>
-                <span className="text-lg text-cyan-100">Check-ins</span>
+              <div className="flex flex-col items-center justify-center bg-gray-800 rounded-xl p-4 w-full">
+                <span className="text-2xl font-extrabold text-cyan-300 mb-1">{DUMMY_SUMMARY.totalCheckIns}</span>
+                <span className="text-md text-cyan-100">Check-ins</span>
               </div>
             </div>
           </div>
         </div>
+
+        {/* Smaller Footer */}
+        <footer
+          className="w-full text-center mt-auto border-t border-gray-700"
+          style={{
+            background: 'linear-gradient(90deg, #23263a 0%, #1e2133 100%)',
+            color: '#a0aec0',
+            fontSize: 14,
+            padding: '12px 0 8px 0',
+            letterSpacing: '0.03em',
+            fontWeight: 500,
+            marginTop: 16,
+          }}
+        >
+          <span style={{ fontWeight: 700, color: '#fff' }}>BluePrint</span> &nbsp;|&nbsp; Crafted for learners everywhere &nbsp; &copy; {new Date().getFullYear()} BluePrint Team 6
+        </footer>
       </div>
     </Layout>
   );
