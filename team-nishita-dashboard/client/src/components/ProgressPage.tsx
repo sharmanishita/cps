@@ -31,7 +31,6 @@ const DUMMY_STATS = [
 
 const isEmptySummary = (summary: any) => {
   if (!summary) return true;
-  // Consider empty if all values are 0
   return Object.values(summary).every((v) => v === 0);
 };
 
@@ -41,7 +40,6 @@ const MILESTONES = [
   { label: '7-Day Streak', achieved: (summary: any) => summary.loginStreak >= 7 },
   { label: '100 Points', achieved: (summary: any) => summary.totalPoints >= 100 },
 ];
-
 const ProgressPage: React.FC = () => {
   const { darkMode } = useTheme();
   const {
@@ -57,7 +55,6 @@ const ProgressPage: React.FC = () => {
     fetchProgressStats();
   }, [fetchProgressSummary, fetchProgressStats]);
 
-  // Decide which data to show
   const summaryToShow: ProgressSummary = isEmptySummary(realSummary) ? DUMMY_SUMMARY : (realSummary || DUMMY_SUMMARY);
   const statsToShow = (realStats && realStats.length > 0 && !isEmptySummary(realSummary)) ? realStats : DUMMY_STATS;
 
@@ -70,7 +67,7 @@ const ProgressPage: React.FC = () => {
   const calculateOverallProgress = () => {
     if (!summaryToShow) return 0;
     const totalActivities = summaryToShow.totalLessonsCompleted + summaryToShow.totalQuizzesTaken;
-    const maxActivities = 100; // Assuming 100 activities is 100% progress
+    const maxActivities = 100;
     return Math.min((totalActivities / maxActivities) * 100, 100);
   };
 
@@ -86,80 +83,169 @@ const ProgressPage: React.FC = () => {
 
   return (
     <Layout>
-      <div className={`max-w-7xl mx-auto px-4 sm:px-8 lg:px-16 py-24 min-h-screen transition-colors duration-300 ${darkMode ? 'bg-[#181A20]' : 'bg-gradient-to-br from-white to-blue-50'}`}>
-        <div className="mb-20 mt-8">
-          <h1 className="text-3xl font-extrabold text-white mb-8 tracking-tight">
-            Your Learning Progress
-          </h1>
-          <p className="text-lg text-gray-400">
+        <div
+          className={`max-w-7xl mx-auto min-h-screen flex flex-col transition-colors duration-300 ${
+            darkMode ? 'bg-[#181A20]' : 'bg-gradient-to-br from-white to-blue-50'
+          }`}
+          style={{
+            paddingTop: 48,
+            paddingLeft: 32,
+            paddingRight: 32,
+          }}
+        >
+          {/* Header Section */}
+          <div className="flex flex-col items-center" style={{ marginTop: 32, marginBottom: 16 }}>
+            <h1
+              className="text-3xl font-extrabold text-white tracking-tight text-center"
+              style={{ marginBottom: 10, paddingTop: 8, paddingBottom: 8 }}
+            >
+              Your Learning Progress
+            </h1>
+            <p
+              className="text-gray-400 text-lg text-center"
+              style={{ marginBottom: 18, paddingLeft: 8, paddingRight: 8 }}
+            >
+              {/* Insert your description or summary here */}
+            </p>
+          </div>
+        </div>
+
             Continue your learning journey and celebrate your achievements
           </p>
         </div>
-
-        {/* Modern Stat Cards - horizontally scrollable on small screens */}
-        <div className="flex gap-12 md:gap-20 mb-32 mt-16 px-4 md:px-20 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900">
-          {/* Blue (primary) */}
-          <div className={`rounded-2xl shadow-lg p-10 flex flex-col items-center min-w-[260px] max-w-[320px] mx-2 transition-colors duration-300 ${darkMode ? 'bg-gradient-to-br from-blue-700 to-blue-400 bg-opacity-90' : 'bg-gradient-to-br from-blue-100 to-blue-50 border border-blue-200'}`}>
-            <BookOpen size={32} className={`mb-4 ${darkMode ? 'text-blue-200' : 'text-blue-700'}`} />
-            <div className={`text-3xl font-bold mb-2 ${darkMode ? 'text-white' : 'text-blue-900'}`}>{summaryToShow.totalLessonsCompleted}</div>
-            <div className={`text-md font-medium ${darkMode ? 'text-blue-100' : 'text-blue-700/80'}`}>Lessons Completed</div>
-          </div>
-          {/* Teal (secondary) */}
-          <div className={`rounded-2xl shadow-lg p-10 flex flex-col items-center min-w-[260px] max-w-[320px] mx-2 transition-colors duration-300 ${darkMode ? 'bg-gradient-to-br from-teal-700 to-teal-400 bg-opacity-90' : 'bg-gradient-to-br from-teal-100 to-teal-50 border border-teal-200'}`}>
-            <Award size={32} className={`mb-4 ${darkMode ? 'text-teal-200' : 'text-teal-700'}`} />
-            <div className={`text-3xl font-bold mb-2 ${darkMode ? 'text-white' : 'text-teal-900'}`}>{summaryToShow.totalQuizzesTaken}</div>
-            <div className={`text-md font-medium ${darkMode ? 'text-teal-100' : 'text-teal-700/80'}`}>Quizzes Taken</div>
-          </div>
-          {/* Purple (secondary) */}
-          <div className={`rounded-2xl shadow-lg p-10 flex flex-col items-center min-w-[260px] max-w-[320px] mx-2 transition-colors duration-300 ${darkMode ? 'bg-gradient-to-br from-purple-700 to-purple-400 bg-opacity-90' : 'bg-gradient-to-br from-purple-100 to-purple-50 border border-purple-200'}`}>
-            <Clock size={32} className={`mb-4 ${darkMode ? 'text-purple-200' : 'text-purple-700'}`} />
-            <div className={`text-3xl font-bold mb-2 ${darkMode ? 'text-white' : 'text-purple-900'}`}>{formatTime(summaryToShow.totalStudyTime)}</div>
-            <div className={`text-md font-medium ${darkMode ? 'text-purple-100' : 'text-purple-700/80'}`}>Study Time</div>
-          </div>
-          {/* Orange/Yellow (secondary) */}
-          <div className={`rounded-2xl shadow-lg p-10 flex flex-col items-center min-w-[260px] max-w-[320px] mx-2 transition-colors duration-300 ${darkMode ? 'bg-gradient-to-br from-orange-600 to-yellow-400 bg-opacity-90' : 'bg-gradient-to-br from-yellow-100 to-orange-50 border border-yellow-200'}`}>
-            <Medal size={32} className={`mb-4 ${darkMode ? 'text-yellow-200' : 'text-yellow-700'}`} />
-            <div className={`text-3xl font-bold mb-2 ${darkMode ? 'text-white' : 'text-yellow-900'}`}>{summaryToShow.totalPoints}</div>
-            <div className={`text-md font-medium ${darkMode ? 'text-yellow-100' : 'text-yellow-700/80'}`}>Total Points</div>
+        {/* Stat Cards Section - Horizontally scrollable on small screens, grid on medium+ */}
+        <div className="mb-32 mt-16 px-4 md:px-20">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 md:gap-20 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900">
+            {[
+              {
+                icon: <BookOpen size={32} className={`${darkMode ? 'text-blue-200' : 'text-blue-700'} mb-4`} />,
+                value: summaryToShow.totalLessonsCompleted,
+                label: 'Lessons Completed',
+                gradientDark: 'from-blue-700 to-blue-400',
+                gradientLight: 'from-blue-100 to-blue-50 border border-blue-200',
+                textColorDark: 'text-white',
+                textColorLight: 'text-blue-900',
+                subTextColorDark: 'text-blue-100',
+                subTextColorLight: 'text-blue-700/80',
+              },
+              {
+                icon: <Award size={32} className={`${darkMode ? 'text-teal-200' : 'text-teal-700'} mb-4`} />,
+                value: summaryToShow.totalQuizzesTaken,
+                label: 'Quizzes Taken',
+                gradientDark: 'from-teal-700 to-teal-400',
+                gradientLight: 'from-teal-100 to-teal-50 border border-teal-200',
+                textColorDark: 'text-white',
+                textColorLight: 'text-teal-900',
+                subTextColorDark: 'text-teal-100',
+                subTextColorLight: 'text-teal-700/80',
+              },
+              {
+                icon: <Clock size={32} className={`${darkMode ? 'text-purple-200' : 'text-purple-700'} mb-4`} />,
+                value: formatTime(summaryToShow.totalStudyTime),
+                label: 'Study Time',
+                gradientDark: 'from-purple-700 to-purple-400',
+                gradientLight: 'from-purple-100 to-purple-50 border border-purple-200',
+                textColorDark: 'text-white',
+                textColorLight: 'text-purple-900',
+                subTextColorDark: 'text-purple-100',
+                subTextColorLight: 'text-purple-700/80',
+              },
+              {
+                icon: <Medal size={32} className={`${darkMode ? 'text-yellow-200' : 'text-yellow-700'} mb-4`} />,
+                value: summaryToShow.totalPoints,
+                label: 'Total Points',
+                gradientDark: 'from-orange-600 to-yellow-400',
+                gradientLight: 'from-yellow-100 to-orange-50 border border-yellow-200',
+                textColorDark: 'text-white',
+                textColorLight: 'text-yellow-900',
+                subTextColorDark: 'text-yellow-100',
+                subTextColorLight: 'text-yellow-700/80',
+              },
+            ].map((card) => (
+              <div
+                key={card.label}
+                className={`rounded-2xl shadow-lg p-10 flex flex-col items-center min-w-[260px] max-w-[320px] mx-2 transition-colors duration-300 bg-gradient-to-br ${
+                  darkMode ? `${card.gradientDark} bg-opacity-90` : card.gradientLight
+                }`}
+              >
+                {card.icon}
+                <div className={`text-3xl font-bold mb-2 ${darkMode ? card.textColorDark : card.textColorLight}`}>
+                  {card.value}
+                </div>
+                <div className={`text-md font-medium ${darkMode ? card.subTextColorDark : card.subTextColorLight}`}>
+                  {card.label}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 
-        {/* Circular Progress Section above the bar chart */}
-        <div className="flex flex-col md:flex-row items-center justify-center gap-32 mb-32 mt-24 px-4 md:px-20">
+        {/* Circular Progress Section */}
+        <div className="flex flex-col md:flex-row items-center justify-center gap-12 mb-32 mt-24 px-4 md:px-20">
           <div className="flex flex-col items-center p-6">
             <CircularProgress progress={calculateOverallProgress()} size={150} strokeWidth={28} color="#60a5fa" label="Overall" />
             <span className="mt-10 text-blue-200 font-semibold text-xl">Overall Progress</span>
           </div>
           <div className="flex flex-col items-center p-6">
-            <CircularProgress progress={(summaryToShow.currentStreak / Math.max(summaryToShow.loginStreak, 1)) * 100} size={150} strokeWidth={28} color="#f59e42" label="Streak" />
-            <span className="mt-10 text-orange-200 font-semibold text-xl">Current Streak: {summaryToShow.currentStreak}</span>
+            <CircularProgress
+              progress={(summaryToShow.currentStreak / Math.max(summaryToShow.loginStreak, 1)) * 100}
+              size={150}
+              strokeWidth={28}
+              color="#f59e42"
+              label="Streak"
+            />
+            <span className="mt-10 text-orange-200 font-semibold text-xl">
+              Current Streak: {summaryToShow.currentStreak}
+            </span>
           </div>
           <div className="flex flex-col items-center p-6">
-            <CircularProgress progress={(summaryToShow.totalCheckIns / 30) * 100} size={150} strokeWidth={28} color="#38bdf8" label="Check-ins" />
-            <span className="mt-10 text-cyan-200 font-semibold text-xl">Check-ins: {summaryToShow.totalCheckIns}</span>
+            <CircularProgress
+              progress={(summaryToShow.totalCheckIns / 30) * 100}
+              size={150}
+              strokeWidth={28}
+              color="#38bdf8"
+              label="Check-ins"
+            />
+            <span className="mt-10 text-cyan-200 font-semibold text-xl">
+              Check-ins: {summaryToShow.totalCheckIns}
+            </span>
           </div>
         </div>
 
         {/* Bar Chart Section */}
-        <div className={`rounded-2xl shadow-lg p-20 mb-32 mt-24 flex flex-col items-center justify-center transition-colors duration-300 ${darkMode ? 'bg-gradient-to-br from-gray-900 to-gray-800' : 'bg-gradient-to-br from-white to-blue-50 border border-blue-100'}`}>
+        <div
+          className={`rounded-2xl shadow-lg p-20 mb-32 mt-24 flex flex-col items-center justify-center transition-colors duration-300 ${
+            darkMode ? 'bg-gradient-to-br from-gray-900 to-gray-800' : 'bg-gradient-to-br from-white to-blue-50 border border-blue-100'
+          }`}
+        >
           <h3
-            className={`text-5xl font-extrabold mb-16 mt-24 flex items-center justify-center ${darkMode ? 'text-purple-200' : 'text-purple-700'}`}
+            className={`text-5xl font-extrabold mb-16 mt-24 flex items-center justify-center ${
+              darkMode ? 'text-purple-200' : 'text-purple-700'
+            }`}
+          >
+            Weekly Learning Summary
+          </h3>
+          {/* Bar chart component goes here */}
+        </div>
+
             style={{
               letterSpacing: '0.05em',
               textAlign: 'center',
               lineHeight: 1.2,
             }}
           >
+
             <BarChart3 size={56} className={`mr-8 ${darkMode ? 'text-purple-200' : 'text-purple-400'}`} />
+
             Daily Activity (Last 7 Days)
           </h3>
-          <div className="relative w-full max-w-5xl mx-auto px-8">
-            {/* Dynamic Y Axis */}
+          <div className="relative w-full max-w-4xl mx-auto px-2">
+            {/* Improved Bar Chart */}
             {(() => {
               const studyTimes = statsToShow.slice(-7).map(day => day.studyTime);
               const maxMinutes = Math.max(...studyTimes, 60);
               let yLabels = [];
-              const yStep = 10;
+              const yStep = 15;
               for (let m = Math.ceil(maxMinutes / yStep) * yStep; m >= 0; m -= yStep) {
                 if (m % 60 === 0 && m !== 0) {
                   yLabels.push(`${m / 60}h`);
@@ -170,8 +256,9 @@ const ProgressPage: React.FC = () => {
                 }
               }
               return (
-                <>
-                  <div className="absolute left-0 top-0 bottom-10 flex flex-col justify-between h-[28rem] z-10 pointer-events-none">
+                <div className="flex w-full">
+                  {/* Y Axis */}
+                  <div className="flex flex-col justify-between h-96 mr-2">
                     {yLabels.map((label, i) => (
                       <div
                         key={label}
@@ -182,68 +269,160 @@ const ProgressPage: React.FC = () => {
                       </div>
                     ))}
                   </div>
+
                   <div className="flex items-end gap-24 h-[28rem] w-full overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-blue-50 justify-center pl-32">
+
                     {statsToShow.slice(-7).map((day, idx) => {
                       let value = day.studyTime;
                       let maxValue = Math.max(...studyTimes, 60);
                       if (maxValue === 0) maxValue = 1;
-                      const barHeight = (value / maxValue) * 400;
+                      const barHeight = (value / maxValue) * 320;
                       return (
-                        <div key={idx} className="flex flex-col items-center group">
+                        <div key={idx} className="flex flex-col items-center group w-14">
+                       
                           <div
-                            className={`w-32 rounded-t-2xl transition-all duration-500 relative shadow-xl ${darkMode ? 'bg-gradient-to-t from-blue-400 to-purple-400' : 'bg-gradient-to-t from-blue-200 to-purple-100'}`}
+                            className={`w-32 rounded-t-2xl transition-all duration-500 relative shadow-xl bg-gradient-to-t ${
+                              darkMode ? 'from-blue-400 to-purple-400' : 'from-blue-200 to-purple-100'
+                            }`}
                             style={{ height: `${barHeight}px` }}
                           >
-                            <div className={`absolute bottom-full mb-6 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 pointer-events-none text-base px-8 py-4 rounded shadow-lg z-10 ${darkMode ? 'bg-gray-900 text-white' : 'bg-white text-gray-900 border border-blue-100'}`}>
+                            <div
+                              className={`absolute bottom-full left-1/2 -translate-x-1/2 transform opacity-0 group-hover:opacity-100 pointer-events-none text-sm px-4 py-2 rounded shadow-lg z-10 transition-all duration-300 ${
+                                darkMode ? 'bg-gray-900 text-white' : 'bg-white text-gray-900 border border-blue-100'
+                              }`}
+                              style={{ marginBottom: '1rem' }}
+                            >
                               {`${day.lessonsCompleted} lessons, ${day.quizzesTaken} quizzes, ${formatTime(day.studyTime)} study`}
                             </div>
                           </div>
+
                           {/* X Axis label */}
-                          <span className={`text-lg mt-6 font-semibold ${darkMode ? 'text-blue-200' : 'text-blue-700'}`}>
+                          <span className={`mt-4 font-semibold ${
+                            darkMode ? 'text-blue-200 text-sm' : 'text-blue-700 text-base'
+                          }`}>
+                            {day.label}
+                          </span>
+
                             {new Date(day._id).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                           </span>
                         </div>
                       );
                     })}
                   </div>
+
                   {/* X Axis line */}
                   <div className={`absolute left-0 right-0 bottom-10 h-0.5 z-0 ${darkMode ? 'bg-blue-900 opacity-60' : 'bg-blue-200 opacity-60'}`} />
                 </>
+
+                </div>
+
               );
             })()}
           </div>
         </div>
 
+        {/* Space after graph for stats */}
+        <div style={{ height: 24 }} />
+
         {/* Progress Tracker */}
-        <div className="mb-32 mt-32 flex flex-col items-center w-full">
-          <h2 className="text-3xl font-extrabold mb-14 tracking-tight text-center">Your Latest Progress (Sample Data)</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
-            <div className={`w-full h-32 flex flex-col items-center justify-center rounded-lg shadow-sm transition-colors duration-300 ${darkMode ? 'bg-blue-500/10' : 'bg-blue-200/40'}`}>
-              <span className={`text-4xl font-extrabold mt-1 ${darkMode ? 'text-blue-300' : 'text-blue-700'}`}>{DUMMY_SUMMARY.totalLessonsCompleted}</span>
-              <span className={`text-lg mt-1 ${darkMode ? 'text-white' : 'text-blue-900/80'}`}>Lessons Completed</span>
-            </div>
-            <div className={`w-full h-32 flex flex-col items-center justify-center rounded-lg shadow-sm transition-colors duration-300 ${darkMode ? 'bg-teal-400/10' : 'bg-teal-200/40'}`}>
-              <span className={`text-4xl font-extrabold mt-1 ${darkMode ? 'text-teal-300' : 'text-teal-700'}`}>{DUMMY_SUMMARY.totalQuizzesTaken}</span>
-              <span className={`text-lg mt-1 ${darkMode ? 'text-white' : 'text-teal-900/80'}`}>Quizzes Taken</span>
-            </div>
-            <div className={`w-full h-32 flex flex-col items-center justify-center rounded-lg shadow-sm transition-colors duration-300 ${darkMode ? 'bg-purple-400/10' : 'bg-purple-200/40'}`}>
-              <span className={`text-4xl font-extrabold mt-1 ${darkMode ? 'text-purple-300' : 'text-purple-700'}`}>{formatTime(DUMMY_SUMMARY.totalStudyTime)}</span>
-              <span className={`text-lg mt-1 ${darkMode ? 'text-white' : 'text-purple-900/80'}`}>Study Time</span>
-            </div>
-            <div className={`w-full h-32 flex flex-col items-center justify-center rounded-lg shadow-sm transition-colors duration-300 ${darkMode ? 'bg-yellow-400/10' : 'bg-yellow-200/40'}`}>
-              <span className={`text-4xl font-extrabold mt-1 ${darkMode ? 'text-yellow-300' : 'text-yellow-700'}`}>{DUMMY_SUMMARY.totalPoints}</span>
-              <span className={`text-lg mt-1 ${darkMode ? 'text-white' : 'text-yellow-900/80'}`}>Total Points</span>
-            </div>
-            <div className={`w-full h-32 flex flex-col items-center justify-center rounded-lg shadow-sm transition-colors duration-300 ${darkMode ? 'bg-orange-400/10' : 'bg-orange-200/40'}`}>
-              <span className={`text-4xl font-extrabold mt-1 ${darkMode ? 'text-orange-300' : 'text-orange-700'}`}>{DUMMY_SUMMARY.currentStreak}</span>
-              <span className={`text-lg mt-1 ${darkMode ? 'text-white' : 'text-orange-900/80'}`}>Current Streak</span>
-            </div>
-            <div className={`w-full h-32 flex flex-col items-center justify-center rounded-lg shadow-sm transition-colors duration-300 ${darkMode ? 'bg-cyan-400/10' : 'bg-cyan-200/40'}`}>
-              <span className={`text-4xl font-extrabold mt-1 ${darkMode ? 'text-cyan-300' : 'text-cyan-700'}`}>{DUMMY_SUMMARY.totalCheckIns}</span>
-              <span className={`text-lg mt-1 ${darkMode ? 'text-white' : 'text-cyan-900/80'}`}>Check-ins</span>
+        <div className="mb-24 mt-16 flex justify-center w-full">
+          <div className={`rounded-2xl shadow-lg px-6 py-10 max-w-full w-full flex flex-col gap-8 items-center 
+            ${darkMode ? 'bg-gradient-to-br from-gray-900 to-gray-800 border border-gray-700' : ''}`}>
+
+            <h2 className={`text-3xl font-extrabold tracking-tight text-center mb-4 
+              ${darkMode ? 'text-blue-200' : 'text-gray-900'}`}>
+              Your Latest Progress (Sample Data)
+            </h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+              {/* Lessons Completed */}
+              <div className={`flex flex-col items-center justify-center rounded-xl p-4 w-full transition-colors duration-300 
+                ${darkMode ? 'bg-gray-800' : 'bg-blue-200/40'}`}>
+                <span className={`font-extrabold mt-1 ${darkMode ? 'text-2xl text-blue-300' : 'text-4xl text-blue-700'}`}>
+                  {DUMMY_SUMMARY.totalLessonsCompleted}
+                </span>
+                <span className={`${darkMode ? 'text-md text-blue-100' : 'text-lg text-blue-900/80'} mt-1`}>
+                  Lessons Completed
+                </span>
+              </div>
+
+              {/* Quizzes Taken */}
+              <div className={`flex flex-col items-center justify-center rounded-xl p-4 w-full transition-colors duration-300 
+                ${darkMode ? 'bg-gray-800' : 'bg-teal-200/40'}`}>
+                <span className={`font-extrabold mt-1 ${darkMode ? 'text-2xl text-teal-300' : 'text-4xl text-teal-700'}`}>
+                  {DUMMY_SUMMARY.totalQuizzesTaken}
+                </span>
+                <span className={`${darkMode ? 'text-md text-teal-100' : 'text-lg text-teal-900/80'} mt-1`}>
+                  Quizzes Taken
+                </span>
+              </div>
+
+              {/* Study Time */}
+              <div className={`flex flex-col items-center justify-center rounded-xl p-4 w-full transition-colors duration-300 
+                ${darkMode ? 'bg-gray-800' : 'bg-purple-200/40'}`}>
+                <span className={`font-extrabold mt-1 ${darkMode ? 'text-2xl text-purple-300' : 'text-4xl text-purple-700'}`}>
+                  {formatTime(DUMMY_SUMMARY.totalStudyTime)}
+                </span>
+                <span className={`${darkMode ? 'text-md text-purple-100' : 'text-lg text-purple-900/80'} mt-1`}>
+                  Study Time
+                </span>
+              </div>
+
+              {/* Total Points */}
+              <div className={`flex flex-col items-center justify-center rounded-xl p-4 w-full transition-colors duration-300 
+                ${darkMode ? 'bg-gray-800' : 'bg-yellow-200/40'}`}>
+                <span className={`font-extrabold mt-1 ${darkMode ? 'text-2xl text-yellow-300' : 'text-4xl text-yellow-700'}`}>
+                  {DUMMY_SUMMARY.totalPoints}
+                </span>
+                <span className={`${darkMode ? 'text-md text-yellow-100' : 'text-lg text-yellow-900/80'} mt-1`}>
+                  Total Points
+                </span>
+              </div>
+
+              {/* Current Streak */}
+              <div className={`flex flex-col items-center justify-center rounded-xl p-4 w-full transition-colors duration-300 
+                ${darkMode ? 'bg-gray-800' : 'bg-orange-200/40'}`}>
+                <span className={`font-extrabold mt-1 ${darkMode ? 'text-2xl text-orange-300' : 'text-4xl text-orange-700'}`}>
+                  {DUMMY_SUMMARY.currentStreak}
+                </span>
+                <span className={`${darkMode ? 'text-md text-orange-100' : 'text-lg text-orange-900/80'} mt-1`}>
+                  Current Streak
+                </span>
+              </div>
+
+              {/* Check-ins */}
+              <div className={`flex flex-col items-center justify-center rounded-xl p-4 w-full transition-colors duration-300 
+                ${darkMode ? 'bg-gray-800' : 'bg-cyan-200/40'}`}>
+                <span className={`font-extrabold mt-1 ${darkMode ? 'text-2xl text-cyan-300' : 'text-4xl text-cyan-700'}`}>
+                  {DUMMY_SUMMARY.totalCheckIns}
+                </span>
+                <span className={`${darkMode ? 'text-md text-cyan-100' : 'text-lg text-cyan-900/80'} mt-1`}>
+                  Check-ins
+                </span>
+              </div>
             </div>
           </div>
         </div>
+
+            </div>
+          </div>
+        </div>
+
+        {/* Smaller Footer */}
+        <footer
+          className="w-full text-center mt-auto border-t border-gray-700"
+          style={{
+            background: 'linear-gradient(90deg, #23263a 0%, #1e2133 100%)',
+            color: '#a0aec0',
+            fontSize: 14,
+            padding: '12px 0 8px 0',
+            letterSpacing: '0.03em',
+            fontWeight: 500,
+            marginTop: 16,
+          }}
+        >
+          <span style={{ fontWeight: 700, color: '#fff' }}>BluePrint</span> &nbsp;|&nbsp; Crafted for learners everywhere &nbsp; &copy; {new Date().getFullYear()} BluePrint Team 6
+        </footer>
       </div>
     </Layout>
   );
