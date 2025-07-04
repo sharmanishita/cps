@@ -132,6 +132,45 @@ export const getCourseById = (courseId: number): Promise<{ data: { course: Cours
 export const deleteCourse = (courseId: number): Promise<{ data: { message: string } }> =>
   api.delete(`/courses/${courseId}`);
 
+// ---------- Progress ----------
+
+export interface ProgressSummary {
+  totalLessonsCompleted: number;
+  totalQuizzesTaken: number;
+  totalStudyTime: number;
+  totalPointsEarned: number;
+  totalPoints: number;
+  currentStreak: number;
+  loginStreak: number;
+  totalCheckIns: number;
+}
+
+export interface DailyProgress {
+  _id: string;
+  lessonsCompleted: number;
+  quizzesTaken: number;
+  studyTime: number;
+  pointsEarned: number;
+  checkIns: number;
+}
+
+export interface ProgressUpdate {
+  lessonsCompleted: number;
+  quizzesTaken: number;
+  studyTime: number;
+  pointsEarned: number;
+  isCheckedIn: boolean;
+}
+
+export const getProgressSummary = (): Promise<{ data: { summary: ProgressSummary } }> =>
+  api.get('/progress/summary');
+
+export const getProgressStats = (): Promise<{ data: { dailyStats: DailyProgress[] } }> =>
+  api.get('/progress/stats');
+
+export const updateProgress = (progressData: ProgressUpdate): Promise<{ data: { message: string } }> =>
+  api.post('/progress/update', progressData);
+
 // ---------- Utils ----------
 
 export const getCurrentUser = (): User | null => {

@@ -6,7 +6,8 @@ import { errorHandler } from './middleware/errorHandler.js';
 import { authRouter } from './routes/auth.js';
 import { calendarRouter } from './routes/calendar.js';
 import { courseRouter } from './routes/course.js';
-import { achievementRouter } from './routes/achievements.js'; 
+import { achievementRouter } from './routes/achievements.js';
+import { progressRouter } from './routes/progress.js'; 
 
 import { requireRole, requireAuth } from './middleware/roleMiddleware.js';
 
@@ -47,7 +48,8 @@ app.get('/', (req: Request, res: Response) => {
 app.use('/api/auth', authRouter);
 app.use('/api/calendar', calendarRouter);
 app.use('/api/courses', courseRouter);
-app.use('/api/achievement', achievementRouter); // ✅ NEW ROUTE REGISTERED
+app.use('/api/achievement', achievementRouter);
+app.use('/api/progress', progressRouter); // ✅ PROGRESS ROUTE REGISTERED
 
 // ✅ ERROR HANDLING
 app.use(errorHandler);
