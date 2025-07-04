@@ -12,6 +12,7 @@
   "dependencies": {
     "@cloudinary/react": "^1.14.3",
     "@cloudinary/url-gen": "^1.21.0",
+    "@radix-ui/react-tooltip": "^1.2.7",
     "@tailwindcss/vite": "^4.1.10",
     "axios": "^1.9.0",
     "dagre": "^0.8.5",
@@ -22,6 +23,7 @@
     "lucide-react": "^0.514.0",
     "pdf-ts": "^0.0.2",
     "react": "^19.1.0",
+    "react-confetti": "^6.4.0",
     "react-dom": "^19.1.0",
     "react-dropzone": "^14.3.8",
     "reactflow": "^11.11.4",
