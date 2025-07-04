@@ -1,113 +1,56 @@
 import express from "express";
-import type { Request, Response } from "express";
-import { generateQuizQuestions } from "../utils/ragEngine";
-import QuizResult from "../models/QuizResult";
-import { QuizSubmission } from "../types/quiz";
-import { storeAnswers, getAnswers } from "../utils/answerStore";
+import mongoose from "mongoose";
+import { getTextFromPdfStream } from "../utils/pdfExtractor";
+import { generateQuizFromText } from "../utils/quizGenerator";
 
 const router = express.Router();
 
-// GET /api/quiz/:topic — Generate quiz questions
-router.get("/:topic", async (req: Request, res: Response) => {
+router.get("/quiz/:topic", async (req, res) => {
   const { topic } = req.params;
+  console.log(`🟡 Incoming quiz request for topic: ${topic}`);
+  const db = mongoose.connection.db;
 
-  if (!topic) {
-    res.status(400).json({
-      error: "Topic is required",
-      questions: [],
-    });
+  if (!db) {
+    res.status(500).json({ error: "Database connection not established" });
     return;
   }
 
   try {
-    console.log("Generating questions for topic:", topic);
-    const questions = await generateQuizQuestions(topic);
-    console.log("Generated questions count:", questions.length);
-
-    if (!Array.isArray(questions) || questions.length === 0) {
-      console.warn("No questions generated for topic:", topic);
-      res.status(404).json({
-        error: "No questions could be generated",
-        questions: [],
-      });
+    const mapping = await db.collection("topic_mappings").findOne({ topic });
+    if (!mapping){
+      console.log("🔴 Topic not found in topic_mappings");
+      res.status(404).json({ error: "Topic not found in mapping" })
       return;
     }
+     console.log(`🟢 Found mapping for topic → PDF: ${mapping.pdf}`);
+    const file = await db.collection("pdfs.files").findOne({ filename: mapping.pdf });
+    if (!file){
+      console.log("🔴 PDF file not found for topic:", topic);
+      res.status(404).json({ error: "PDF file not found" });
+      return;
+    }// res.status(404).json({ error: "PDF not found" });
+    console.log(`🟢 Found PDF file for topic: ${topic} with ID: ${file._id}`);
 
-    // Store correct answers for later validation
-    const correctAnswers = questions.map((q) => q.correctAnswer);
-    storeAnswers(topic, correctAnswers);
+    const bucket = new mongoose.mongo.GridFSBucket(db, { bucketName: "pdfs" });
+    const stream = bucket.openDownloadStream(file._id);
 
-    // Send sanitized questions to frontend
-    const sanitizedQuestions = questions.map(({ question, options }) => ({
-      question,
-      options,
-    }));
+    const text = await getTextFromPdfStream(stream);
+    if (!text) {
+      console.log("🔴 No text extracted from PDF for topic:", topic);
+      res.status(500).json({ error: "Failed to extract text from PDF" });
+      return;
+    }
+    console.log(`🟢 Successfully extracted text from PDF for topic: ${topic}`);
 
-    console.log("Sending response with", sanitizedQuestions.length, "questions");
-    res.json({ questions: sanitizedQuestions });
-    return;
+    const formattedQuiz = await generateQuizFromText(text, topic);
+    
+    console.log(`🟢 Successfully generated quiz for topic: ${topic}`);
+
+    res.json(formattedQuiz);
   } catch (err) {
-    console.error("Quiz generation failed:", err);
-    res.status(500).json({
-      error: "Failed to generate questions",
-      questions: [],
-    });
-    return;
+    console.error("Quiz generation error:", err);
+    res.status(500).json({ error: "Server error during quiz generation" });
   }
 });
-
-// POST /api/quiz/submit — Submit quiz answers
-router.post(
-  "/submit",
-  async (req: Request<{}, {}, QuizSubmission>, res: Response) => {
-    const { topic, answers, username } = req.body;
-
-    if (!topic || !Array.isArray(answers) || !username) {
-      res.status(400).json({ error: "Missing or invalid topic, answers, or username" });
-      return;
-    }
-
-    try {
-      // Get stored correct answers
-      const correctAnswers = getAnswers(topic);
-      if (!correctAnswers) {
-        res.status(404).json({ error: "Quiz session not found" });
-        return;
-      }
-
-      // Calculate score
-      const score = answers.reduce(
-        (total, answer, index) => total + (answer === correctAnswers[index] ? 1 : 0),
-        0
-      );
-
-      const percentageScore = (score / answers.length) * 100;
-      const mastery = 1 - percentageScore / 100; // Higher mastery means more practice needed
-
-      // Save quiz result
-      await QuizResult.create({
-        username,
-        topic,
-        score: percentageScore,
-        mastery,
-        answers,
-        correctAnswers,
-      });
-
-      res.json({
-        topic,
-        score: percentageScore,
-        masteryUpdate: { [topic]: mastery },
-        correctAnswers,
-        userAnswers: answers,
-      });
-      return;
-    } catch (err) {
-      console.error("Quiz submission error:", err);
-      res.status(500).json({ error: "Failed to process submission" });
-      return;
-    }
-  }
-);
 
 export default router;

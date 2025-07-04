@@ -1,0 +1,5 @@
+{
+  "title": "classes",
+  "lecture": "08",
+  "content": "Classes define new types in Python using the `class` keyword. A class contains data attributes and procedural attributes (methods). Instances of a class are created using constructors like `__init__`, which initialize the object state."
+}

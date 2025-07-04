@@ -5,7 +5,8 @@ import mongoose from "mongoose";
 import { GridFSBucket } from "mongodb";
 import dotenv from "dotenv";
 
-dotenv.config({ path: path.join(__dirname, "../../.env") });
+//dotenv.config({ path: path.join(__dirname, "../../.env") });
+dotenv.config();
 
 
 const pdfDir = path.join(__dirname, "../data");

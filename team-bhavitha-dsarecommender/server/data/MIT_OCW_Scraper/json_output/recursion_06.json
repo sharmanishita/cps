@@ -1,0 +1,6 @@
+{
+  "title": "recursion",
+  "lecture": "06",
+  "content": "Recursion is a method of solving problems by breaking them into smaller, self-similar problems. A recursive function calls itself with a simpler input until it reaches a base case. Common recursive examples include multiplication, factorial, Fibonacci, palindrome checking, and the Towers of Hanoi. Recursion requires careful control of scope and termination conditions to avoid infinite loops and stack overflows."
+}
+

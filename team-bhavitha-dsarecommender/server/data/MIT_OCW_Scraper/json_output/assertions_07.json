@@ -1,0 +1,5 @@
+{
+  "title": "assertions",
+  "lecture": "07",
+  "content": "Assertions are used in programming to check if assumptions made in the code are true. In Python, the `assert` statement tests a condition and raises an error if the condition is false. Assertions are helpful for catching bugs early and making the code more robust during development. They should not be used for handling user errors or input validation."
+}

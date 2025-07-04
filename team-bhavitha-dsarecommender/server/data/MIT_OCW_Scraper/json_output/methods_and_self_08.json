@@ -1,0 +1,5 @@
+{
+  "title": "methods_and_self",
+  "lecture": "08",
+  "content": "Methods are functions that belong to a class. In Python, the first parameter of any method is `self`, which refers to the instance. Methods use dot notation and interact with instance variables to define behavior unique to that object."
+}

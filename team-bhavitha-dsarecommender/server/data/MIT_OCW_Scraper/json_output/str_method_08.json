@@ -1,0 +1,5 @@
+{
+  "title": "str_method",
+  "lecture": "08",
+  "content": "The `__str__` method defines how an object appears when printed. Without it, Python prints a default memory address. By overriding `__str__`, developers can create readable, meaningful string representations of custom objects."
+}

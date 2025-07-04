@@ -1,0 +1,5 @@
+{
+  "title": "dictionaries",
+  "lecture": "06",
+  "content": "Dictionaries in Python are collections of key-value pairs that provide an efficient way to store and retrieve data. Keys must be immutable and unique, while values can be of any type. Dictionaries allow for fast lookup, insertion, and deletion using operations like `dict[key]`, `in`, and `del`. They are commonly used to count frequencies (e.g., words in lyrics) and improve recursive efficiency by storing intermediate results, such as in memoized Fibonacci functions."
+}

@@ -1,0 +1,5 @@
+{
+  "title": "functions",
+  "lecture": "04",
+  "content": "Functions are reusable blocks of code that perform a specific task. They are defined using the `def` keyword followed by the function name and parentheses with optional parameters. Functions can return values using the `return` statement. This promotes code reuse, testing, and logical organization.\n\nExample:\ndef square(x):\n    return x * x"
+}

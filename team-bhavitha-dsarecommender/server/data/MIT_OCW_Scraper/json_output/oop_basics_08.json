@@ -1,0 +1,5 @@
+{
+  "title": "oop_basics",
+  "lecture": "08",
+  "content": "Object-Oriented Programming (OOP) abstracts behavior through interfaces and encapsulates internal data. Benefits include modularity, reusability, and the ability to build complex systems by combining smaller, manageable units — objects."
+}

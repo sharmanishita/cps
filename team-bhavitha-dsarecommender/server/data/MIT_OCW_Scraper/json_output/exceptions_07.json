@@ -1,0 +1,5 @@
+{
+  "title": "exceptions",
+  "lecture": "07",
+  "content": "Exceptions are errors that occur during program execution, such as dividing by zero or accessing an invalid index. Python provides mechanisms to handle exceptions gracefully using `try`, `except`, and `finally` blocks. Proper exception handling ensures a program can recover from unexpected events without crashing."
+}

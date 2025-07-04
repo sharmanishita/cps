@@ -1,0 +1,5 @@
+{
+  "title": "debugging",
+  "lecture": "07",
+  "content": "Debugging is the process of identifying and correcting errors or bugs in a program. It requires understanding how the program should behave, observing actual behavior, and determining where things go wrong. Common strategies include using print statements, checking variable values, and narrowing down the code responsible for an error. Debugging is as much a reasoning skill as it is technical."
+}
