@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getCurrentMonthCalendar } from '../api/api';
-import './AchievementPage.css'; 
+import './AchievementPage.css';
 
 interface CalendarData {
   username: string;
@@ -18,10 +18,10 @@ const EmbeddedStreakCalendar: React.FC = () => {
   const [calendarData, setCalendarData] = useState<CalendarData | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const monthNames = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'
-  ];
+  // const monthNames = [
+  //   'January', 'February', 'March', 'April', 'May', 'June',
+  //   'July', 'August', 'September', 'October', 'November', 'December'
+  // ];
 
   useEffect(() => {
     const fetchCalendarData = async () => {
