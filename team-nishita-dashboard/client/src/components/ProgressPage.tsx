@@ -34,6 +34,12 @@ const isEmptySummary = (summary: any) => {
   return Object.values(summary).every((v) => v === 0);
 };
 
+const MILESTONES = [
+  { label: 'First Quiz', achieved: (summary: any) => summary.totalQuizzesTaken > 0 },
+  { label: '5 Lessons', achieved: (summary: any) => summary.totalLessonsCompleted >= 5 },
+  { label: '7-Day Streak', achieved: (summary: any) => summary.loginStreak >= 7 },
+  { label: '100 Points', achieved: (summary: any) => summary.totalPoints >= 100 },
+];
 const ProgressPage: React.FC = () => {
   const { darkMode } = useTheme();
   const {
