@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { Users, BarChart2, Settings, FileText, MessageSquare, Plus, Home } from "lucide-react";
 import "./Sidebar.styles.css";
+import { useTheme } from '../contexts/ThemeContext';
 
 const adminLinks = [
   { name: "Dashboard", icon: <Home size={20} />, path: "/admin" },
@@ -16,11 +17,14 @@ const adminLinks = [
 const AdminSidebar: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
+  const { darkMode } = useTheme();
 
   return (
-    <aside className={`sidebar ${collapsed ? "collapsed" : ""}`}>
+    <aside className={`sidebar admin-sidebar ${collapsed ? "collapsed" : ""} ${darkMode ? "dark" : "light"}`}>
       <div className="sidebar-header">
-        <span style={{ fontWeight: "bold", fontSize: "1.3rem", color: "#2563eb" }}>Admin Panel</span>
+        {!collapsed && (
+          <span style={{ fontWeight: "bold", fontSize: "1.3rem", color: "#2563eb" }}>Admin Panel</span>
+        )}
         <button
           onClick={() => setCollapsed(!collapsed)}
           className="collapse-btn"
