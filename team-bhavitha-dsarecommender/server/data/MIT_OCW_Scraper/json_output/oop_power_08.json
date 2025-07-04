@@ -1,0 +1,5 @@
+{
+  "title": "oop_power",
+  "lecture": "08",
+  "content": "OOP enables abstraction, encapsulation, and inheritance. It allows developers to build reusable, layered systems where complex behaviors are composed of simpler objects working together. This is a fundamental principle in scalable software design."
+}

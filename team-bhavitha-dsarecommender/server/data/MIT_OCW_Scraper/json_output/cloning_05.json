@@ -1,0 +1,5 @@
+{
+  "title": "cloning",
+  "lecture": "05",
+  "content": "Cloning refers to creating a copy of a list to avoid aliasing problems. This can be done using slicing:\n```python\noriginal = [1, 2, 3]\nclone = original[:]\n```\nModifying the clone does not affect the original list. Cloning is useful when you need independent copies of mutable objects."
+}

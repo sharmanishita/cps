@@ -1,0 +1,5 @@
+{
+  "title": "types_and_instances",
+  "lecture": "08",
+  "content": "You can inspect objects using `type()` and verify membership with `isinstance()`. These introspection tools are useful in debugging and in ensuring objects behave as expected within class hierarchies."
+}

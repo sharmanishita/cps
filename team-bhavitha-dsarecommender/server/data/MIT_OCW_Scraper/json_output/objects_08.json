@@ -1,0 +1,5 @@
+{
+  "title": "objects",
+  "lecture": "08",
+  "content": "In Python, everything is an object — integers, floats, strings, lists, dictionaries. Each object has a type, internal representation, and methods to interact with it. Understanding that data and behavior are bundled into objects is the foundation for OOP in Python."
+}

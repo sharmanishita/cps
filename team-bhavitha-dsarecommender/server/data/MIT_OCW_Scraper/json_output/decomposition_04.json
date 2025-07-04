@@ -1,0 +1,5 @@
+{
+  "title": "decomposition",
+  "lecture": "04",
+  "content": "Decomposition is the process of breaking a problem into smaller parts to make it more manageable. Each smaller part can be solved independently and combined to solve the entire problem. This promotes modularity and reusability in programming. For example, when designing a program to simulate student grades, you might break the task into separate functions for data input, processing, and output."
+}

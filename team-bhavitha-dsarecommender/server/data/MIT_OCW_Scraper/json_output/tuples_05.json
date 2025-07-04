@@ -1,0 +1,5 @@
+{
+  "title": "tuples",
+  "lecture": "05",
+  "content": "Tuples are immutable sequences in Python used to store collections of items. They are defined using parentheses: `t = (1, 2, 3)`. Tuples support indexing, slicing, and iteration just like lists, but their contents cannot be changed after creation. They are often used for fixed-size, heterogeneous data and function return values where immutability is desired."
+}

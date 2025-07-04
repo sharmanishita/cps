@@ -8,6 +8,10 @@ import QuizSelectPage from "./pages/QuizSelectPage";
 import HomePage from './pages/HomePage';
 import Navbar from './components/Navbar';
 import ExploreTopicPage from "./pages/ExploreTopicPage";
+import RecommendationPage from "./pages/RecommendationPage";
+import axios from "axios";
+
+
 
 // Inside <Routes>...
 
@@ -25,6 +29,7 @@ function App() {
           <Route path="/register" element={<RegisterPage />} />
           {/* Protected routes go here */}
           <Route element={<ProtectedRoutes/>}>
+            <Route path="/recommend" element={<RecommendationPage />} />
             <Route path="/explore/:topic" element={<ExploreTopicPage />} />
             <Route path="/dashboard/:username" element={<Dashboard />} />
             <Route path="/dashboard" element={<Dashboard />} />

@@ -1,0 +1,5 @@
+{
+  "title": "aliasing",
+  "lecture": "05",
+  "content": "Aliasing occurs when two variables refer to the same object in memory. Modifying the object through one alias affects the other. For example:\n```python\nx = [1, 2, 3]\ny = x\ny[0] = 9\nprint(x)  # Output: [9, 2, 3]\n```\nUnderstanding aliasing is critical for debugging side effects in mutable objects like lists."
+}

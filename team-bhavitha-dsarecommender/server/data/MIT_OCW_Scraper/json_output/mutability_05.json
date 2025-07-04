@@ -1,0 +1,5 @@
+{
+  "title": "mutability",
+  "lecture": "05",
+  "content": "Mutability refers to whether an object’s contents can be changed after creation. Lists are mutable, while tuples are not. Mutable objects can cause unexpected side effects when shared between parts of a program. Understanding mutability is essential for managing data flow, debugging, and writing robust functions."
+}

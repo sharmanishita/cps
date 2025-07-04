@@ -1,0 +1,5 @@
+{
+  "title": "operator_overloading",
+  "lecture": "08",
+  "content": "Python lets you redefine how operators like `+`, `==`, or `len()` behave using special methods like `__add__`, `__eq__`, `__len__`, etc. This allows your custom classes to behave like built-in types."
+}

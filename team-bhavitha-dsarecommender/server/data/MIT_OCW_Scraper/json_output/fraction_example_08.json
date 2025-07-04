@@ -1,0 +1,5 @@
+{
+  "title": "fraction_example",
+  "lecture": "08",
+  "content": "The Fraction example shows how to create a new number type with its own internal representation (numerator, denominator) and methods (add, subtract, convert, invert). It demonstrates the full power of OOP in modeling real-world objects."
+}

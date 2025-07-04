@@ -2,12 +2,6 @@ import express, { Request, Response } from 'express';
 const router = express.Router();
 import User from "../models/users";
 
-// Simulated in-memory user storage
-const dummyUsers: { username: string; password: string }[] = [
-  { username: 'anurag', password: '1234' },
-  { username: 'testuser', password: 'abcd' }
-];
-
 // POST /api/login
 router.post("/login", async (req, res) => {
   const { username, password } = req.body;

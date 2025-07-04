@@ -1,0 +1,5 @@
+{
+  "title": "testing",
+  "lecture": "07",
+  "content": "Testing is a critical part of writing high-quality programs. It helps identify errors early and ensures that code behaves as expected. Testing types include black-box testing (focusing on inputs and outputs) and white-box testing (understanding internal code paths). Good testing requires thinking of edge cases and checking whether functions produce correct results under various scenarios."
+}

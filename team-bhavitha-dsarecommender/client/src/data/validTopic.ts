@@ -10,6 +10,6 @@ export const validTopics = [
   "Classes", "OOP", "Encapsulation",
   "Inheritance", "Subclasses", "Class Hierarchies",
   "Big-O Notation", "Efficiency", "Space Complexity",
-  "Search Algorithms", "Sorting Algorithms"
+  "Search Algorithms", "Sorting Algorithms","Complexity Analysis"
 ];
 
