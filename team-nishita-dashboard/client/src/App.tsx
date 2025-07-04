@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { AuthProvider } from './contexts/AuthContext';
 import LandingPage from './components/LandingPage';
+import SidebarOnlyLayout from './components/SidebarOnlyLayout';
 import UserHome from './components/UserHome';
 import AdminHome from './components/AdminHome';
 import CoursePage from './components/CoursePage';
@@ -9,13 +10,13 @@ import ProtectedRoute from './contexts/ProtectedRoute';
 import ChatWidget from "./ChatWidget.tsx";
 import AdminLayout from './components/AdminLayout';
 import AdminReports from './components/AdminReports';
-
+// import TeamAndFAQPage from "./TeamAndFAQPage.tsx";
 // New pages
 import ProgressPage from './components/ProgressPage';
 import MyCoursesPage from './components/MyCoursePage';
 import AllCoursesPage from './components/AllCoursesPage';
 import AchievementsPage from './components/AchievementPage';
-import RecommendationsPage from './components/RecommendationPage';
+import TeamAndFAQPage from './components/TeamAndFAQPage.tsx';
 import KnowledgeGraphPage from './components/KnowledgeGraphPage';
 import AdminUserManagement from './components/AdminUserManagement';
 import AdminAnalytics from './components/AdminAnalytics';
@@ -30,7 +31,7 @@ function App() {
         <Router>
           <Routes>
             <Route path="/" element={<LandingPage />} />
-            
+
             <Route
               path="/dashboard"
               element={
@@ -77,13 +78,17 @@ function App() {
             />
 
             <Route
-              path="/recommendations"
+              path="/team-faq"
               element={
                 <ProtectedRoute requiredRole="user">
-                  <RecommendationsPage />
+                  <SidebarOnlyLayout>
+                    <TeamAndFAQPage />
+                  </SidebarOnlyLayout>
                 </ProtectedRoute>
               }
             />
+
+
 
             <Route
               path="/knowledge-graph"
