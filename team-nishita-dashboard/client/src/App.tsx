@@ -35,174 +35,11 @@ function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
-
-        <ChatWidget />
-        <Router>
-          <Routes>
-            <Route path="/" element={<LandingPage />} />
-
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute requiredRole="user">
-                  <UserHome />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/progress"
-              element={
-                <ProtectedRoute requiredRole="user">
-                  <ProgressPage />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/my-courses"
-              element={
-                <ProtectedRoute requiredRole="user">
-                  <MyCoursesPage />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/all-courses"
-              element={
-                <ProtectedRoute requiredRole="user">
-                  <AllCoursesPage />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/achievements"
-              element={
-                <ProtectedRoute requiredRole="user">
-                  <AchievementsPage />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/team-faq"
-              element={
-                <ProtectedRoute requiredRole="user">
-                  <SidebarOnlyLayout>
-                    <TeamAndFAQPage />
-                  </SidebarOnlyLayout>
-                </ProtectedRoute>
-              }
-            />
-
-
-
-            <Route
-              path="/knowledge-graph"
-              element={
-                <ProtectedRoute requiredRole="user">
-                  <KnowledgeGraphPage />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/admin"
-              element={
-                <ProtectedRoute requiredRole="admin">
-                  <AdminLayout>
-                    <AdminHome />
-                  </AdminLayout>
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/admin/add-course"
-              element={
-                <ProtectedRoute requiredRole="admin">
-                  <AdminLayout>
-                    <AdminHome showAddCourseForm={true} />
-                  </AdminLayout>
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/admin/reports"
-              element={
-                <ProtectedRoute requiredRole="admin">
-                  <AdminLayout>
-                    <AdminReports />
-                  </AdminLayout>
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/admin/users"
-              element={
-                <ProtectedRoute requiredRole="admin">
-                  <AdminLayout>
-                    <AdminUserManagement />
-                  </AdminLayout>
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/admin/analytics"
-              element={
-                <ProtectedRoute requiredRole="admin">
-                  <AdminLayout>
-                    <AdminAnalytics />
-                  </AdminLayout>
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/admin/settings"
-              element={
-                <ProtectedRoute requiredRole="admin">
-                  <AdminLayout>
-                    <AdminSystemSettings />
-                  </AdminLayout>
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/admin/messages"
-              element={
-                <ProtectedRoute requiredRole="admin">
-                  <AdminLayout>
-                    <AdminMessages />
-                  </AdminLayout>
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/course/:slug"
-              element={
-                <ProtectedRoute requiredRole="user">
-                  <CoursePage />
-                </ProtectedRoute>
-              }
-            />
-          </Routes>
-        </Router>
-
-        {/* ✅ Wrap everything in Tooltip.Provider to prevent Tooltip crash */}
         <Tooltip.Provider>
           <ChatWidget />
           <Router>
             <Routes>
               <Route path="/" element={<LandingPage />} />
-
               <Route
                 path="/dashboard"
                 element={
@@ -211,7 +48,6 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-
               <Route
                 path="/progress"
                 element={
@@ -220,7 +56,6 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-
               <Route
                 path="/my-courses"
                 element={
@@ -229,7 +64,6 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-
               <Route
                 path="/all-courses"
                 element={
@@ -238,25 +72,24 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-
               <Route
                 path="/achievements"
                 element={
                   <ProtectedRoute requiredRole="user">
-                    <AchievementPage />
+                    <AchievementsPage />
                   </ProtectedRoute>
                 }
               />
-
-              {/* <Route
-                path="/recommendations"
+              <Route
+                path="/team-faq"
                 element={
                   <ProtectedRoute requiredRole="user">
-                    <RecommendationsPage />
+                    <SidebarOnlyLayout>
+                      <TeamAndFAQPage />
+                    </SidebarOnlyLayout>
                   </ProtectedRoute>
                 }
-              /> */}
-
+              />
               <Route
                 path="/knowledge-graph"
                 element={
@@ -265,7 +98,6 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-
               <Route
                 path="/admin"
                 element={
@@ -276,7 +108,6 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-
               <Route
                 path="/admin/add-course"
                 element={
@@ -287,7 +118,6 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-
               <Route
                 path="/admin/reports"
                 element={
@@ -298,7 +128,6 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-
               <Route
                 path="/admin/users"
                 element={
@@ -309,7 +138,6 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-
               <Route
                 path="/admin/analytics"
                 element={
@@ -320,7 +148,6 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-
               <Route
                 path="/admin/settings"
                 element={
@@ -331,7 +158,6 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-
               <Route
                 path="/admin/messages"
                 element={
@@ -342,7 +168,6 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-
               <Route
                 path="/course/:slug"
                 element={
