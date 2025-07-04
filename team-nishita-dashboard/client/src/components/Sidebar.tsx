@@ -5,6 +5,7 @@ import {
   Home, BarChart2, BookOpen, Book, Award, ThumbsUp, Share2, Menu
 } from 'lucide-react';
 import './Sidebar.styles.css';
+import { useTheme } from '../contexts/ThemeContext';
 
 interface SidebarProps {
   collapsed: boolean;
@@ -13,6 +14,7 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed }) => {
   const location = useLocation();
+  const { darkMode } = useTheme();
 
   const links = [
     { name: 'Home', icon: <Home size={20} />, path: '/dashboard' },
@@ -30,7 +32,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed }) => {
   ];
 
   return (
-    <aside className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
+    <aside className={`sidebar ${collapsed ? 'collapsed' : ''} ${darkMode ? 'dark' : 'light'}`}>
       <div className="sidebar-header">
         <button
           onClick={() => setCollapsed(!collapsed)}
