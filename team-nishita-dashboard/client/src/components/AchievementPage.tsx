@@ -43,13 +43,28 @@ const AchievementPage: React.FC = () => {
   return (
     <Layout>
       <div className="achievement-page">
-        {/* Top 5 Stats Cards */}
+        {/* Top Stats */}
         <div className="top-section">
-          <div className="card"><h3>🔥 Current Streak</h3><p>{data.currentStreak} Days</p></div>
-          <div className="card"><h3>🏁 Highest Streak</h3><p>{data.highestStreak} Days</p></div>
-          <div className="card"><h3>📅 Days Active</h3><p>{data.totalActiveDays}</p></div>
-          <div className="card"><h3>🎯 Total Points</h3><p>{data.totalPoints}</p></div>
-          <div className="card"><h3>🏆 Level</h3><p>{data.level}</p></div>
+          <div className="stat-card streak">
+            <h3>🔥 Current Streak</h3>
+            <p>{data.currentStreak} Days</p>
+          </div>
+          <div className="stat-card higheststreak">
+            <h3>🏁 Highest Streak</h3>
+            <p>{data.highestStreak} Days</p>
+          </div>
+          <div className="stat-card active-days">
+            <h3>📅 Days Active</h3>
+            <p>{data.totalActiveDays}</p>
+          </div>
+          <div className="stat-card points">
+            <h3>🎯 Total Points</h3>
+            <p>{data.totalPoints}</p>
+          </div>
+          <div className="stat-card level">
+            <h3>🏆 Level</h3>
+            <p>{data.level}</p>
+          </div>
         </div>
 
         {/* Animate new badge */}
