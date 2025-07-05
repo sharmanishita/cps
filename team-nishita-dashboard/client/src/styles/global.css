@@ -1853,13 +1853,15 @@ body.dark-theme .soft-orange-card {
 
 /* Progress Page Light Theme Container */
 .progress-page-container {
-  background: #FFFDE7; /* very light orange */
+  background: #FFFDE7;
   min-height: 100vh;
   transition: background 0.3s;
+  padding: 3.5rem 2.5rem 2.5rem 2.5rem;
 }
 
 body.dark-theme .progress-page-container {
   background: #181A20;
+  padding: 3.5rem 2.5rem 2.5rem 2.5rem;
 }
 
 /* Progress Page Card */
@@ -1869,6 +1871,8 @@ body.dark-theme .progress-page-container {
   border-radius: 18px;
   box-shadow: 0 4px 16px 0 rgba(255, 193, 7, 0.10);
   transition: background 0.3s, border 0.3s;
+  padding: 2.5rem 2rem;
+  margin-bottom: 2rem;
 }
 
 body.dark-theme .progress-orange-card {
@@ -1876,6 +1880,8 @@ body.dark-theme .progress-orange-card {
   border: 1.5px solid #353a4a;
   border-radius: 18px;
   box-shadow: none;
+  padding: 2.5rem 2rem;
+  margin-bottom: 2rem;
 }
 
 .progress-latest-container {
@@ -1884,6 +1890,8 @@ body.dark-theme .progress-orange-card {
   border-radius: 18px;
   box-shadow: 0 4px 16px 0 rgba(255, 193, 7, 0.08);
   transition: background 0.3s, border 0.3s;
+  padding: 2.5rem 2rem;
+  margin-bottom: 2rem;
 }
 
 body.dark-theme .progress-latest-container {
@@ -1891,6 +1899,8 @@ body.dark-theme .progress-latest-container {
   border: 1.5px solid #353a4a;
   border-radius: 18px;
   box-shadow: none;
+  padding: 2.5rem 2rem;
+  margin-bottom: 2rem;
 }
 
 .stat-orange-card {
@@ -1910,10 +1920,10 @@ body.dark-theme .stat-orange-card {
 /* ProgressPage Latest Progress Card Colors */
 .progress-card-lessons, .progress-card-quizzes, .progress-card-study,
 .progress-card-points, .progress-card-streak, .progress-card-checkins {
-  padding: 2.5rem 2rem;
-  min-width: 220px;
-  min-height: 140px;
-  margin: 0.5rem 0;
+  padding: 2.2rem 1.2rem;
+  min-width: 180px;
+  min-height: 120px;
+  margin: 1rem 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1930,7 +1940,22 @@ body:not(.dark-theme) .progress-card-points, body:not(.dark-theme) .progress-car
 @media (max-width: 900px) {
   .progress-card-lessons, .progress-card-quizzes, .progress-card-study,
   .progress-card-points, .progress-card-streak, .progress-card-checkins {
-    min-width: 160px;
-    padding: 1.5rem 1rem;
+    min-width: 140px;
+    padding: 1.2rem 0.7rem;
   }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.7s ease-out;
 }

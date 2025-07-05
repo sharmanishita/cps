@@ -9,6 +9,7 @@ interface CircularProgressProps {
   showPercentage?: boolean;
   animated?: boolean;
   label?: string;
+  trackColor?: string;
 }
 
 const CircularProgress: React.FC<CircularProgressProps> = ({
@@ -18,7 +19,8 @@ const CircularProgress: React.FC<CircularProgressProps> = ({
   color = 'blue',
   showPercentage = true,
   animated = true,
-  label
+  label,
+  trackColor
 }) => {
   const { darkMode } = useTheme();
   
@@ -35,6 +37,7 @@ const CircularProgress: React.FC<CircularProgressProps> = ({
   };
 
   const finalColor = typeof color === 'string' && !['blue', 'green', 'purple', 'orange', 'red'].includes(color) ? color : getProgressColor();
+  const finalTrackColor = trackColor || (darkMode ? '#374151' : '#e5e7eb');
 
   return (
     <div className="relative inline-flex items-center justify-center">
@@ -48,7 +51,7 @@ const CircularProgress: React.FC<CircularProgressProps> = ({
           cx={size / 2}
           cy={size / 2}
           r={radius}
-          stroke={darkMode ? '#374151' : '#e5e7eb'}
+          stroke={finalTrackColor}
           strokeWidth={strokeWidth}
           fill="none"
         />
