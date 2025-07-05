@@ -183,7 +183,7 @@ const AdminHome: React.FC<AdminHomeProps> = ({ showAddCourseForm = false }) => {
               </div>
               <div className="admin-actions">
                 <button
-                  className="admin-btn primary"
+                  className="admin-btn secondary"
                   onClick={() => setShowCourseForm(true)}
                 >
                   <Plus size={16} />
