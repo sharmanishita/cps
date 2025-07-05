@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -148,6 +148,10 @@ const AdminHome: React.FC<AdminHomeProps> = ({ showAddCourseForm = false }) => {
     { icon: Activity, label: 'Active Sessions', value: '89' },
     { icon: BarChart3, label: 'Completion Rate', value: '87%' }
   ];
+
+  useEffect(() => {
+    setShowCourseForm(showAddCourseForm);
+  }, [showAddCourseForm]);
 
   return (
     <div className={`admin-page-container ${darkMode ? 'dark' : 'light'}`}>
