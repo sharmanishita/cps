@@ -175,25 +175,8 @@ const TeamCard: React.FC<{ member: TeamMember }> = ({ member }) => (
   </div>
 );
 
-const ThemeToggle: React.FC = () => {
-  const [theme, setTheme] = React.useState(
-    document.documentElement.getAttribute("data-theme") || "light"
-  );
-  const toggleTheme = () => {
-    const newTheme = theme === "dark" ? "light" : "dark";
-    document.documentElement.setAttribute("data-theme", newTheme);
-    setTheme(newTheme);
-  };
-  return (
-    <button className="theme-toggle" onClick={toggleTheme}>
-      {theme === "dark" ? "🌞" : "🌙"}
-    </button>
-  );
-};
-
 const TeamAndFAQPage: React.FC = () => (
   <div className="team-faq-page">
-    <ThemeToggle />
     {/* Hero Section */}
     <section className="hero-section">
       <div className="hero-bg" />
