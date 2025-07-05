@@ -43,7 +43,7 @@
 }
 
 
-.team-faq-page .theme-toggle {
+/* .team-faq-page .theme-toggle {
   position: absolute;
   top: 1.5rem;
   right: 2rem;
@@ -59,7 +59,7 @@
 }
 .team-faq-page .theme-toggle:hover {
   background: var(--accent);
-}
+} */
 
 .team-faq-page .hero-section {
   position: relative;

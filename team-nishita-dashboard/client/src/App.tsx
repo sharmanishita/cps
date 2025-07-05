@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { AuthProvider } from './contexts/AuthContext';
 import LandingPage from './components/LandingPage';
-import SidebarOnlyLayout from './components/SidebarOnlyLayout';
+import Layout from './components/Layout';
 import UserHome from './components/UserHome';
 import AdminHome from './components/AdminHome';
 import CoursePage from './components/CoursePage';
@@ -84,9 +84,9 @@ function App() {
                 path="/team-faq"
                 element={
                   <ProtectedRoute requiredRole="user">
-                    <SidebarOnlyLayout>
+                    <Layout>
                       <TeamAndFAQPage />
-                    </SidebarOnlyLayout>
+                    </Layout>
                   </ProtectedRoute>
                 }
               />
